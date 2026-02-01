@@ -1,2 +1,8 @@
 /target
 GEMINI.md
+GEMINI_API_KEY
+vega.db
+*.db
+.env
+.DS_Store
+GEMINI_API_KEY
