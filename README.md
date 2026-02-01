@@ -12,6 +12,10 @@
 *   **🛡️ Built-in Safety**: A robust Risk Assessment Engine prevents accidental destruction. Critical commands require explicit confirmation.
 *   **🏢 Enterprise Ready**: Includes **SSH Remote Management**, **PDF Session Reporting**, and **API Key Validation**.
 
+## 🎥 Demo
+[![Vega Demo](https://img.youtube.com/vi/BA4aD9KdQuE/0.jpg)](https://youtu.be/BA4aD9KdQuE)
+*Click to watch the initialization & self-repair demo.*
+
 ## 🛠️ Installation
 
 ### Prerequisites
