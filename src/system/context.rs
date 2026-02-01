@@ -1,4 +1,8 @@
+
+use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use crate::system::virt::VirtualMachine;
+
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Partition {
@@ -24,6 +28,8 @@ pub struct SystemContext {
     pub os_name: String,
     pub kernel_version: String,
     pub partitions: Vec<Partition>,
+    pub vms: Vec<VirtualMachine>,
+    pub env_vars: HashMap<String, String>,
 }
 
 impl SystemContext {
@@ -32,6 +38,8 @@ impl SystemContext {
             os_name: "Unknown".to_string(),
             kernel_version: "Unknown".to_string(),
             partitions: Vec::new(),
+            vms: Vec::new(),
+            env_vars: HashMap::new(),
         }
     }
 }

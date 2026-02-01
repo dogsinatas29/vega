@@ -1,6 +1,10 @@
 use std::fs;
 use std::process::Command;
+use std::collections::HashMap;
+use std::env;
 use crate::system::context::{SystemContext, Partition, PartitionType};
+use crate::system::virt::VirtManager;
+
 
 pub fn scan_system() -> SystemContext {
     let mut context = SystemContext::new();
@@ -10,6 +14,19 @@ pub fn scan_system() -> SystemContext {
 
     // 2. Scan Partitions (Robust parsing)
     context.partitions = scan_partitions();
+
+    // 3. Scan VMs
+    context.vms = VirtManager::list_vms();
+
+    // 4. Scan Specific Env Vars (Hard Constraints)
+    let mut env_vars = HashMap::new();
+    if let Ok(val) = env::var("GITHUB_URL") {
+        env_vars.insert("GITHUB_URL".to_string(), val);
+    }
+    if let Ok(val) = env::var("GDRIVE_PATH") {
+        env_vars.insert("GDRIVE_PATH".to_string(), val);
+    }
+    context.env_vars = env_vars;
 
     context
 }

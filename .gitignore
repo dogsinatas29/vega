@@ -1,8 +1,11 @@
 /target
 GEMINI.md
 GEMINI_API_KEY
-vega.db
 *.db
+*.sqlite
 .env
 .DS_Store
-GEMINI_API_KEY
+**/*.wad
+**/*.mp3
+history/
+output/

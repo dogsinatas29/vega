@@ -74,4 +74,17 @@ impl EnvScanner {
         
         found_keys
     }
+
+    /// Reads system LANG environment variable
+    #[allow(dead_code)]
+    pub fn get_locale() -> String {
+        env::var("LANG").unwrap_or_else(|_| "en_US.UTF-8".to_string())
+    }
+
+    /// Validates if a string looks like a valid URL (basic check)
+    pub fn validate_url(url: &str) -> bool {
+        // Basic regex for http/https URLs
+        let url_regex = Regex::new(r"^(https?://)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(/.*)?$").unwrap();
+        url_regex.is_match(url)
+    }
 }

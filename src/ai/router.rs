@@ -1,4 +1,4 @@
-use crate::ai::LLMProvider;
+use crate::ai::AiProvider;
 use crate::ai::providers::gemini::GeminiProvider;
 use crate::ai::providers::offline::OfflineEngine;
 use log::{info, warn, debug};
@@ -11,6 +11,7 @@ pub enum EngineType {
     Claude,
     OpenAI,
     Offline,
+    Mock,
 }
 
 impl SmartRouter {
@@ -47,7 +48,7 @@ impl SmartRouter {
         EngineType::Gemini
     }
 
-    pub fn get_provider(engine: EngineType) -> Result<Box<dyn LLMProvider>, String> {
+    pub fn get_provider(engine: EngineType) -> Result<Box<dyn AiProvider>, String> {
         info!("🤖 Initializing Provider: {:?}", engine);
         match engine {
             EngineType::Gemini => {
@@ -63,6 +64,7 @@ impl SmartRouter {
             EngineType::Claude => Err("Claude Provider not yet implemented".to_string()), 
             EngineType::OpenAI => Err("OpenAI Provider not yet implemented".to_string()),
             EngineType::Offline => Ok(Box::new(OfflineEngine::new())),
+            EngineType::Mock => Ok(Box::new(crate::ai::providers::mock::MockProvider::new())),
         }
     }
 }

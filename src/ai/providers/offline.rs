@@ -1,4 +1,4 @@
-use crate::ai::LLMProvider;
+use crate::ai::{AiProvider, QuotaStatus};
 use crate::system::context::SystemContext;
 use async_trait::async_trait;
 use std::error::Error;
@@ -35,9 +35,13 @@ impl OfflineEngine {
 }
 
 #[async_trait]
-impl LLMProvider for OfflineEngine {
+impl AiProvider for OfflineEngine {
     fn name(&self) -> &str {
         "Vega Offline (Rule-based)"
+    }
+    
+    fn get_quota_status(&self) -> QuotaStatus {
+        QuotaStatus::Unlimited
     }
 
     async fn generate_response(&self, _context: &SystemContext, prompt: &str) -> Result<String, Box<dyn Error>> {

@@ -1,17 +1,64 @@
 use rusqlite::{params, Connection, Result};
 use std::time::{SystemTime, UNIX_EPOCH};
+use std::os::unix::fs::PermissionsExt;
+use std::fs;
 
 pub struct Database {
     conn: Connection,
     current_session_id: Option<i64>,
 }
 
+#[derive(Debug, Clone)]
+pub struct TaskEntry {
+    pub project_name: Option<String>,
+    pub command: String,
+    pub exit_code: i32,
+    pub stdout: String,
+    pub stderr: String,
+    pub healer_used: bool,
+    pub healer_log: Option<String>,
+    pub token_usage: Option<i32>,
+    pub timestamp: i64,
+}
+
 impl Database {
+    pub fn get_current_session_id(&self) -> Option<i64> {
+        self.current_session_id
+    }
+
     pub fn new() -> Result<Self> {
-        let conn = Connection::open("vega.db")?;
+        let config_dir = dirs::config_dir().unwrap_or_else(|| std::path::PathBuf::from("."));
+        let db_path = config_dir.join("vega").join("vega.db");
+        // Ensure directory exists
+        if let Some(parent) = db_path.parent() {
+            std::fs::create_dir_all(parent).ok();
+        }
+
+        let conn = Connection::open(&db_path)?;
         
-        // Initialize Schema
-        conn.execute(
+        // Security: Enforce 600 permissions
+        if let Ok(metadata) = fs::metadata(&db_path) {
+            let mut perms = metadata.permissions();
+            perms.set_mode(0o600);
+            let _ = fs::set_permissions(&db_path, perms);
+        }
+
+        let mut db = Database {
+            conn,
+            current_session_id: None,
+        };
+        db.migrate()?;
+        db.start_session()?;
+        Ok(db)
+    }
+
+    fn migrate(&self) -> Result<()> {
+        self.conn.execute(
+            "PRAGMA foreign_keys = ON;",
+            [],
+        )?;
+
+        self.conn.execute(
             "CREATE TABLE IF NOT EXISTS sessions (
                 id INTEGER PRIMARY KEY,
                 start_time INTEGER NOT NULL,
@@ -21,7 +68,7 @@ impl Database {
             [],
         )?;
 
-        conn.execute(
+        self.conn.execute(
             "CREATE TABLE IF NOT EXISTS commands (
                 id INTEGER PRIMARY KEY,
                 session_id INTEGER,
@@ -35,7 +82,7 @@ impl Database {
             [],
         )?;
 
-        conn.execute(
+        self.conn.execute(
             "CREATE TABLE IF NOT EXISTS metadata (
                 key TEXT PRIMARY KEY,
                 value TEXT
@@ -43,7 +90,7 @@ impl Database {
             [],
         )?;
 
-        conn.execute(
+        self.conn.execute(
             "CREATE TABLE IF NOT EXISTS chat_history (
                 id INTEGER PRIMARY KEY,
                 role TEXT NOT NULL,
@@ -53,14 +100,63 @@ impl Database {
             [],
         )?;
 
-        let mut db = Database {
-            conn,
-            current_session_id: None,
-        };
+        self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS execution_logs (
+                id INTEGER PRIMARY KEY,
+                session_id INTEGER,
+                command TEXT NOT NULL,
+                success BOOLEAN,
+                exit_code INTEGER,
+                stdout TEXT,
+                stderr TEXT,
+                healer_intervention TEXT,
+                timestamp INTEGER,
+                FOREIGN KEY(session_id) REFERENCES sessions(id)
+            )",
+            [],
+        )?;
 
-        db.start_session()?;
-        
-        Ok(db)
+        // Advanced Schema (Phase 3-4-1)
+        self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS task_history (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id INTEGER,
+                project_name TEXT,
+                command TEXT NOT NULL,
+                exit_code INTEGER,
+                stdout TEXT,
+                stderr TEXT,
+                healer_used BOOLEAN,
+                healer_log TEXT,
+                token_usage INTEGER,
+                timestamp INTEGER,
+                FOREIGN KEY(session_id) REFERENCES sessions(id)
+            )",
+            [],
+        )?;
+
+        self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS error_solutions (
+                error_pattern TEXT PRIMARY KEY,
+                solution_cmd TEXT,
+                success_count INTEGER DEFAULT 1
+            )",
+            [],
+        )?;
+
+        // Phase 4: Advanced Metrics
+        self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS system_stats (
+                date TEXT PRIMARY KEY,
+                total_input_tokens INTEGER DEFAULT 0,
+                total_output_tokens INTEGER DEFAULT 0,
+                error_count INTEGER DEFAULT 0
+            )",
+            [],
+        )?;
+
+    // Migration logic moved to migrate()
+    Ok(()) 
     }
 
     pub fn start_session(&mut self) -> Result<()> {
@@ -108,6 +204,16 @@ impl Database {
         Ok(())
     }
 
+    pub fn add_execution_log(&self, session_id: i64, command: &str, success: bool, exit_code: i32, stdout: &str, stderr: &str, healer_intervention: Option<&str>) -> Result<()> {
+        let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as i64;
+        self.conn.execute(
+            "INSERT INTO execution_logs (session_id, command, success, exit_code, stdout, stderr, healer_intervention, timestamp)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            params![session_id, command, success, exit_code, stdout, stderr, healer_intervention, timestamp],
+        )?;
+        Ok(())
+    }
+
     pub fn get_recent_history(&self, limit: usize) -> Result<Vec<(String, String)>> {
         let mut stmt = self.conn.prepare(
             "SELECT role, content FROM chat_history ORDER BY id DESC LIMIT ?"
@@ -123,6 +229,128 @@ impl Database {
         }
         history.reverse(); // Return in chronological order
         Ok(history)
+    }
+
+    pub fn get_failure_count(&self, command: &str) -> Result<i32> {
+        let mut stmt = self.conn.prepare(
+            "SELECT COUNT(*) FROM execution_logs WHERE command = ? AND success = 0"
+        )?;
+        let count: i32 = stmt.query_row(params![command], |row| row.get(0))?;
+        Ok(count)
+    }
+
+    // --- Phase 3-4-1 Methods ---
+
+    pub fn log_task(
+        &self, 
+        session_id: i64, 
+        project_name: Option<&str>, 
+        command: &str, 
+        exit_code: i32, 
+        stdout: &str, 
+        stderr: &str, 
+        healer_used: bool, 
+        healer_log: Option<&str>, 
+        token_usage: Option<i32>
+    ) -> Result<()> {
+        let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as i64;
+        self.conn.execute(
+            "INSERT INTO task_history (session_id, project_name, command, exit_code, stdout, stderr, healer_used, healer_log, token_usage, timestamp)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            params![
+                session_id, 
+                project_name, 
+                command, 
+                exit_code, 
+                stdout, 
+                stderr, 
+                healer_used, 
+                healer_log, 
+                token_usage, 
+                timestamp
+            ],
+        )?;
+        Ok(())
+    }
+
+    pub fn learn_solution(&self, error_pattern: &str, solution_cmd: &str) -> Result<()> {
+        // Upsert logic: if exists, increment success_count
+        let _rows_affected = self.conn.execute(
+            "INSERT INTO error_solutions (error_pattern, solution_cmd, success_count)
+             VALUES (?, ?, 1)
+             ON CONFLICT(error_pattern) DO UPDATE SET success_count = success_count + 1",
+             params![error_pattern, solution_cmd]
+        )?;
+        Ok(())
+    }
+
+    pub fn get_solution(&self, error_pattern: &str) -> Result<Option<String>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT solution_cmd FROM error_solutions WHERE error_pattern = ?"
+        )?;
+        
+        // Handling strict exact match for now. Regex matching in SQLite is harder without extensions.
+        // We'll assume the 'error_pattern' passed here is a known key.
+        // Or in the future, we iterate/search. 
+        let mut rows = stmt.query(params![error_pattern])?;
+        
+        if let Some(row) = rows.next()? {
+            Ok(Some(row.get(0)?))
+        } else {
+            Ok(None)
+        }
+    }
+
+    pub fn record_task(
+        &self,
+        project: Option<&str>,
+        cmd: &str,
+        res: &crate::executor::ExecuteResult,
+        tokens: Option<i32>
+    ) -> Result<()> {
+        if let Some(sid) = self.current_session_id {
+            self.log_task(
+                 sid,
+                 project,
+                 cmd,
+                 res.exit_code,
+                 &res.stdout,
+                 &res.stderr,
+                 false,
+                 None,
+                 tokens
+            )?;
+        }
+        Ok(())
+    }
+
+    pub fn get_session_tasks(&self, session_id: i64) -> Result<Vec<TaskEntry>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT project_name, command, exit_code, stdout, stderr, healer_used, healer_log, token_usage, timestamp 
+             FROM task_history 
+             WHERE session_id = ? 
+             ORDER BY timestamp ASC"
+        )?;
+        
+        let task_iter = stmt.query_map(params![session_id], |row| {
+            Ok(TaskEntry {
+                project_name: row.get(0)?,
+                command: row.get(1)?,
+                exit_code: row.get(2)?,
+                stdout: row.get(3)?,
+                stderr: row.get(4)?,
+                healer_used: row.get(5)?,
+                healer_log: row.get(6)?,
+                token_usage: row.get(7)?,
+                timestamp: row.get(8)?,
+            })
+        })?;
+
+        let mut tasks = Vec::new();
+        for task in task_iter {
+            tasks.push(task?);
+        }
+        Ok(tasks)
     }
 }
 

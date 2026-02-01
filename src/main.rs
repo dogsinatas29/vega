@@ -1,18 +1,24 @@
-mod system;
-mod storage;
-mod safety;
-mod security;
-mod ai;
-mod remote;
-mod reporting;
 
-use system::{global, env_scanner::EnvScanner};
+use vega::system;
+use vega::storage;
+use vega::safety;
+
+use vega::ai;
+use vega::remote;
+use vega::reporting;
+
+use vega::context;
+
+use system::{global, env_scanner::EnvScanner, virt::VirtManager};
 use storage::db::Database;
 use safety::{sanitizer, checker, ui};
 use ai::router::SmartRouter;
 use remote::RemoteManager;
 use reporting::ReportGenerator;
-use system::executor::Executor;
+use vega::executor::{Executor, Healer};
+use context::switcher::SmartContext;
+use system::archivist::Archivist;
+use system::os::OsInfo;
 use clap::{Parser, Subcommand};
 use dotenvy::dotenv;
 use std::env;
@@ -51,6 +57,10 @@ struct Args {
     /// Execute command on remote host (format: user@host)
     #[arg(long)]
     remote: Option<String>,
+
+    /// Run diagnostic checks only (Offline Mode)
+    #[arg(long)]
+    check_only: bool,
 }
 
 #[derive(Subcommand, Debug)]
@@ -104,21 +114,23 @@ async fn main() {
     
     dotenv().ok();
     
-    // 0. Environment Discovery
-    let discovered_keys = EnvScanner::scan_shell_configs();
-    for (key, env_key) in &discovered_keys {
-        if env::var(key).is_err() {
-            unsafe { env::set_var(key, &env_key.value); }
-        }
-    }
+    // 0. Initialization (Self-Reliant)
+    let config = vega::init::initialize_system();
+    
+    // Inject Keys into Env for compatibility with Providers
+    // Keys are managed via Environment Variables. VEGA relies on `dotenv` or user environment.
 
     let args = Args::parse();
     
     // 1. Handle Subcommands
     if let Some(Commands::CheckKey) = args.command {
         // ... (CheckKey Implementation) ...
+        // ... (CheckKey Implementation) ...
         println!("🔑 Checking API Keys...");
         let target_keys = vec!["GEMINI_API_KEY"];
+        // Re-scan for debugging details
+        let discovered_keys = EnvScanner::scan_shell_configs();
+        
         for key_name in target_keys {
             if let Some(env_key) = discovered_keys.get(key_name) {
                 println!("\n📌 Key: {}", key_name.green().bold());
@@ -164,6 +176,48 @@ async fn main() {
         return;
     }
 
+    // 3.5 Handle Diagnostic Mode (Offline)
+    if args.check_only {
+        println!("{}", "🔍 Running Local System Diagnostics (Offline Mode)...".cyan().bold());
+        
+        // 1. VM Check
+        println!("\n🖥️  Virtual Machines (via libvirt):");
+        let vms = VirtManager::list_vms();
+        if vms.is_empty() {
+            println!("   No VMs found.");
+        } else {
+            for vm in vms {
+                let status_color = if vm.state.contains("running") { "running".green() } else { vm.state.as_str().red() };
+                println!("   - {:<15} [{}] IP: {:?}", vm.name.bold(), status_color, vm.ip_address);
+            }
+        }
+
+        // 2. Docker Check
+        println!("\n🐳 Docker Containers:");
+        let containers = system::docker::DockerManager::list_containers();
+        if containers.is_empty() {
+             println!("   No active containers found (or Docker not running).");
+        } else {
+             for c in containers {
+                 println!("   - {:<12} {:<20} [{}]", c.id[..10].to_string(), c.name.bold(), c.status.green());
+             }
+        }
+
+        // 3. Env Check
+        println!("\n🔑 Environment Keys:");
+        let keys = EnvScanner::scan_shell_configs();
+        if keys.is_empty() {
+             println!("   No keys found in shell configs.");
+        } else {
+             for (k, v) in keys {
+                 println!("   - {:<20} Source: {:?}", k.yellow(), v.source_file);
+             }
+        }
+
+        println!("\n✅ Diagnostics Complete.");
+        return;
+    }
+
     // 4. Interactive Event Loop
     global::initialize();
     
@@ -184,6 +238,8 @@ async fn main() {
         Vec::new()
     };
 
+    let current_session_id = db.as_ref().and_then(|d| d.get_current_session_id());
+
     // Determine initial input
     let mut next_input = if !args.query.is_empty() {
         Some(args.query.join(" "))
@@ -194,6 +250,7 @@ async fn main() {
 
     let mut pending_error: Option<String> = None;
     let mut retry_count: u32 = 0;
+    let mut session_errors: u32 = 0;
     const MAX_RETRIES: u32 = 3;
 
     loop {
@@ -235,10 +292,62 @@ async fn main() {
         }
         session_history.push(("user".to_string(), raw_query.clone()));
 
+        // --- PHASE 4: Virtualization Awareness ---
+        // If query mentions VM/Fedora, auto-scan
+        let mut vm_context_str = String::new();
+        let query_lower = raw_query.to_lowercase();
+        if query_lower.contains("vm") || query_lower.contains("fedora") || query_lower.contains("virtual") {
+            println!("{}", "🔍 Scanning for Virtual Machines (GNOME Boxes)...".cyan());
+            let vms = VirtManager::list_vms();
+            if vms.is_empty() {
+                println!("   No active VMs found.");
+            } else {
+                for vm in &vms {
+                    println!("   🖥️  Found: {} ({}) - IP: {:?}", vm.name.bold(), vm.state, vm.ip_address);
+                    if vm.state == "running" {
+                        let ip_str = vm.ip_address.clone().unwrap_or_else(|| "UNKNOWN (Use QEMU Agent fallback)".to_string());
+                        vm_context_str.push_str(&format!("* VM '{}' is RUNNING at IP {}.\n", vm.name, ip_str));
+                    }
+                }
+            }
+        }
+        // -----------------------------------------
+
+        // --- PHASE 5: Project Awareness ---
+        let project_info = SmartContext::detect_project(&config);
+        let mut project_context_str = String::new();
+        let mut current_project_name = None;
+
+        if let Some(proj) = &project_info {
+             println!("{}", format!("📂 Project: {} ({})", proj.name.cyan(), proj.description).dimmed());
+             current_project_name = Some(proj.name.clone());
+             project_context_str.push_str(&format!("* Current Project: {}\n", proj.name));
+             project_context_str.push_str(&format!("* Description: {}\n", proj.description));
+             project_context_str.push_str(&format!("* Path: {:?}\n", proj.path));
+             
+             if proj.git_check {
+                 if let Some(status) = SmartContext::check_git_status() {
+                      println!("{}", format!("   📝 Git Modified: {}", status).yellow());
+                      project_context_str.push_str(&format!("* Git Status: {}\n", status));
+                 }
+             }
+        }
+        // -----------------------------------------
+
         let sanitized_query = sanitizer::sanitize_input(&raw_query);
         
         // Build Context-Aware Prompt
         let mut full_prompt = String::new();
+        if !vm_context_str.is_empty() {
+            full_prompt.push_str("## SYSTEM SCANNED RESOURCES\n");
+            full_prompt.push_str(&vm_context_str);
+            full_prompt.push_str("\n");
+        }
+        if !project_context_str.is_empty() {
+            full_prompt.push_str("## ACTIVE PROJECT CONTEXT\n");
+            full_prompt.push_str(&project_context_str);
+            full_prompt.push_str("\n");
+        }
         if !session_history.is_empty() {
             full_prompt.push_str("Recent Conversation History:\n");
             for (role, msg) in &session_history {
@@ -300,49 +409,64 @@ async fn main() {
                                 println!("🚀 Executing: {}", parsed.command);
                                 
                                 // Capture Output/Error for Feedback Loop
-                                match Executor::execute_command(&parsed.command) {
-                                    Ok(output) => {
-                                        println!("{}", output);
-                                        if let Some(database) = &db {
-                                            let _ = database.log_command(&parsed.command, &format!("User query: {}", sanitized_query), true);
-                                        }
-                                        println!("✅ Done.");
-                                        
-                                        // If we were retrying and succeeded, clear error/count
-                                        pending_error = None;
-                                        retry_count = 0;
-                                        
-                                        // If this was a one-shot CLI arg (not REPL), break
-                                        // Logic: if args.query was used, next_input was Some, then taken. next_input is now None.
-                                        // AND we are not in REPL loop (args.query was not empty initially)
-                                        // Wait, the logic for REPL is implicit in the loop. 
-                                        // If we want to behave like CLI for args, we should break if args.query existed.
-                                        if !args.query.is_empty() && retry_count == 0 {
+                                // Execute with Healer (Auto-Recovery)
+                                let result = Executor::execute_command(&parsed.command);
+                                
+                                if result.success {
+                                    println!("{}", result.stdout.trim());
+                                    
+                                    // Add to context (Short summary)
+                                    let summary = format!("Ran: {}\nOutput: {}", parsed.command, result.stdout.trim());
+                                    // ... append to context logic if exists ...
+                                    if let Some(database) = &db {
+                                        let _ = database.save_chat_message("system", &summary);
+                                        // The Archivist: Log Success
+                                        let _ = Archivist::log_execution(&db, &current_session_id, current_project_name.as_deref(), &parsed.command, &result, None, None);
+                                    }
+                                    println!("✅ Done.");
+                                    
+                                    // If we were retrying and succeeded, clear error/count
+                                    pending_error = None;
+                                    retry_count = 0;
+                                    
+                                    // If this was a one-shot CLI arg (not REPL), break
+                                    // Logic: if args.query was used, next_input was Some, then taken. next_input is now None.
+                                    // AND we are not in REPL loop (args.query was not empty initially)
+                                    // Wait, the logic for REPL is implicit in the loop. 
+                                    // If we want to behave like CLI for args, we should break if args.query existed.
+                                    if !args.query.is_empty() && retry_count == 0 {
+                                        break;
+                                    }
+                                } else {
+                                    eprintln!("{}", "❌ Command Failed".red().bold());
+                                    eprintln!("STDERR:\n{}", result.stderr.trim());
+                                    
+                                    // Healer Diagnosis
+                                    let os_info = OsInfo::detect(); 
+                                    let mut healer_hint = String::new();
+                                    if let Some(suggestion) = Healer::diagnose(&result, &os_info, &parsed.command) {
+                                        println!("\n{} {}", "🚑 Healer Suggestion:".yellow().bold(), format!("{}", suggestion).cyan());
+                                        healer_hint = format!("\n(Hint: System suggests trying: '{}')", suggestion);
+                                    }
+
+                                    let error_summary = format!("Ran: {}\nFailed (Exit: {})\nError: {}{}", parsed.command, result.exit_code, result.stderr.trim(), healer_hint);
+                                    session_errors += 1;
+                                    if let Some(database) = &db {
+                                        let _ = database.save_chat_message("system", &error_summary);
+                                        // The Archivist: Log Failure with Healer Hint
+                                        let _ = Archivist::log_execution(&db, &current_session_id, current_project_name.as_deref(), &parsed.command, &result, if healer_hint.is_empty() { None } else { Some(healer_hint) }, None);
+                                    }
+                                    
+                                    // Trigger Self-Correction
+                                    if retry_count < MAX_RETRIES {
+                                        retry_count += 1;
+                                        pending_error = Some(error_summary); // Use the detailed error summary for AI
+                                        continue; // Loop again with error as input
+                                    } else {
+                                        eprintln!("{}", "❌ Maximum retries reached. Please contact the expert (User).".red().bold());
                                             break;
                                         }
-                                    },
-                                    Err(e) => {
-                                        eprintln!("❌ Execution Failed: {}", e);
-                                        if let Some(database) = &db {
-                                            let _ = database.log_command(&parsed.command, &format!("User query: {}; Error: {}", sanitized_query, e), false);
-                                        }
-                                        
-                                        // Trigger Self-Correction
-                                        if retry_count < MAX_RETRIES {
-                                            retry_count += 1;
-                                            pending_error = Some(e.to_string());
-                                            continue; // Loop again with error as input
-                                        } else {
-                                            eprintln!("{}", "❌ Maximum retries reached. Please contact the expert (User).".red().bold());
-                                            pending_error = None;
-                                            retry_count = 0;
-                                            // Fall through to normal loop (user prompt) or break if one-shot
-                                            if !args.query.is_empty() {
-                                                 break;
-                                            }
-                                        }
                                     }
-                                }
                              } else {
                                  println!("❌ Action cancelled by user.");
                                  // If cancelled, stop retrying
@@ -365,5 +489,19 @@ async fn main() {
                 if !args.query.is_empty() { break; }
             }
         }
+    }
+
+    // Session Wrap-up
+    println!("\n{}", "👋 Shutting down VEGA...".dimmed());
+    if session_errors > 5 {
+        println!("{}", "😒 Too many errors today. Try reading the documentation.".red().italic());
+    } else {
+        println!("{}", "✨ Session closed cleanly.".green());
+    }
+
+    // Archivist: Generate Session Report
+    if let (Some(database), Some(sid)) = (&db, current_session_id) {
+        println!("📜 Generating Session Report...");
+        Archivist::archive_session(database, sid);
     }
 }

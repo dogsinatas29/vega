@@ -1,4 +1,4 @@
-use crate::ai::LLMProvider;
+use crate::ai::{AiProvider, QuotaStatus};
 use crate::security::keyring;
 use crate::system::context::SystemContext;
 use async_trait::async_trait;
@@ -46,9 +46,13 @@ impl GeminiProvider {
 }
 
 #[async_trait]
-impl LLMProvider for GeminiProvider {
+impl AiProvider for GeminiProvider {
     fn name(&self) -> &str {
         "Google Gemini"
+    }
+    
+    fn get_quota_status(&self) -> QuotaStatus {
+        QuotaStatus::Unknown
     }
 
     async fn generate_response(&self, context: &SystemContext, prompt: &str) -> Result<String, Box<dyn Error>> {
