@@ -86,5 +86,10 @@ export GEMINI_API_KEY="AIzaSy..."
 *   **Memory**: SQLite (`vega.db`) for context and history.
 *   **UI**: Interactive Event Loop with intelligent formatting and spinners.
 
+## 🔮 Future Roadmap
+*   **Multi-Model Support**: Upcoming integration with **Anthropic Claude 3.5 Sonnet** (for deep reasoning) and **OpenAI GPT-4o**.
+*   **Offline AI**: Native bindings for Ollama/Llama.cpp for air-gapped environments.
+*   **Plugin System**: Extensible architecture for community capabilities.
+
 ---
 *Built with ❤️ by Antigravity & Dogsinatas*
