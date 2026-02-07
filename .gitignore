@@ -16,6 +16,8 @@ logs/
 vega_config.toml
 token.json
 credentials.json
+GEMINI_API_KEY
+
 
 # Textures/Assets (generated or large)
 debug_map.txt
