@@ -1,11 +1,30 @@
-/target
-GEMINI.md
-GEMINI_API_KEY
+# Rust
+target/
+**/*.rs.bk
+
+# Python (Legacy/Mixed)
+*.py
+__pycache__/
+*.pyc
+*.spec
+
+# Logs & Data
+logs/
+*.log
+*.jsonl
 *.db
-*.sqlite
-.env
+vega_config.toml
+token.json
+credentials.json
+
+# Textures/Assets (generated or large)
+debug_map.txt
+temp_analysis/
+
+# System
 .DS_Store
-**/*.wad
-**/*.mp3
-history/
-output/
+.idea/
+.vscode/
+
+# Keep specific assets if needed, but ignore raw dumps
+assets/*.tmp

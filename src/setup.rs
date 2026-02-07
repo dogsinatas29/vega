@@ -1,0 +1,174 @@
+use std::io::{self, Write};
+use std::fs;
+use std::env;
+use crate::config::{VegaConfig, AiConfig, OptimizationConfig};
+use crate::context::SystemContext;
+use crate::shell::ShellSnapshot;
+use crate::scan;
+
+pub struct SetupWizard;
+
+impl SetupWizard {
+    pub fn run() {
+        // 0. Check for Silent Mode (--yes / -y)
+        let args: Vec<String> = env::args().collect();
+        let silent_mode = args.contains(&"--yes".to_string()) || args.contains(&"-y".to_string());
+
+        if silent_mode {
+            println!("🚀 Vega Setup (Silent Mode)");
+        } else {
+            println!("🚀 Vega Setup Wizard");
+            println!("--------------------");
+        }
+
+        // 1. System Scan
+        if !silent_mode {
+            println!("🔍 Scanning System...");
+            let ctx = SystemContext::collect();
+            println!("   - OS: {}", ctx.os_info);
+        }
+        
+        // 2. AI Onboarding
+        if !silent_mode {
+            println!("\n[1] Setup Intelligence (LLM)");
+        }
+        
+        let provider = if silent_mode {
+            "gemini".to_string() // Default for silent
+        } else {
+            Self::select_provider()
+        };
+
+        let (api_key, source) = if silent_mode {
+            // In silent mode, try to find key, if not, fail or use dummy? 
+            // Design decision: Try to find env var first.
+            let env_key = match provider.as_str() {
+                "gemini" => env::var("GEMINI_API_KEY"),
+                "chatgpt" => env::var("OPENAI_API_KEY"),
+                "claude" => env::var("ANTHROPIC_API_KEY"),
+                _ => Err(std::env::VarError::NotPresent),
+            };
+
+            if let Ok(_) = env_key {
+                ("***MASKED***".to_string(), "env_var".to_string())
+            } else {
+                // Try file scan
+                if let Some((_, path)) = scan::env::find_key(&provider) {
+                    ("***MASKED***".to_string(), format!("file:{}", path))
+                } else {
+                    println!("❌ Silent Mode Error: No API Key found for {}. Please set env var.", provider);
+                    return; 
+                }
+            }
+        } else {
+            Self::discover_and_confirm_key(&provider)
+        };
+
+        if !silent_mode {
+            println!("   - Provider: {}", provider);
+            println!("   - API Key Source: {}", source);
+        }
+
+        // 3. Generate Config
+        let mut config = VegaConfig::default();
+        config.system.log_level = Some("INFO".to_string());
+        
+        config.ai = Some(AiConfig {
+            provider: provider.clone(),
+            api_key_source: source,
+            model: None, 
+        });
+
+        config.optimization = Some(OptimizationConfig {
+            cache_enabled: Some(true),
+            system_prompt_version: Some("1.0".to_string()),
+            local_keywords: Some(vec!["update".to_string(), "ssh".to_string()]),
+            shell_snapshot_path: Some("logs/shell_snapshot.json".to_string()),
+        });
+
+        // Save
+        let toml_str = toml::to_string(&config).unwrap();
+        fs::write("vega_config.toml", toml_str).expect("Failed to write config");
+        
+        println!("✨ Setup Complete. Configuration saved to vega_config.toml");
+    }
+
+    fn select_provider() -> String {
+        println!("   Select LLM Provider:");
+        println!("   1) Gemini (Recommended)");
+        println!("   2) ChatGPT");
+        println!("   3) Claude");
+        
+        loop {
+             let choice = Self::prompt("   Select (1-3): ", Some("1"));
+             match choice.as_str() {
+                 "1" | "gemini" => return "gemini".to_string(),
+                 "2" | "chatgpt" => return "chatgpt".to_string(),
+                 "3" | "claude" => return "claude".to_string(),
+                 _ => println!("   ❌ Invalid choice."),
+             }
+        }
+    }
+
+    fn discover_and_confirm_key(provider: &str) -> (String, String) {
+        let env_var = match provider {
+            "gemini" => "GEMINI_API_KEY",
+            "chatgpt" => "OPENAI_API_KEY",
+            "claude" => "ANTHROPIC_API_KEY",
+            _ => "UNKNOWN_KEY"
+        };
+
+        // 1. Check current env
+        if env::var(env_var).is_ok() {
+            println!("   🔍 Detected API Key in environment ({})", env_var);
+            if Self::confirm("   Use this key? (Y/n): ", Some("Y")) {
+                return ("***MASKED***".to_string(), "env_var".to_string());
+            }
+        }
+
+        // 2. Advanced Regex Scan
+        if let Some((masked_key, path)) = scan::env::find_key(provider) {
+             println!("   🔍 Detected API Key in {} ({})", path, masked_key);
+             if Self::confirm(&format!("   Use key from {}? (Y/n): ", path), Some("Y")) {
+                 return (masked_key, format!("file:{}", path));
+             }
+        }
+
+        // 3. Manual Fallback
+        loop {
+            let key = Self::prompt("   🔑 Enter API Key: ", None);
+            if !key.is_empty() {
+                // Basic Validation
+                if key.len() < 10 {
+                    println!("   ❌ Invalid Key Format (Too short).");
+                    continue;
+                }
+                return (key, "manual".to_string());
+            }
+            println!("   ❌ API Key cannot be empty.");
+        }
+    }
+
+    fn prompt(msg: &str, default: Option<&str>) -> String {
+        print!("{}", msg);
+        if let Some(d) = default {
+            print!("(default: {}) ", d);
+        }
+        io::stdout().flush().unwrap();
+
+        let mut input = String::new();
+        io::stdin().read_line(&mut input).unwrap();
+        let trimmed = input.trim();
+
+        if trimmed.is_empty() && default.is_some() {
+            default.unwrap().to_string()
+        } else {
+            trimmed.to_string()
+        }
+    }
+
+    fn confirm(msg: &str, default: Option<&str>) -> bool {
+        let input = Self::prompt(msg, default);
+        input.eq_ignore_ascii_case("y") || input.eq_ignore_ascii_case("yes")
+    }
+}
