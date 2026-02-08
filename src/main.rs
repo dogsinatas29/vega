@@ -17,6 +17,7 @@ mod ai;
 
 use std::env;
 use std::process::Command;
+use crossterm::style::Stylize;
 use crate::config::VegaConfig;
 use crate::context::SystemContext;
 use crate::token_saver::{TokenSaver, Action};
@@ -160,17 +161,72 @@ async fn main() {
 
     // Command: vega connect [target]
     if input == "connect" && args.len() >= 3 {
-        // ... (existing code)
         let target_name = &args[2];
-        println!("🤖 Tiki-Taka: Analyzing request to connect to '{}'...", target_name);
+        println!("🤖 [VEGA] Analyzing connection request for '{}'...", target_name);
         
-        // A. Check Knowledge Base
-        if let Some(entry) = kb.get(target_name) {
-            println!("📚 Knowledge: Found verified config for '{}' ({})", target_name, entry.ip);
-            SshConnection::connect(&entry.ip, entry.user.as_deref());
-            return;
+        // 1. Resolve & Persist: Check Internal State (KB)
+        let mut kb_hit = false;
+        if let Some(entry) = kb.get(target_name).cloned() {
+            kb_hit = true;
+            println!("📚 State DB: Found entry for '{}' ({})", target_name, entry.ip);
+            
+            print!("   Verifying reachability... ");
+            use std::io::{self, Write};
+            io::stdout().flush().unwrap();
+            
+            if SshConnection::check_connection(&entry.ip, entry.user.as_deref()).is_ok() {
+                println!("OK ✅");
+                SshConnection::connect(&entry.ip, entry.user.as_deref());
+                return;
+            } else {
+                println!("Failed ❌ (Stale or Unreachable)");
+                println!("🔄 Silent Discovery: Initiating live scan for '{}'...", target_name);
+            }
         }
-        // ...
+        
+        // 2. Silent Discovery: Scan VMs and Network
+        if !kb_hit { 
+             println!("🔍 Silent Discovery: Scanning for '{}'...", target_name);
+        }
+        
+        let vms = VmScanner::scan();
+        let target_vm = vms.iter().find(|vm| vm.name.contains(target_name));
+        
+        if let Some(vm) = target_vm {
+            println!("🎯 Discovery: Found VM '{}' (State: {})", vm.name, vm.state);
+            if let Some(ip) = &vm.ip {
+                println!("   Resolved IP: {}", ip);
+                
+                // 3. Persist: Update State DB
+                print!("   Verifying new endpoint... ");
+                if SshConnection::check_connection(ip, None).is_ok() {
+                    println!("OK ✅");
+                    println!("💾 Persistence: Updating State DB for '{}'...", target_name);
+                    
+                    let os_detected = SshConnection::detect_os(ip, None);
+                    kb.add(target_name, KnowledgeEntry {
+                        ip: ip.clone(),
+                        user: None,
+                        protocol: "ssh".to_string(),
+                        port: Some(22),
+                        os_type: os_detected, 
+                        last_success: chrono::Local::now().to_rfc3339(),
+                    });
+                    let _ = kb.save();
+                    
+                    SshConnection::connect(ip, None);
+                    return;
+                } else {
+                    println!("Unreachable ❌");
+                }
+            } else {
+                println!("⚠️ Discovery Error: VM found but no IP address could be resolved.");
+                println!("   TIP: Ensure qemu-guest-agent is running or check DHCP leases.");
+            }
+        } else {
+            println!("❌ Discovery Failed: No target found matching '{}'.", target_name);
+        }
+        return;
     }
     
     // Check old connect logic if pasted above cut it off...

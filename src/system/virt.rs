@@ -14,7 +14,7 @@ impl VmController {
         }
 
         // 2. Start
-        let output = Command::new("virsh").arg("start").arg(name).output()
+        let output = Command::new("virsh").args(&["-c", "qemu:///session", "start", name]).output()
             .map_err(|e| e.to_string())?;
 
         if output.status.success() {

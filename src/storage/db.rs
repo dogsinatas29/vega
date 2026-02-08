@@ -313,7 +313,7 @@ impl Database {
                  sid,
                  project,
                  cmd,
-                 res.exit_code,
+                 res.exit_code.unwrap_or(-1),
                  &res.stdout,
                  &res.stderr,
                  false,
@@ -351,6 +351,28 @@ impl Database {
             tasks.push(task?);
         }
         Ok(tasks)
+    }
+
+    // --- Metadata Helper Methods ---
+
+    pub fn set_metadata(&self, key: &str, value: &str) -> Result<()> {
+        self.conn.execute(
+            "INSERT INTO metadata (key, value) VALUES (?, ?)
+             ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+            params![key, value],
+        )?;
+        Ok(())
+    }
+
+    pub fn get_metadata(&self, key: &str) -> Result<Option<String>> {
+        let mut stmt = self.conn.prepare("SELECT value FROM metadata WHERE key = ?")?;
+        let mut rows = stmt.query(params![key])?;
+        
+        if let Some(row) = rows.next()? {
+            Ok(Some(row.get(0)?))
+        } else {
+            Ok(None)
+        }
     }
 }
 

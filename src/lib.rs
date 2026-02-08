@@ -8,3 +8,8 @@ pub mod reporting;
 pub mod init;
 pub mod executor;
 pub mod context;
+pub mod scan;
+pub mod connection;
+pub mod knowledge;
+pub mod config;
+

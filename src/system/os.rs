@@ -15,6 +15,17 @@ pub struct OsInfo {
     pub version: String,    // e.g., "25.10", "41"
     pub arch: String,       // e.g., "x86_64"
     pub pkg_manager: PackageManager,
+    // VM Discovery fields
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ip_address: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub access_method: Option<String>,  // "ssh" or "console"
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub console_command: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub vm_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub vm_uri: Option<String>,
 }
 
 impl OsInfo {
@@ -40,7 +51,17 @@ impl OsInfo {
         // 3. Detect Package Manager
         let pkg_manager = Self::detect_package_manager();
 
-        Self { id, version, arch, pkg_manager }
+        Self { 
+            id, 
+            version, 
+            arch, 
+            pkg_manager,
+            ip_address: None,
+            access_method: None,
+            console_command: None,
+            vm_name: None,
+            vm_uri: None,
+        }
     }
 
     fn detect_package_manager() -> PackageManager {

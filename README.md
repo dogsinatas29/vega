@@ -13,6 +13,18 @@
 
 ---
 
+### 🛡️ Core Logic Update: "Discovery First"
+
+> **"질문은 최후의 수단이다."** (Questions are a last resort.)
+
+VEGA는 네트워크(DHCP), 가상화 에이전트(QEMU Agent), ARP 테이블 등 가용한 모든 도구를 총동원해 스스로 정보를 확보합니다. 확보된 정보는 즉시 내부 상태 데이터베이스(State DB)에 기록되어 다음 작업의 맥락으로 활용됩니다.
+
+- **동적 탐색 (Silent Discovery):** 불완전한 정보(예: IP 없음) 수신 시 즉시 백그라운드 탐색 수행.
+- **상태 박제 (Resolve & Persist):** 찾아낸 시스템 정보는 즉시 기록하여 불필요한 재질의 원천 차단.
+- **동적 데이터베이스 (State DB):** 사고 과정을 보여주는 대시보드를 넘어, 스스로 찾아낸 시스템 정보의 박제소 역할.
+
+---
+
 ## 🧠 Core Architecture / 핵심 아키텍처
 
 Vega operates on a 3-stage **Reasoning Engine** to ensure safety and accuracy.
