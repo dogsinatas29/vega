@@ -47,6 +47,8 @@ async fn main() {
         return;
     }
     let input = &args[1];
+    let full_input = args[1..].join(" ");
+    let full_input = full_input.trim();
 
     if input == "setup" {
         SetupWizard::run();
@@ -386,14 +388,17 @@ async fn main() {
     }
 
     // 4. Token Saver: Hybrid Reasoning
-    let action = token_saver.match_local_intent(input);
+    let action = token_saver.match_local_intent(full_input);
     
     // Smart fzf Trigger (Pre-API Scan)
+    // Only if simple enough to be a typo or alias.
     if let Action::Unknown = action {
-        let history_matches = token_saver.search_history(input);
+        let is_complex = full_input.contains(' ') || full_input.len() > 10;
+        if !is_complex {
+            let history_matches = token_saver.search_history(full_input);
         if !history_matches.is_empty() {
             println!("🧠 Found similar past commands. Smart Triggering fzf...");
-             if let Some(selection) = Interactor::select_with_fzf("Found matches >", history_matches, Some(input)) {
+             if let Some(selection) = Interactor::select_with_fzf("Found matches >", history_matches, Some(full_input)) {
                  println!("🎯 Smart fzf Selected: {}", selection);
                  let _ = Command::new("sh").arg("-c").arg(&selection).status();
                  logger.log(input, "SmartFzfExec", true);
@@ -401,13 +406,14 @@ async fn main() {
              }
         }
     }
+    }
     
     let mut success = true;
 
     // Zero-Token Path: fzf Fallback (General)
     // Only if Action is Unknown AND input is simple (not complex/natural language)
     if let Action::Unknown = action {
-        let is_complex = input.contains(' ') || input.len() > 10;
+        let is_complex = full_input.contains(' ') || full_input.len() > 10;
         
         if !is_complex {
             println!("🤔 Intent unknown locally. Trying Zero-Token fzf...");
@@ -460,14 +466,14 @@ async fn main() {
             // If input has spaces or is long, assume natural language -> AI
             // If input is short and single word without spaces -> fzf (typo likely)
             
-            let is_complex = input.contains(' ') || input.len() > 10;
+            let is_complex = full_input.contains(' ') || full_input.len() > 10;
             
             if is_complex {
                 println!("🤖 [VEGA] Analyzing natural language request...");
-                println!("   Input: \"{}\"", input);
+                println!("   Input: \"{}\"", full_input);
                 
                 // 1. Determine Engine
-                let engine_type = crate::ai::router::SmartRouter::determine_engine(input, config.ai.as_ref().map(|a| a.provider.clone()));
+                let engine_type = crate::ai::router::SmartRouter::determine_engine(full_input, config.ai.as_ref().map(|a| a.provider.clone()));
                 
                 // 2. Initialize Provider
                 match crate::ai::router::SmartRouter::get_provider(engine_type) {
@@ -479,7 +485,7 @@ async fn main() {
                         let ctx = SystemContext::collect();
                         
                         // Call async generate_response
-                        match brain.generate_response(&ctx, input).await {
+                        match brain.generate_response(&ctx, full_input).await {
                              Ok(response) => println!("📝 Response:\n{}", response),
                              Err(e) => eprintln!("❌ AI Error: {}", e),
                         }
@@ -495,5 +501,5 @@ async fn main() {
     }
 
     // 5. Log Execution
-    logger.log(input, &format!("{:?}", action), success);
+    logger.log(full_input, &format!("{:?}", action), success);
 }
