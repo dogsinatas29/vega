@@ -4,6 +4,9 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)]()
 
+> **🚧 Current Status**: Testing system configuration tasks via SSH access to OS running on QEMU.
+> **🚧 현재 상태**: QEMU에서 구동 중인 OS에 SSH로 접속하여 시스템 설정 작업을 테스트 중입니다.
+
 > **"The Pocket Knife Strategy"**
 >
 > A non-resident, lightweight system administration agent that respects your shell environment. Refuses to be a daemon.
