@@ -60,6 +60,14 @@ sudo apt install -y libssl-dev pkg-config
 sudo pacman -S openssl pkg-config
 ```
 
+**Common Build Dependencies (Rust Crates):**
+The following crates are automatically handled by Cargo, but ensure your environment supports them:
+- `colored` (Terminal colors)
+- `reqwest` (HTTP Client for AI)
+- `async-trait` (Async traits)
+- `serde` & `serde_json` (JSON Parsing)
+- `ssh2` (SSH Protocol)
+
 > **Why?** Vega uses `ssh2` crate which depends on `openssl-sys`. The OpenSSL development headers are required for compilation.
 >
 > **왜 필요한가요?** Vega는 `ssh2` 크레이트를 사용하며, 이는 `openssl-sys`에 의존합니다. 컴파일을 위해 OpenSSL 개발 헤더가 필요합니다.
@@ -153,6 +161,12 @@ vega "Find all files larger than 1GB in /home"
 # Korean
 vega "현재 디렉토리에서 1GB 이상인 파일 찾아줘"
 ```
+
+> **AI Execution Flow:**
+> 1.  **Analysis**: Vega processes your natural language request.
+> 2.  **Proposal**: It presents a JSON-formatted plan with a `Risk Level` (INFO/WARNING/CRITICAL).
+> 3.  **Confirmation**: You are prompted to execute the command (`[y/N]`).
+> 4.  **Action**: Upon approval, the command is executed immediately.
 
 ---
 

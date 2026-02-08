@@ -26,6 +26,7 @@ use crate::logger::ExecutionLogger;
 use crate::shell::ShellSnapshot;
 use crate::interactor::Interactor;
 use crate::setup::SetupWizard;
+use colored::Colorize;
 
 use crate::knowledge::{KnowledgeBase, KnowledgeEntry};
 use crate::scan::vm::VmScanner;
@@ -486,7 +487,54 @@ async fn main() {
                         
                         // Call async generate_response
                         match brain.generate_response(&ctx, full_input).await {
-                             Ok(response) => println!("📝 Response:\n{}", response),
+                             Ok(response_str) => {
+                                 // Try to parse as JSON
+                                 use crate::ai::{AiResponse, RiskLevel};
+                                 match serde_json::from_str::<AiResponse>(&response_str) {
+                                     Ok(ai_res) => {
+                                         println!("📝 Explanation: {}", ai_res.explanation);
+                                         
+                                         // Colorize based on risk
+                                         let risk_display = match ai_res.risk_level {
+                                             RiskLevel::INFO => "INFO".green(),
+                                             RiskLevel::WARNING => "WARNING".yellow(),
+                                             RiskLevel::CRITICAL => "CRITICAL".red().bold(),
+                                         };
+                                         println!("⚠️  Risk Level: {}", risk_display);
+                                         
+                                         if !ai_res.command.is_empty() {
+                                             println!("🚀 Proposed Command: {}", ai_res.command.cyan());
+                                             
+                                             if Interactor::confirm("Execute this command?") {
+                                                 println!("⚡ Executing...");
+                                                 let status = Command::new("sh")
+                                                     .arg("-c")
+                                                     .arg(&ai_res.command)
+                                                     .status();
+                                                 
+                                                 match status {
+                                                     Ok(s) => {
+                                                         if s.success() {
+                                                             println!("✅ Execution Successful.");
+                                                         } else {
+                                                             println!("❌ Execution Failed (Exit Code: {:?})", s.code());
+                                                         }
+                                                     },
+                                                     Err(e) => println!("❌ Failed to spawn shell: {}", e),
+                                                 }
+                                             } else {
+                                                 println!("🚫 Aborted by user.");
+                                             }
+                                         } else {
+                                             println!("ℹ️  No command to execute.");
+                                         }
+                                     },
+                                     Err(_) => {
+                                         // Fallback: Raw text response
+                                         println!("📝 Response (Raw):\n{}", response_str);
+                                     }
+                                 }
+                             },
                              Err(e) => eprintln!("❌ AI Error: {}", e),
                         }
                     },

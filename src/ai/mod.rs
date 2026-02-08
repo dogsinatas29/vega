@@ -13,6 +13,21 @@ use crate::context::SystemContext;
 use std::error::Error;
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
+pub enum RiskLevel {
+    INFO,
+    WARNING,
+    CRITICAL,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
+pub struct AiResponse {
+    pub command: String,
+    pub explanation: String,
+    pub risk_level: RiskLevel,
+    pub needs_clarification: bool,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub enum QuotaStatus {
     Unknown,
     Unlimited,
