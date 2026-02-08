@@ -153,7 +153,21 @@ Launch the interactive wizard to configure API keys and preferences.
 vega setup
 ```
 
-### 2. Natural Language Command / 자연어 명령
+### 2. Google Login (Recommended) / 구글 로그인 (권장)
+Authenticate with your Google account to use higher quotas and project-based billing.
+구글 계정으로 로그인하여 더 높은 할당량과 프로젝트 기반의 과금 정책을 사용하세요.
+
+```bash
+vega login
+```
+
+> **🔑 Authentication Priority / 인증 우선순위:**
+> 1.  **Google OAuth Token**: If logged in, Vega uses this token FIRST. (Higher Quota)
+> 2.  **API Key**: Used as a fallback if no valid token exists. (Standard Quota)
+>
+> **로그인 시 API Key를 우회(Override)하여 Google Cloud Project 할당량을 우선 사용합니다.**
+
+### 3. Natural Language Command / 자연어 명령
 Ask Vega to perform tasks using plain English or Korean.
 평범한 자연어로 작업을 요청하세요.
 
