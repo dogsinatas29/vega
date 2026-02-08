@@ -1,9 +1,12 @@
 use std::process::Command;
 
+#[allow(dead_code)]
 pub const DISCOVERY_SCRIPT: &str = "/home/dogsinatas/python_project2/src/utils/discovery.py";
 
+#[allow(dead_code)]
 pub struct Discovery;
 
+#[allow(dead_code)]
 impl Discovery {
     /// Runs the discovery script as a subprocess
     pub fn run() -> Result<(), String> {

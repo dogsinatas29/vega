@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::fs;
-use std::path::Path;
+
 use serde::{Deserialize, Serialize};
 use regex::Regex;
 use serde_json::Value;
@@ -16,6 +16,7 @@ pub enum Action {
 pub struct TokenSaver {
     cache_path: String,
     cache: HashMap<String, String>, // Prompt -> Action/Response
+    #[allow(dead_code)]
     local_keywords: Vec<String>,
     history: HashSet<String>,
 }
@@ -78,6 +79,7 @@ impl TokenSaver {
         Action::Unknown
     }
 
+    #[allow(dead_code)]
     pub fn check_cache(&self, input: &str) -> Option<&String> {
         self.cache.get(input)
     }

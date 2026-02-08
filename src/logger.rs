@@ -33,6 +33,11 @@ impl ExecutionLogger {
         };
 
         if let Ok(json) = serde_json::to_string(&entry) {
+            let path_obj = std::path::Path::new(&self.path);
+            if let Some(parent) = path_obj.parent() {
+                let _ = std::fs::create_dir_all(parent);
+            }
+
             if let Ok(mut file) = OpenOptions::new()
                 .create(true)
                 .append(true)

@@ -5,6 +5,7 @@ use std::sync::Arc;
 use tokio::sync::Semaphore;
 use tokio::signal;
 
+#[allow(dead_code)]
 pub async fn update_all(kb: &KnowledgeBase) {
     println!("🚀 Orchestrating Fleet Update for {} nodes...", kb.targets.len());
     

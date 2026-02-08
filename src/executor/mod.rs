@@ -3,6 +3,7 @@ pub mod status;
 pub mod orchestrator;
 
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct ExecuteResult {
     pub success: bool,
     pub stdout: String,

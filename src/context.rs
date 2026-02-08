@@ -138,6 +138,7 @@ impl SystemContext {
             .unwrap_or_else(|| "Unknown".to_string())
     }
 
+    #[allow(dead_code)]
     pub fn detect_current_project() -> String {
         let cwd = std::env::current_dir().unwrap_or_default();
         let path_str = cwd.to_string_lossy();

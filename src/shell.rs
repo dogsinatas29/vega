@@ -18,6 +18,10 @@ impl ShellSnapshot {
     }
 
     pub fn save(&self, path: &str) -> std::io::Result<()> {
+        let path_obj = std::path::Path::new(path);
+        if let Some(parent) = path_obj.parent() {
+            fs::create_dir_all(parent)?;
+        }
         let json = serde_json::to_string_pretty(self)?;
         fs::write(path, json)?;
         Ok(())

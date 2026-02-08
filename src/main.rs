@@ -5,7 +5,7 @@ mod logger;
 mod shell;
 mod interactor;
 pub mod setup;
-mod doom;
+
 mod init;
 mod knowledge;
 mod scan;
@@ -13,24 +13,25 @@ mod connection;
 mod executor;
 mod system;
 // pub mod setup; // Removed duplicate, handled by mod setup + pub usage from crate::setup
+pub mod security;
 mod ai;
 
 use std::env;
 use std::process::Command;
-use crossterm::style::Stylize;
-use crate::config::VegaConfig;
+
+
 use crate::context::SystemContext;
 use crate::token_saver::{TokenSaver, Action};
 use crate::logger::ExecutionLogger;
 use crate::shell::ShellSnapshot;
 use crate::interactor::Interactor;
 use crate::setup::SetupWizard;
-use crate::doom::engine::DoomEngine;
+
 use crate::knowledge::{KnowledgeBase, KnowledgeEntry};
 use crate::scan::vm::VmScanner;
 use crate::connection::ssh::SshConnection;
 use crate::executor::pkg;
-use crate::executor::orchestrator; // Added for the new update command
+
 use crate::system::virt::VmController;
 use crate::system::storage::SmartStorage;
 use crate::system::healer::Healer;
@@ -65,10 +66,25 @@ async fn main() {
     // 3. Initialize Modules
     let optimization = config.optimization.as_ref().cloned().unwrap_or_default();
     let keywords = optimization.local_keywords.clone().unwrap_or_default();
-    let snapshot_path = optimization.shell_snapshot_path.clone().unwrap_or("logs/shell_snapshot.json".to_string());
+    let snapshot_path = optimization.shell_snapshot_path.clone().unwrap_or_else(|| {
+        if let Some(mut path) = dirs::cache_dir() {
+            path.push("vega");
+            path.push("shell_snapshot.json");
+            path.to_string_lossy().to_string()
+        } else {
+            "logs/shell_snapshot.json".to_string()
+        }
+    });
     
-    let token_saver = TokenSaver::new("logs/cache.json", "logs/history.jsonl", keywords);
-    let logger = ExecutionLogger::new("logs/history.jsonl");
+    let data_dir = dirs::data_local_dir()
+        .map(|mut p| { p.push("vega"); p })
+        .unwrap_or_else(|| std::path::PathBuf::from("logs"));
+
+    let cache_path = data_dir.join("cache.json").to_string_lossy().to_string();
+    let history_path = data_dir.join("history.jsonl").to_string_lossy().to_string();
+
+    let token_saver = TokenSaver::new(&cache_path, &history_path, keywords);
+    let logger = ExecutionLogger::new(&history_path);
 
     // 4. Command Routing (Continued)
     
@@ -239,7 +255,7 @@ async fn main() {
     // Let's grab the connect logic block again to be safe.
     
     if input == "connect" && args.len() >= 3 {
-         let target_name = &args[2];
+         let _target_name = &args[2];
          // ... (re-implement or ensure it persists)
          // For brevity in this tool call, I'll assume I replace the START of main up to the connect logic.
          // BUT wait, replace_file_content replaces a chunk.
@@ -353,16 +369,7 @@ async fn main() {
         return;
     }
 
-    if input == "monitor" {
-        println!("😈 Launching DooM System Monitor...");
-        std::thread::sleep(std::time::Duration::from_secs(1));
-        
-        let mut engine = DoomEngine::new();
-        if let Err(e) = engine.run() {
-            eprintln!("❌ Doom Engine Error: {}", e);
-        }
-        return;
-    }
+
 
     // Special Command: config sync (or refresh-config)
     if input == "config" || input == "refresh-config" {
@@ -398,24 +405,29 @@ async fn main() {
     let mut success = true;
 
     // Zero-Token Path: fzf Fallback (General)
+    // Only if Action is Unknown AND input is simple (not complex/natural language)
     if let Action::Unknown = action {
-        println!("🤔 Intent unknown locally. Trying Zero-Token fzf...");
+        let is_complex = input.contains(' ') || input.len() > 10;
         
-        let mut candidates = Vec::new();
-        candidates.push("vega config".to_string());
-        candidates.push("system update".to_string());
-        candidates.push("vega monitor".to_string());
-        
-        if let Some(snap) = ShellSnapshot::load(&snapshot_path) {
-            for path in snap.zoxide_paths {
-                candidates.push(format!("cd {}", path));
-            }
-        }
+        if !is_complex {
+            println!("🤔 Intent unknown locally. Trying Zero-Token fzf...");
+            
+            let mut candidates = Vec::new();
+            candidates.push("vega config".to_string());
+            candidates.push("system update".to_string());
 
-        if let Some(selection) = Interactor::select_with_fzf("Select Action >", candidates, None) {
-             println!("🎯 fzf Selected: {}", selection);
-             let _ = Command::new("sh").arg("-c").arg(&selection).status();
-             return;
+            
+            if let Some(snap) = ShellSnapshot::load(&snapshot_path) {
+                for path in snap.zoxide_paths {
+                    candidates.push(format!("cd {}", path));
+                }
+            }
+
+            if let Some(selection) = Interactor::select_with_fzf("Select Action >", candidates, None) {
+                 println!("🎯 fzf Selected: {}", selection);
+                 let _ = Command::new("sh").arg("-c").arg(&selection).status();
+                 return;
+            }
         }
     }
 
@@ -444,10 +456,41 @@ async fn main() {
              let _ = Command::new("tail").args(&["-n", "10", "logs/history.jsonl"]).status();
         },
         Action::Unknown => {
-            println!("🤖 [LLM] Intent unknown locally & fzf cancelled. Escalating to Gemini...");
-            let ctx = SystemContext::collect();
-            println!("Generated Context (Compressed): OS={}, Load={:?}", ctx.os_info, ctx.load_avg);
-            println!("(Connecting to LLM API...)");
+            // Intelligent Fallback: AI or fzf?
+            // If input has spaces or is long, assume natural language -> AI
+            // If input is short and single word without spaces -> fzf (typo likely)
+            
+            let is_complex = input.contains(' ') || input.len() > 10;
+            
+            if is_complex {
+                println!("🤖 [VEGA] Analyzing natural language request...");
+                println!("   Input: \"{}\"", input);
+                
+                // 1. Determine Engine
+                let engine_type = crate::ai::router::SmartRouter::determine_engine(input, config.ai.as_ref().map(|a| a.provider.clone()));
+                
+                // 2. Initialize Provider
+                match crate::ai::router::SmartRouter::get_provider(engine_type) {
+                    Ok(brain) => {
+                        let brain: Box<dyn crate::ai::AiProvider> = brain;
+                        println!("⚡ Routing to: {:?}", engine_type);
+                        
+                        // Collect context for the AI
+                        let ctx = SystemContext::collect();
+                        
+                        // Call async generate_response
+                        match brain.generate_response(&ctx, input).await {
+                             Ok(response) => println!("📝 Response:\n{}", response),
+                             Err(e) => eprintln!("❌ AI Error: {}", e),
+                        }
+                    },
+                    Err(e) => eprintln!("❌ AI Init Failed: {}", e),
+                }
+                return; // handled by AI
+            } 
+            
+            // Fallthrough to fzf logic below for simple typos (e.g. "updtae")
+            println!("🤔 Intent unknown locally. Trying Zero-Token fzf...");
         }
     }
 

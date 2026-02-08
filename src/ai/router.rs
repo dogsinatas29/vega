@@ -11,6 +11,7 @@ pub enum EngineType {
     Claude,
     OpenAI,
     Offline,
+    #[allow(dead_code)]
     Mock,
 }
 

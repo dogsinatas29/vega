@@ -44,18 +44,91 @@ Vega는 안전하고 정확한 실행을 위해 3단계 **추론 엔진**을 기
 
 ---
 
+## 📦 Build Prerequisites / 빌드 사전 요구사항
+
+Before building from source, install the required development packages:
+소스에서 빌드하기 전에 필요한 개발 패키지를 설치하세요:
+
+```bash
+# Fedora / RHEL / CentOS
+sudo dnf install -y openssl-devel pkg-config
+
+# Ubuntu / Debian
+sudo apt install -y libssl-dev pkg-config
+
+# Arch Linux
+sudo pacman -S openssl pkg-config
+```
+
+> **Why?** Vega uses `ssh2` crate which depends on `openssl-sys`. The OpenSSL development headers are required for compilation.
+>
+> **왜 필요한가요?** Vega는 `ssh2` 크레이트를 사용하며, 이는 `openssl-sys`에 의존합니다. 컴파일을 위해 OpenSSL 개발 헤더가 필요합니다.
+
+### 🔧 Troubleshooting Build Issues / 빌드 문제 해결
+
+If you still get `openssl-sys` errors after installing the packages, try these steps:
+패키지 설치 후에도 `openssl-sys` 에러가 발생하면 다음을 시도하세요:
+
+**1. Verify OpenSSL installation / OpenSSL 설치 확인:**
+```bash
+# Check if openssl.pc exists
+pkg-config --modversion openssl
+
+# If the above fails, find openssl.pc manually
+find /usr -name "openssl.pc" 2>/dev/null
+```
+
+**2. Set PKG_CONFIG_PATH manually / PKG_CONFIG_PATH 수동 설정:**
+```bash
+# Common locations (adjust based on your system)
+# Fedora/RHEL
+export PKG_CONFIG_PATH=/usr/lib64/pkgconfig:$PKG_CONFIG_PATH
+
+# Ubuntu/Debian
+export PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:$PKG_CONFIG_PATH
+
+# Then retry build
+cargo build --release
+```
+
+**3. Alternative: Use vendored OpenSSL / 대안: 번들된 OpenSSL 사용:**
+```bash
+# This will compile OpenSSL from source (slower but more reliable)
+cargo build --release --features vendored-openssl
+```
+
+> **Note:** If using vendored OpenSSL, you'll also need `perl` and `make` installed.
+>
+> **참고:** 번들된 OpenSSL을 사용하는 경우 `perl`과 `make`도 설치되어 있어야 합니다.
+
+---
+
 ## ⚡ Installation / 설치 방법
 
-Vega is built as a single static binary. No dependencies required.
-Vega는 단일 정적 바이너리로 빌드됩니다. 별도의 의존성이 필요하지 않습니다.
+Vega is built as a single static binary. No runtime dependencies required.
+Vega는 단일 정적 바이너리로 빌드됩니다. 런타임 의존성은 필요하지 않습니다.
 
 ```bash
 # 1. Build Release Binary
 cargo build --release
 
-# 2. Install to local bin
+# 2. Create local bin directory (if it doesn't exist)
+mkdir -p ~/.local/bin
+
+# 3. Install to local bin
 cp target/release/vega ~/.local/bin/
+
+# 4. Add to PATH (if not already added)
+echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+# 5. Verify installation
+vega --help
 ```
+
+> **Note on Build Warnings:** You may see warnings about unused imports and variables during compilation. These are normal and do not affect functionality. The build is successful if you see `Finished \`release\` profile [optimized]` at the end.
+>
+> **빌드 경고 안내:** 컴파일 중 사용하지 않는 import나 변수에 대한 경고가 표시될 수 있습니다. 이는 정상이며 기능에 영향을 주지 않습니다. 마지막에 `Finished \`release\` profile [optimized]`가 표시되면 빌드가 성공한 것입니다.
 
 ---
 
@@ -81,14 +154,6 @@ vega "Find all files larger than 1GB in /home"
 vega "현재 디렉토리에서 1GB 이상인 파일 찾아줘"
 ```
 
-### 3. System Monitor / 시스템 모니터
-Visualize your system load in a DooM-style 3D interface.
-둠(Doom) 스타일의 3D 인터페이스로 시스템 부하를 시각화합니다.
-
-```bash
-vega monitor
-```
-
 ---
 
 ## 📋 Internal Commands / 내부 명령어
@@ -102,7 +167,6 @@ Vega는 직접 제어를 위한 다양한 내장 명령어를 제공합니다.
 | `install <pkg>` | Install packages (detects apt/dnf/pacman) | 패키지 설치 (패키지 매니저 자동 감지) |
 | `connect <host>` | SSH connection with context memory | 컨텍스트 메모리를 활용한 SSH 연결 |
 | `status` | Show system status dashboard | 시스템 상태 대시보드 표시 |
-| `monitor` | Launch 3D System Monitor | 3D 시스템 모니터 실행 |
 | `health` | Analyze system logs and suggest fixes | 시스템 로그 분석 및 해결책 제안 |
 | `backup <src> <dst>` | Smart backup with validation | 검증 과정을 포함한 스마트 백업 |
 | `refresh <target>` | Refresh SSH host context | SSH 호스트 컨텍스트 갱신 |

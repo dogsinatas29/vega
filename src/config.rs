@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::collections::HashMap;
+
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct VegaConfig {
@@ -51,6 +51,7 @@ impl VegaConfig {
         Ok(config)
     }
 
+    #[allow(dead_code)]
     pub fn validate(&self) -> Result<(), String> {
         // Example validation: Check if API key is present (if we had that field)
         // For now, checks structural integrity

@@ -17,7 +17,7 @@ pub fn bootstrap() -> Result<VegaConfig, Box<dyn std::error::Error>> {
         println!("   - Git User: {}", ctx.git_user);
         
         // 2. Create Default Config
-        let mut config = VegaConfig::default();
+        let config = VegaConfig::default();
         // pre-populate based on scan?
         // For now just basic default + save it.
         

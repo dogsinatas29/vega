@@ -1,18 +1,23 @@
-use std::process::Command;
+
 use crate::context::SystemContext;
 
 pub enum PackageSystem {
     Apt,
     Dnf,
     Pacman,
+    #[allow(dead_code)]
     Flatpak,
+    #[allow(dead_code)]
     Unknown,
 }
 
 pub trait PackageManager {
     fn install(&self, package: &str) -> String;
+    #[allow(dead_code)]
     fn update(&self) -> String;
+    #[allow(dead_code)]
     fn remove(&self, package: &str) -> String;
+    #[allow(dead_code)]
     fn search(&self, query: &str) -> String;
     fn name(&self) -> &str;
     fn kind(&self) -> PackageSystem;
@@ -28,6 +33,7 @@ fn normalize(pkg: &str, kind: &PackageSystem) -> String {
     }
 }
 
+#[allow(dead_code)]
 pub struct Apt;
 impl PackageManager for Apt {
     fn install(&self, package: &str) -> String { format!("sudo apt install -y {}", normalize(package, &self.kind())) }
@@ -38,6 +44,7 @@ impl PackageManager for Apt {
     fn kind(&self) -> PackageSystem { PackageSystem::Apt }
 }
 
+#[allow(dead_code)]
 pub struct Dnf;
 impl PackageManager for Dnf {
     fn install(&self, package: &str) -> String { format!("sudo dnf install -y {}", normalize(package, &self.kind())) }
@@ -48,6 +55,7 @@ impl PackageManager for Dnf {
     fn kind(&self) -> PackageSystem { PackageSystem::Dnf }
 }
 
+#[allow(dead_code)]
 pub struct Pacman;
 impl PackageManager for Pacman {
     fn install(&self, package: &str) -> String { format!("sudo pacman -S --noconfirm {}", normalize(package, &self.kind())) }
@@ -58,6 +66,7 @@ impl PackageManager for Pacman {
     fn kind(&self) -> PackageSystem { PackageSystem::Pacman }
 }
 
+#[allow(dead_code)]
 pub struct Flatpak;
 impl PackageManager for Flatpak {
     fn install(&self, package: &str) -> String { format!("flatpak install -y flathub {}", package) }

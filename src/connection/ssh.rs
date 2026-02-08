@@ -1,5 +1,5 @@
 use std::process::Command;
-use std::time::Duration;
+
 
 pub struct SshConnection;
 
@@ -121,6 +121,7 @@ impl SshConnection {
         }
     }
 
+    #[allow(dead_code)]
     pub async fn execute_remote_async(ip: &str, cmd: &str) -> Result<String, String> {
         let output = tokio::process::Command::new("ssh")
             .args(&["-o", "BatchMode=yes", "-o", "ConnectTimeout=10", "-o", "StrictHostKeyChecking=no", ip, cmd])

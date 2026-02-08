@@ -1,5 +1,5 @@
 use crate::ai::{AiProvider, QuotaStatus};
-use crate::system::context::SystemContext;
+use crate::context::SystemContext;
 use async_trait::async_trait;
 use std::error::Error;
 use std::collections::HashMap;
@@ -18,6 +18,7 @@ impl MockProvider {
         Self { responses }
     }
     
+    #[allow(dead_code)]
     pub fn add_response(&mut self, trigger: &str, response: &str) {
         self.responses.insert(trigger.to_lowercase(), response.to_string());
     }

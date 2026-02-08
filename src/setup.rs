@@ -3,7 +3,7 @@ use std::fs;
 use std::env;
 use crate::config::{VegaConfig, AiConfig, OptimizationConfig};
 use crate::context::SystemContext;
-use crate::shell::ShellSnapshot;
+
 use crate::scan;
 
 pub struct SetupWizard;
@@ -39,7 +39,7 @@ impl SetupWizard {
             Self::select_provider()
         };
 
-        let (api_key, source) = if silent_mode {
+        let (_api_key, source) = if silent_mode {
             // In silent mode, try to find key, if not, fail or use dummy? 
             // Design decision: Try to find env var first.
             let env_key = match provider.as_str() {
@@ -83,14 +83,21 @@ impl SetupWizard {
             cache_enabled: Some(true),
             system_prompt_version: Some("1.0".to_string()),
             local_keywords: Some(vec!["update".to_string(), "ssh".to_string()]),
-            shell_snapshot_path: Some("logs/shell_snapshot.json".to_string()),
+            shell_snapshot_path: None, // Use default logic in main.rs
         });
 
         // Save
-        let toml_str = toml::to_string(&config).unwrap();
-        fs::write("vega_config.toml", toml_str).expect("Failed to write config");
+        let config_path = crate::init::get_config_path();
         
-        println!("✨ Setup Complete. Configuration saved to vega_config.toml");
+        // Ensure parent dir exists
+        if let Some(parent) = config_path.parent() {
+            let _ = fs::create_dir_all(parent);
+        }
+
+        let toml_str = toml::to_string(&config).unwrap();
+        fs::write(&config_path, toml_str).expect("Failed to write config");
+        
+        println!("✨ Setup Complete. Configuration saved to {:?}", config_path);
     }
 
     fn select_provider() -> String {

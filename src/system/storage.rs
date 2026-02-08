@@ -50,6 +50,7 @@ impl SmartStorage {
         format!("rclone sync {} {} {}", source, remote, flags)
     }
 
+    #[allow(dead_code)]
     pub fn list_remotes() -> Vec<String> {
         let output = Command::new("rclone").arg("listremotes").output();
         if let Ok(o) = output {

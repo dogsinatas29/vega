@@ -1,5 +1,5 @@
 use std::process::Command;
-use crate::scan::vm::{VmScanner, VmInfo};
+use crate::scan::vm::VmScanner;
 
 pub struct VmController;
 
@@ -24,6 +24,7 @@ impl VmController {
         }
     }
 
+    #[allow(dead_code)]
     pub fn get_ip(name: &str) -> Option<String> {
         let vms = VmScanner::scan();
         if let Some(vm) = vms.iter().find(|v| v.name == name) {
