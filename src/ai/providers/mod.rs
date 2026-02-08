@@ -1,4 +1,5 @@
 pub mod gemini;
+pub mod vertex_ai;
 pub mod offline;
 pub mod mock;
 // pub mod openai; // Future

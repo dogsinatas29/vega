@@ -13,6 +13,7 @@ mod connection;
 mod executor;
 mod system;
 // pub mod setup; // Removed duplicate, handled by mod setup + pub usage from crate::setup
+pub mod auth;
 pub mod security;
 mod ai;
 
@@ -44,7 +45,7 @@ async fn main() {
     // println!("DEBUG: args={:?}", args); // Uncomment for debugging
     if args.len() < 2 {
         println!("Usage: vega <command>");
-        println!("Commands: connect, install, backup, start, health, status, refresh, update --all, setup");
+        println!("Commands: connect, install, backup, start, health, status, refresh, update --all, setup, login");
         return;
     }
     let input = &args[1];
@@ -53,6 +54,15 @@ async fn main() {
 
     if input == "setup" {
         SetupWizard::run();
+        return;
+    }
+    
+    if input == "login" {
+        println!("🔐 Starting Google OAuth Login...");
+        match crate::auth::google::login().await {
+            Ok(_) => println!("✅ Login successful! Token saved."),
+            Err(e) => eprintln!("❌ Login failed: {}", e),
+        }
         return;
     }
 

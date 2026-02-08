@@ -1,5 +1,6 @@
 use crate::ai::AiProvider;
 use crate::ai::providers::gemini::GeminiProvider;
+use crate::ai::providers::vertex_ai::VertexAiProvider;
 use crate::ai::providers::offline::OfflineEngine;
 use log::{info, warn, debug};
 
@@ -8,6 +9,7 @@ pub struct SmartRouter;
 #[derive(Debug, PartialEq, Clone, Copy)]
 pub enum EngineType {
     Gemini,
+    VertexAI,
     Claude,
     OpenAI,
     Offline,
@@ -21,6 +23,7 @@ impl SmartRouter {
         if let Some(pref) = preferred {
             match pref.to_lowercase().as_str() {
                 "gemini" => { debug!("🎯 Router: User forced Gemini"); return EngineType::Gemini; },
+                "vertex_ai" | "vertexai" => { debug!("🎯 Router: User forced Vertex AI"); return EngineType::VertexAI; },
                 "claude" => { debug!("🎯 Router: User forced Claude"); return EngineType::Claude; },
                 "openai" | "gpt" => { debug!("🎯 Router: User forced OpenAI"); return EngineType::OpenAI; },
                 "offline" => { debug!("🎯 Router: User forced Offline"); return EngineType::Offline; },
@@ -60,6 +63,21 @@ impl SmartRouter {
                         // Automatic Fallback Strategy
                         Ok(Box::new(OfflineEngine::new()))
                     }
+                }
+            },
+            EngineType::VertexAI => {
+                // Load config to get project_id and region
+                let config_path = crate::init::get_config_path();
+                let config = crate::config::VegaConfig::load(config_path.to_str().unwrap())
+                    .map_err(|e| format!("Failed to load config: {}", e))?;
+                
+                let vertex_config = config.ai
+                    .and_then(|ai| ai.vertex_ai)
+                    .ok_or("Vertex AI not configured. Please run 'vega setup' and configure project_id and region.")?;
+
+                match VertexAiProvider::new(vertex_config.project_id, vertex_config.region) {
+                    Ok(p) => Ok(Box::new(p)),
+                    Err(e) => Err(format!("Vertex AI Init Failed: {}", e))
                 }
             },
             EngineType::Claude => Err("Claude Provider not yet implemented".to_string()), 

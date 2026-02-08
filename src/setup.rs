@@ -76,7 +76,8 @@ impl SetupWizard {
         config.ai = Some(AiConfig {
             provider: provider.clone(),
             api_key_source: source,
-            model: None, 
+            model: None,
+            vertex_ai: None,
         });
 
         config.optimization = Some(OptimizationConfig {
