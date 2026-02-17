@@ -141,9 +141,20 @@ Phase 1 (Foundation) [COMPLETED]: OS 스캔 엔진, 로컬 파일 제어, SQLite
 
 Phase 2 (Intelligence) [COMPLETED]: 멀티 AI 라우팅(OpenAI/Claude/Gemini), 비식별화 로직, ASCII 차트 리포트 엔진.
 
-Phase 3 (Optimization) [IN-PROGRESS]: Persona Hardening, CoT 강화, SQLite FTS5 기반 Local RAG, fzf 히스토리 UI.
+Phase 3 (Optimization) [COMPLETED]: Persona Hardening, CoT 강화, SQLite FTS5 기반 Local RAG, fzf 히스토리 UI.
 
-Phase 4 (Enterprise) [PLANNED]: SSH/FTP 원격 관리, PDF/이메일 리포트 발송, 하이브리드 클라우드 동기화.
+Phase 4 (Discovery & Security) [COMPLETED]: Nvim 플러그인 매니저 감지 (lazy-lock.json), `SSH_AUTH_SOCK` 상속 로직, `SystemContext` 아키텍처 일원화.
+
+Phase 5 (Enterprise) [PLANNED]: SSH/FTP 원격 관리, PDF/이메일 리포트 발송, 하이브리드 클라우드 동기화.
+
+12. Phase 4 Implementation Specs (Discovery & sudo Enhancement) [COMPLETED]
+A. Discovery Logic 2.0
+- **Plugin Manager Detection**: Checks for `~/.config/nvim/lazy-lock.json` as the primary indicator for `lazy.nvim`.
+- **Architectural Purity**: Discovery logic refactored into `src/system/discovery.rs`.
+
+B. Security & Environment
+- **SSH Agent Inheritance**: Automatically prepends `SSH_AUTH_SOCK` to `sudo` commands for seamless agent forwarding during privileged operations.
+- **Context Consolidation**: Merged all system metadata into a single unified `SystemContext` in `src/context.rs`.
 
 10. Phase 2 Implementation Specs (Intelligence) [COMPLETED]
 A. AI Architecture
@@ -177,8 +188,9 @@ Sync: 작업 완료 시 rclone을 통해 구글 드라이브에 코드를 즉시
 - **Storage**: SQLite (`vega.db`) with `rusqlite` (bundled). Tracks Sessions and Commands.
 - **Safety**: `Sanitizer` (Regex) -> `Checker` (Risk Level) -> `SafetyUI` (Confirmation).
 
-## Current Architecture (Phase 3) [LATEST]
-- **AI Reasoning**: Hardened SRE Persona + Mandatory Chain-of-Thought (CoT) visualization.
+## Current Architecture (Phase 4) [LATEST]
+- **AI Reasoning**: Hardened SRE Persona + Mandatory Chain-of-Thought (CoT) + Environment Injection (`plugin_manager`, `ssh_auth_sock`).
 - **Context Retrieval**: SQLite FTS5 Virtual Table (`search_index`) for high-performance Local RAG.
 - **Reliability**: Smart Quota Fallback 2.0 with persistent state and context summaries.
 - **Privacy**: Automated Regex Sanitization for all history-based suggestions.
+- **Universal Context**: Single source of truth via unified `SystemContext` in `src/context.rs`.
