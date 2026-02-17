@@ -195,8 +195,9 @@ impl SystemContext {
 
     fn detect_plugin_manager() -> Option<String> {
         if let Some(home) = dirs::home_dir() {
-            let lazy_path = home.join(".config/nvim/lua/config/lazy.lua");
-            if lazy_path.exists() {
+            // Senior's Advice: Check for lockfile instead of config file for higher accuracy
+            let lazy_lock = home.join(".config/nvim/lazy-lock.json");
+            if lazy_lock.exists() {
                 return Some("lazy".to_string());
             }
         }
