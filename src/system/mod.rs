@@ -1,4 +1,13 @@
+pub mod archivist;
+pub mod config;
+pub mod context;
+pub mod discovery;
+pub mod docker;
+pub mod env_scanner;
+pub mod global;
+pub mod healer;
+pub mod os;
+pub mod sanitizer;
+pub mod scanner;
 pub mod storage;
 pub mod virt;
-pub mod healer;
-pub mod discovery;

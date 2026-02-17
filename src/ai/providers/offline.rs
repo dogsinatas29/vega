@@ -61,16 +61,18 @@ impl AiProvider for OfflineEngine {
             command = cmd;
             explanation = format!("Offline mode: Found a local rule matching your request.");
         } else {
-            // 2. Try History-based Suggestion
-            if let Some(history_cmd) = self.search_history(user_input) {
+            // 2. Try Local RAG (Semantic-like History Search)
+            if let Some(history_cmd) = self.search_history_rag(user_input) {
                 command = history_cmd;
-                explanation =
-                    format!("Offline mode: I found a similar command you've executed before.");
+                explanation = format!(
+                    "Offline mode: I found a similar command in your history using Local RAG."
+                );
                 risk_level = "WARNING"; // History might be outdated, warn user
             }
         }
 
         let res = json!({
+            "thought": format!("Offline mode requested. Attempting rule mapping for '{}'. Falling back to Local RAG history search.", user_input),
             "command": command,
             "explanation": explanation,
             "risk_level": risk_level,
@@ -82,32 +84,13 @@ impl AiProvider for OfflineEngine {
 }
 
 impl OfflineEngine {
-    fn search_history(&self, query: &str) -> Option<String> {
-        let history_path = dirs::data_local_dir()
-            .map(|mut p| {
-                p.push("vega");
-                p.push("history.jsonl");
-                p
-            })
-            .unwrap_or_else(|| std::path::PathBuf::from("logs/history.jsonl"));
-
-        if let Ok(file) = std::fs::File::open(history_path) {
-            use std::io::{BufRead, BufReader};
-            let reader = BufReader::new(file);
-            let q = query.to_lowercase();
-
-            // Search backwards for the most recent similar command
-            let mut matches = Vec::new();
-            for line in reader.lines().flatten() {
-                if let Ok(entry) = serde_json::from_str::<serde_json::Value>(&line) {
-                    let cmd = entry["command"].as_str().unwrap_or("");
-                    if cmd.to_lowercase().contains(&q) {
-                        // Senior Tip: Sanitize history before suggesting to protect privacy
-                        matches.push(sanitize_string(cmd));
-                    }
+    fn search_history_rag(&self, query: &str) -> Option<String> {
+        if let Ok(db) = crate::storage::db::Database::new() {
+            if let Ok(matches) = db.search_relevant_context(query, 1) {
+                if let Some(res) = matches.first() {
+                    return Some(sanitize_string(res));
                 }
             }
-            return matches.last().cloned();
         }
         None
     }

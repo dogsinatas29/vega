@@ -179,7 +179,7 @@ impl SmartRouter {
         // Context Sync: Summary Injection logic
         let mut final_query = query.to_string();
         if engine == EngineType::WebSession && in_cooldown {
-            if let Some(summary) = Self::get_context_summary(3) {
+            if let Some(summary) = Self::get_context_summary(query, 3) {
                 println!("🧠 [Router] Injecting context summary from API -> Web Session sync...");
                 final_query = format!(
                     "Previous context summary: [ {} ]\n\nContinuing with: {}",
@@ -208,7 +208,7 @@ impl SmartRouter {
 
                 // When falling back, also try to inject summary
                 let mut fallback_query = query.to_string();
-                if let Some(summary) = Self::get_context_summary(3) {
+                if let Some(summary) = Self::get_context_summary(query, 3) {
                     fallback_query = format!(
                         "Previous context summary: [ {} ]\n\nContinuing with: {}",
                         summary, query
@@ -221,7 +221,17 @@ impl SmartRouter {
         }
     }
 
-    fn get_context_summary(limit: usize) -> Option<String> {
+    fn get_context_summary(query: &str, limit: usize) -> Option<String> {
+        // Local RAG: Search relevant history using SQLite FTS5
+        if let Ok(db) = crate::storage::db::Database::new() {
+            if let Ok(matches) = db.search_relevant_context(query, limit) {
+                if !matches.is_empty() {
+                    return Some(matches.join(" -> "));
+                }
+            }
+        }
+
+        // Fallback to simple tailing if DB search fails or returns nothing
         let history_path = dirs::data_local_dir()
             .map(|mut p| {
                 p.push("vega");

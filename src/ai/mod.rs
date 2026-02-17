@@ -42,6 +42,7 @@ pub enum RiskLevel {
 
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct AiResponse {
+    pub thought: Option<String>,
     pub command: String,
     pub explanation: String,
     pub risk_level: RiskLevel,

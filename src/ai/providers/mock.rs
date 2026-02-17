@@ -1,6 +1,7 @@
 use crate::ai::{AiProvider, QuotaStatus};
 use crate::context::SystemContext;
 use async_trait::async_trait;
+use serde_json::json;
 use std::collections::HashMap;
 
 pub struct MockProvider {
@@ -10,20 +11,33 @@ pub struct MockProvider {
 impl MockProvider {
     pub fn new() -> Self {
         let mut responses = HashMap::new();
-        // Default Canned Responses
-        responses.insert("hello".to_string(), "Hello from MockProvider!".to_string());
-        responses.insert(
-            "status".to_string(),
-            "Mock Systems Operational.".to_string(),
-        );
+
+        // Default Canned Responses (JSON formatted with 'thought' field)
+        let hello_res = json!({
+            "thought": "User said hello. Providing a friendly mock response.",
+            "command": "echo 'Hello from MockProvider!'",
+            "explanation": "Simple greeting response.",
+            "risk_level": "INFO",
+            "needs_clarification": false
+        });
+        responses.insert("hello".to_string(), hello_res.to_string());
+
+        let status_res = json!({
+            "thought": "Checking mock system status.",
+            "command": "echo 'Mock Systems Operational.'",
+            "explanation": "System health check simulation.",
+            "risk_level": "INFO",
+            "needs_clarification": false
+        });
+        responses.insert("status".to_string(), status_res.to_string());
 
         Self { responses }
     }
 
     #[allow(dead_code)]
-    pub fn add_response(&mut self, trigger: &str, response: &str) {
+    pub fn add_response(&mut self, trigger: &str, response_json: &str) {
         self.responses
-            .insert(trigger.to_lowercase(), response.to_string());
+            .insert(trigger.to_lowercase(), response_json.to_string());
     }
 }
 
@@ -56,6 +70,13 @@ impl AiProvider for MockProvider {
             }
         }
 
-        Ok("Mock Default Response: I hear you.".to_string())
+        let default_res = json!({
+            "thought": "No specific trigger found in prompt. Falling back to default mock response.",
+            "command": "ls -la",
+            "explanation": "Default mock command.",
+            "risk_level": "INFO",
+            "needs_clarification": false
+        });
+        Ok(default_res.to_string())
     }
 }

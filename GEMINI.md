@@ -122,12 +122,28 @@ Markdown 보고서: vega --report 실행 시, 해당 기간의 모든 작업 맥
 
 자동 메일링: AI가 요약한 리포트를 PDF나 Markdown 포맷으로 팀장이나 본인에게 즉시 발송합니다.
 
+11. Phase 3 Implementation Specs (Context & Intelligence) [IN-PROGRESS]
+A. Intelligence Hardening
+- **SRE Persona**: Injects "20-year Senior Embedded Linux SRE" context into every request. Enforces brevity and KISS principle.
+- **Chain-of-Thought (CoT)**: Enforces mandatory reasoning via `thought` field in JSON response schema.
+
+B. Local RAG (Pseudo-Semantic Retrieval)
+- **FTS5 Backend**: Synchronizes `chat_history` and `commands` to a SQLite FTS5 virtual table (`search_index`).
+- **Context Injection**: Uses FTS5 `MATCH` queries to find the most relevant past commands/chats to inject into current prompts.
+
+C. High-Availability Routing (Quota Fallback 2.0)
+- **Persistent State**: Saves quota exhaustion timestamps to `~/.cache/vega/quota_state.json`.
+- **Atomic Operations**: Implements write-to-temp-then-rename to prevent cache corruption.
+- **Context Sync**: Summarizes and injects history when falling back between providers.
+
 7. 개발 로드맵 (Roadmap)
 Phase 1 (Foundation) [COMPLETED]: OS 스캔 엔진, 로컬 파일 제어, SQLite 가중치 로깅, Safety Interceptor 구축.
 
-Phase 2 (Intelligence): 멀티 AI 라우팅(OpenAI/Claude/Gemini), 비식별화 로직, ASCII 차트 리포트 엔진.
+Phase 2 (Intelligence) [COMPLETED]: 멀티 AI 라우팅(OpenAI/Claude/Gemini), 비식별화 로직, ASCII 차트 리포트 엔진.
 
-Phase 3 (Enterprise): SSH/FTP 원격 관리, PDF/이메일 리포트 발송, 하이브리드 클라우드 동기화.
+Phase 3 (Optimization) [IN-PROGRESS]: Persona Hardening, CoT 강화, SQLite FTS5 기반 Local RAG, fzf 히스토리 UI.
+
+Phase 4 (Enterprise) [PLANNED]: SSH/FTP 원격 관리, PDF/이메일 리포트 발송, 하이브리드 클라우드 동기화.
 
 10. Phase 2 Implementation Specs (Intelligence) [COMPLETED]
 A. AI Architecture
@@ -161,6 +177,8 @@ Sync: 작업 완료 시 rclone을 통해 구글 드라이브에 코드를 즉시
 - **Storage**: SQLite (`vega.db`) with `rusqlite` (bundled). Tracks Sessions and Commands.
 - **Safety**: `Sanitizer` (Regex) -> `Checker` (Risk Level) -> `SafetyUI` (Confirmation).
 
-## Current Architecture (Phase 2)
-- **AI**: `LLMProvider` trait + `GeminiProvider`.
-- **Security**: `keyring` crate + `SystemContext` injection.
+## Current Architecture (Phase 3) [LATEST]
+- **AI Reasoning**: Hardened SRE Persona + Mandatory Chain-of-Thought (CoT) visualization.
+- **Context Retrieval**: SQLite FTS5 Virtual Table (`search_index`) for high-performance Local RAG.
+- **Reliability**: Smart Quota Fallback 2.0 with persistent state and context summaries.
+- **Privacy**: Automated Regex Sanitization for all history-based suggestions.

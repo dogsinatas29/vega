@@ -43,7 +43,7 @@ impl Archivist {
                 *sid,
                 project_name,
                 &sanitized_cmd,
-                result.exit_code,
+                result.exit_code.unwrap_or(-1),
                 &result.stdout,
                 &result.stderr,
                 healer_action.is_some(),
@@ -57,7 +57,7 @@ impl Archivist {
             timestamp: timestamp.clone(),
             command: sanitized_cmd.clone(),
             success: result.success,
-            exit_code: result.exit_code,
+            exit_code: result.exit_code.unwrap_or(-1),
             result: result.clone(),
             healer_action: healer_action.clone(),
         };

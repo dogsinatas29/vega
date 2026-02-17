@@ -1,5 +1,15 @@
+pub use crate::scan::vm::{VmInfo, VmScanner};
 use std::process::Command;
-use crate::scan::vm::VmScanner;
+
+// Aliases for compatibility with other modules (e.g. scanner.rs, context.rs)
+pub type VirtualMachine = VmInfo;
+pub type VirtManager = VmScanner;
+
+impl VmScanner {
+    pub fn list_vms() -> Vec<VmInfo> {
+        Self::scan()
+    }
+}
 
 pub struct VmController;
 
@@ -14,13 +24,15 @@ impl VmController {
         }
 
         // 2. Start
-        let output = Command::new("virsh").args(&["-c", "qemu:///session", "start", name]).output()
+        let output = Command::new("virsh")
+            .args(&["-c", "qemu:///session", "start", name])
+            .output()
             .map_err(|e| e.to_string())?;
 
         if output.status.success() {
-             Ok(format!("🚀 VM '{}' started successfully.", name))
+            Ok(format!("🚀 VM '{}' started successfully.", name))
         } else {
-             Err(String::from_utf8_lossy(&output.stderr).to_string())
+            Err(String::from_utf8_lossy(&output.stderr).to_string())
         }
     }
 

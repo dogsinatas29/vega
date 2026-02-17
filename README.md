@@ -153,21 +153,35 @@ Launch the interactive wizard to configure API keys and preferences.
 vega setup
 ```
 
-### 2. Google Login (Recommended) / 구글 로그인 (권장)
-Authenticate with your Google account to use higher quotas and project-based billing.
-구글 계정으로 로그인하여 더 높은 할당량과 프로젝트 기반의 과금 정책을 사용하세요.
+### 2. Google Login & Managed Billing / 구글 로그인 및 빌링 관리
+Authenticate with your Google account to bypass standard API key limits and leverage project-based quotas.
+구글 계정으로 로그인하여 표준 API 키 제한을 우회하고 프로젝트 기반 할당량을 활용하세요.
 
 ```bash
 vega login
 ```
 
-> **🔑 Authentication Priority / 인증 우선순위:**
-> 1.  **Google OAuth Token**: If logged in, Vega uses this token FIRST. (Higher Quota)
-> 2.  **API Key**: Used as a fallback if no valid token exists. (Standard Quota)
->
-> **로그인 시 API Key를 우회(Override)하여 Google Cloud Project 할당량을 우선 사용합니다.**
+- **Higher Quotas**: Managed accounts typically enjoy 15-60 RPM vs 2-15 RPM for free keys.
+- **Auto-Renewal**: Uses OAuth2 Refresh Tokens for seamless background session management.
+- **Enterprise Friendly**: Works with GCP "Application Default Credentials" (ADC) discovery.
+- **Fallback Logic**: If OAuth tokens expire or fail, VEGA automatically falls back to your configured API Key or Web Session.
 
-### 3. Natural Language Command / 자연어 명령
+---
+
+### 3. History & Memory Management / 히스토리 및 메모리 관리
+Browse your past triumphs and re-run complex commands via the `fzf`-powered interface.
+`fzf` 인터페이스를 통해 과거의 빛나는 작업 기록을 검색하고 복잡한 명령어를 즉시 재실행하세요.
+
+```bash
+vega history
+```
+
+> **Backend (FTS5)**: Past interactions are indexed in an "Unconscious Memory" (SQLite FTS5) to provide AI with relevant context.
+> **Frontend (fzf)**: Use the interactive UI to search, filter, and execute history items.
+
+---
+
+### 4. Natural Language Command / 자연어 명령
 Ask Vega to perform tasks using plain English or Korean.
 평범한 자연어로 작업을 요청하세요.
 
@@ -180,10 +194,11 @@ vega "현재 디렉토리에서 1GB 이상인 파일 찾아줘"
 ```
 
 > **AI Execution Flow:**
-> 1.  **Analysis**: Vega processes your natural language request.
-> 2.  **Proposal**: It presents a JSON-formatted plan with a `Risk Level` (INFO/WARNING/CRITICAL).
-> 3.  **Confirmation**: You are prompted to execute the command (`[y/N]`).
-> 4.  **Action**: Upon approval, the command is executed immediately.
+> 1.  **Reasoning (CoT)**: View the AI's internal thought process before the suggestion.
+> 2.  **Analysis**: Vega processes your natural language request.
+> 3.  **Proposal**: It presents a JSON-formatted plan with a `Risk Level` (INFO/WARNING/CRITICAL).
+> 4.  **Confirmation**: You are prompted to execute the command (`[y/N]`).
+> 5.  **Action**: Upon approval, the command is executed immediately.
 
 ---
 
@@ -195,6 +210,8 @@ Vega는 직접 제어를 위한 다양한 내장 명령어를 제공합니다.
 | Command / 명령어 | Description (EN) | Description (KR) |
 | :--- | :--- | :--- |
 | `setup` | Run the configuration wizard | 설정 마법사 실행 |
+| `login` | Authenticate via Google OAuth2 | 구글 OAuth2 인증 및 로그인 |
+| `history` | Interactive history UI via fzf | fzf 기반 대화형 히스토리 UI |
 | `install <pkg>` | Install packages (detects apt/dnf/pacman) | 패키지 설치 (패키지 매니저 자동 감지) |
 | `connect <host>` | SSH connection with context memory | 컨텍스트 메모리를 활용한 SSH 연결 |
 | `status` | Show system status dashboard | 시스템 상태 대시보드 표시 |

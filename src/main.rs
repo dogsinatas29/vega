@@ -1,21 +1,4 @@
-mod config;
-mod context;
-pub(crate) mod interactor;
-mod logger;
-pub mod setup;
-mod shell;
-mod token_saver;
-
-mod connection;
-mod executor;
-mod init;
-mod knowledge;
-mod scan;
-mod system;
-// pub mod setup; // Removed duplicate, handled by mod setup + pub usage from crate::setup
-mod ai;
-pub mod auth;
-pub mod security;
+use vega::*;
 
 use std::env;
 use std::process::Command;
@@ -44,7 +27,7 @@ async fn main() {
     // println!("DEBUG: args={:?}", args); // Uncomment for debugging
     if args.len() < 2 {
         println!("Usage: vega <command>");
-        println!("Commands: connect, install, backup, start, health, status, refresh, update --all, setup, login");
+        println!("Commands: connect, install, backup, start, health, status, refresh, update --all, setup, login, history");
         return;
     }
     let input = &args[1];
@@ -61,6 +44,28 @@ async fn main() {
         match crate::auth::google::login().await {
             Ok(_) => println!("✅ Login successful! Token saved."),
             Err(e) => eprintln!("❌ Login failed: {}", e),
+        }
+        return;
+    }
+
+    if input == "history" {
+        if let Ok(db) = crate::storage::db::Database::new() {
+            if let Ok(commands) = db.get_all_commands() {
+                if let Some(selected) = Interactor::select_with_fzf(
+                    "📜 VEGA History (Unconscious Memory)",
+                    commands,
+                    None,
+                ) {
+                    println!("🚀 Selected: {}", selected.green());
+                    if Interactor::confirm("Execute this command now?") {
+                        let status = Command::new("sh").arg("-c").arg(&selected).status();
+                        match status {
+                            Ok(s) if s.success() => println!("✅ Execution Successful."),
+                            _ => println!("❌ Execution Failed or Aborted."),
+                        }
+                    }
+                }
+            }
         }
         return;
     }
@@ -552,7 +557,7 @@ async fn main() {
                                 println!("⚠️  Risk Level: {}", risk_display);
 
                                 if !ai_res.command.is_empty() {
-                                    println!("🚀 Proposed Command: {}", ai_res.command.cyan());
+                                    println!("   > Command: {}", ai_res.command.green().bold());
 
                                     if Interactor::confirm("Execute this command?") {
                                         println!("⚡ Executing...");

@@ -1,0 +1,3507 @@
+{
+  "canvas_state": {
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "visible_layers": [
+      "source",
+      "documentation"
+    ],
+    "zoom_level": 1
+  },
+  "clusters": [
+    {
+      "bounds": {
+        "height": 400,
+        "width": 550,
+        "x": 0,
+        "y": 0
+      },
+      "children": [
+        "node_81",
+        "node_82",
+        "node_83",
+        "node_84",
+        "node_85"
+      ],
+      "collapsed": false,
+      "id": "cluster_18",
+      "label": "ROOT"
+    },
+    {
+      "bounds": {
+        "height": 400,
+        "width": 400,
+        "x": 600,
+        "y": 0
+      },
+      "children": [
+        "node_86",
+        "node_87",
+        "node_88",
+        "node_89"
+      ],
+      "collapsed": false,
+      "id": "cluster_19",
+      "label": "src/ai"
+    },
+    {
+      "bounds": {
+        "height": 400,
+        "width": 550,
+        "x": 1200,
+        "y": 0
+      },
+      "children": [
+        "node_90",
+        "node_91",
+        "node_92",
+        "node_93",
+        "node_94",
+        "node_95"
+      ],
+      "collapsed": false,
+      "id": "cluster_20",
+      "label": "src/ai/providers"
+    },
+    {
+      "bounds": {
+        "height": 250,
+        "width": 400,
+        "x": 1800,
+        "y": 0
+      },
+      "children": [
+        "node_96",
+        "node_97"
+      ],
+      "collapsed": false,
+      "id": "cluster_21",
+      "label": "src/auth"
+    },
+    {
+      "bounds": {
+        "height": 700,
+        "width": 700,
+        "x": 2400,
+        "y": 0
+      },
+      "children": [
+        "node_98",
+        "node_99",
+        "node_100",
+        "node_101",
+        "node_102",
+        "node_103",
+        "node_104",
+        "node_105",
+        "node_106",
+        "node_107",
+        "node_108",
+        "node_109",
+        "node_110"
+      ],
+      "collapsed": false,
+      "id": "cluster_22",
+      "label": "src"
+    },
+    {
+      "bounds": {
+        "height": 250,
+        "width": 400,
+        "x": 0,
+        "y": 400
+      },
+      "children": [
+        "node_111",
+        "node_112"
+      ],
+      "collapsed": false,
+      "id": "cluster_23",
+      "label": "src/connection"
+    },
+    {
+      "bounds": {
+        "height": 250,
+        "width": 400,
+        "x": 600,
+        "y": 400
+      },
+      "children": [
+        "node_113",
+        "node_114"
+      ],
+      "collapsed": false,
+      "id": "cluster_24",
+      "label": "src/ecs"
+    },
+    {
+      "bounds": {
+        "height": 400,
+        "width": 550,
+        "x": 1200,
+        "y": 400
+      },
+      "children": [
+        "node_115",
+        "node_116",
+        "node_117",
+        "node_118",
+        "node_119"
+      ],
+      "collapsed": false,
+      "id": "cluster_25",
+      "label": "src/executor"
+    },
+    {
+      "bounds": {
+        "height": 250,
+        "width": 250,
+        "x": 1800,
+        "y": 400
+      },
+      "children": [
+        "node_120"
+      ],
+      "collapsed": false,
+      "id": "cluster_26",
+      "label": "src/remote"
+    },
+    {
+      "bounds": {
+        "height": 250,
+        "width": 250,
+        "x": 2400,
+        "y": 400
+      },
+      "children": [
+        "node_121"
+      ],
+      "collapsed": false,
+      "id": "cluster_27",
+      "label": "src/reporting"
+    },
+    {
+      "bounds": {
+        "height": 400,
+        "width": 400,
+        "x": 0,
+        "y": 800
+      },
+      "children": [
+        "node_122",
+        "node_123",
+        "node_124",
+        "node_125"
+      ],
+      "collapsed": false,
+      "id": "cluster_28",
+      "label": "src/safety"
+    },
+    {
+      "bounds": {
+        "height": 400,
+        "width": 400,
+        "x": 600,
+        "y": 800
+      },
+      "children": [
+        "node_126",
+        "node_127",
+        "node_128"
+      ],
+      "collapsed": false,
+      "id": "cluster_29",
+      "label": "src/scan"
+    },
+    {
+      "bounds": {
+        "height": 250,
+        "width": 400,
+        "x": 1200,
+        "y": 800
+      },
+      "children": [
+        "node_129",
+        "node_130"
+      ],
+      "collapsed": false,
+      "id": "cluster_30",
+      "label": "src/security"
+    },
+    {
+      "bounds": {
+        "height": 250,
+        "width": 400,
+        "x": 1800,
+        "y": 800
+      },
+      "children": [
+        "node_131",
+        "node_132"
+      ],
+      "collapsed": false,
+      "id": "cluster_31",
+      "label": "src/storage"
+    },
+    {
+      "bounds": {
+        "height": 700,
+        "width": 700,
+        "x": 2400,
+        "y": 800
+      },
+      "children": [
+        "node_133",
+        "node_134",
+        "node_135",
+        "node_136",
+        "node_137",
+        "node_138",
+        "node_139",
+        "node_140",
+        "node_141",
+        "node_142",
+        "node_143",
+        "node_144",
+        "node_145",
+        "node_146"
+      ],
+      "collapsed": false,
+      "id": "cluster_32",
+      "label": "src/system"
+    },
+    {
+      "bounds": {
+        "height": 400,
+        "width": 550,
+        "x": 0,
+        "y": 1200
+      },
+      "children": [
+        "node_147",
+        "node_148",
+        "node_149",
+        "node_150",
+        "node_151"
+      ],
+      "collapsed": false,
+      "id": "cluster_33",
+      "label": "src/systems"
+    },
+    {
+      "bounds": {
+        "height": 250,
+        "width": 250,
+        "x": 600,
+        "y": 1200
+      },
+      "children": [
+        "node_152"
+      ],
+      "collapsed": false,
+      "id": "cluster_34",
+      "label": "src/types"
+    },
+    {
+      "bounds": {
+        "height": 550,
+        "width": 550,
+        "x": 1200,
+        "y": 1200
+      },
+      "children": [
+        "node_153",
+        "node_154",
+        "node_155",
+        "node_156",
+        "node_157",
+        "node_158",
+        "node_159",
+        "node_160",
+        "node_161"
+      ],
+      "collapsed": false,
+      "id": "cluster_35",
+      "label": "src/utils"
+    }
+  ],
+  "edges": [
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_86",
+      "id": "edge_14",
+      "is_approved": false,
+      "to": "node_129",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_90",
+      "id": "edge_15",
+      "is_approved": false,
+      "to": "node_129",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_94",
+      "id": "edge_16",
+      "is_approved": false,
+      "to": "node_129",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_95",
+      "id": "edge_17",
+      "is_approved": false,
+      "to": "node_129",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_106",
+      "id": "edge_18",
+      "is_approved": false,
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_106",
+      "id": "edge_19",
+      "is_approved": false,
+      "to": "node_118",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Circular dependency detected",
+      "from": "node_126",
+      "id": "edge_20",
+      "is_approved": false,
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 1,
+        "reason": "Circular dependency: Self-reference is not allowed in this layer.",
+        "valid": false
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_129",
+      "id": "edge_21",
+      "is_approved": false,
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_108",
+      "id": "edge_22",
+      "is_approved": false,
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_134",
+      "id": "edge_23",
+      "is_approved": false,
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_138",
+      "id": "edge_24",
+      "is_approved": false,
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_139",
+      "id": "edge_25",
+      "is_approved": false,
+      "to": "node_144",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_144",
+      "id": "edge_26",
+      "is_approved": false,
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_159",
+      "id": "edge_27",
+      "is_approved": false,
+      "to": "node_155",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_86",
+      "id": "edge_auto_1771332094557_873",
+      "label": "ref",
+      "to": "node_129",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_90",
+      "id": "edge_auto_1771332094557_190",
+      "label": "ref",
+      "to": "node_129",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_94",
+      "id": "edge_auto_1771332094557_615",
+      "label": "ref",
+      "to": "node_129",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_95",
+      "id": "edge_auto_1771332094557_762",
+      "label": "ref",
+      "to": "node_129",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_106",
+      "id": "edge_auto_1771332094557_833",
+      "label": "ref",
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_106",
+      "id": "edge_auto_1771332094557_29",
+      "label": "ref",
+      "to": "node_118",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_108",
+      "id": "edge_auto_1771332094557_217",
+      "label": "ref",
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_129",
+      "id": "edge_auto_1771332094557_509",
+      "label": "ref",
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_134",
+      "id": "edge_auto_1771332094557_161",
+      "label": "ref",
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_138",
+      "id": "edge_auto_1771332094557_110",
+      "label": "ref",
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_139",
+      "id": "edge_auto_1771332094558_794",
+      "label": "ref",
+      "to": "node_144",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_144",
+      "id": "edge_auto_1771332094558_685",
+      "label": "ref",
+      "to": "node_126",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_159",
+      "id": "edge_auto_1771332094558_117",
+      "label": "ref",
+      "to": "node_155",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    }
+  ],
+  "gemini_md_path": "/home/dogsinatas/rust_project/vega/GEMINI.md",
+  "nodes": [
+    {
+      "data": {
+        "cluster_id": "cluster_18",
+        "color": "#d3869b",
+        "description": "Cargo.toml (Auto-detected)",
+        "file": "Cargo.toml",
+        "label": "Cargo.toml",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_81",
+      "position": {
+        "x": 50,
+        "y": 50
+      },
+      "status": "active",
+      "type": "config",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_18",
+        "color": "#fabd2f",
+        "description": "GEMINI.md (Auto-detected)",
+        "file": "GEMINI.md",
+        "label": "GEMINI.md",
+        "summary": {
+          "classes": [
+            "Current Architecture (Phase 1)",
+            "Current Architecture (Phase 2)"
+          ],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_82",
+      "position": {
+        "x": 200,
+        "y": 50
+      },
+      "status": "active",
+      "type": "documentation",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_18",
+        "color": "#fabd2f",
+        "description": "README.md (Auto-detected)",
+        "file": "README.md",
+        "label": "README.md",
+        "summary": {
+          "classes": [
+            "🌌 Vega: The Sovereign SRE Agent",
+            "🛡️ Core Logic Update: \"Discovery First\"",
+            "🧠 Core Architecture / 핵심 아키텍처",
+            "📦 Build Prerequisites / 빌드 사전 요구사항",
+            "Fedora / RHEL / CentOS",
+            "Ubuntu / Debian",
+            "Arch Linux",
+            "🔧 Troubleshooting Build Issues / 빌드 문제 해결",
+            "Check if openssl.pc exists",
+            "If the above fails, find openssl.pc manually",
+            "Common locations (adjust based on your system)",
+            "Fedora/RHEL",
+            "Ubuntu/Debian",
+            "Then retry build",
+            "This will compile OpenSSL from source (slower but more reliable)",
+            "⚡ Installation / 설치 방법",
+            "1. Build Release Binary",
+            "2. Create local bin directory (if it doesn't exist)",
+            "3. Install to local bin",
+            "4. Add to PATH (if not already added)",
+            "5. Verify installation",
+            "🛠️ Usage / 사용 방법",
+            "1. Setup / 초기 설정",
+            "2. Google Login (Recommended) / 구글 로그인 (권장)",
+            "3. Natural Language Command / 자연어 명령",
+            "English",
+            "Korean",
+            "📋 Internal Commands / 내부 명령어",
+            "🛡️ Safety Features / 보안 기능",
+            "📄 License"
+          ],
+          "functions": [],
+          "references": [
+            "logic_flow"
+          ]
+        }
+      },
+      "id": "node_83",
+      "position": {
+        "x": 350,
+        "y": 50
+      },
+      "status": "active",
+      "type": "documentation",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_18",
+        "color": "#fabd2f",
+        "description": "architecture.md (Auto-detected)",
+        "file": "architecture.md",
+        "label": "architecture.md",
+        "summary": {
+          "classes": [
+            "프로젝트 아키텍처"
+          ],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_84",
+      "position": {
+        "x": 50,
+        "y": 200
+      },
+      "status": "active",
+      "type": "documentation",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_18",
+        "color": "#b8bb26",
+        "description": "init_env.sh (Auto-detected)",
+        "file": "init_env.sh",
+        "label": "init_env.sh",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_85",
+      "position": {
+        "x": 200,
+        "y": 200
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_19",
+        "color": "#b8bb26",
+        "description": "auth_manager.rs (Auto-detected)",
+        "file": "src/ai/auth_manager.rs",
+        "label": "auth_manager.rs",
+        "summary": {
+          "classes": [
+            "AuthManager"
+          ],
+          "functions": [
+            "get_bearer_token",
+            "refresh_token",
+            "get_adc_token"
+          ],
+          "references": [
+            "keyring",
+            "BasicClient",
+            "AuthUrl",
+            "Value",
+            "Error",
+            "fs"
+          ]
+        }
+      },
+      "id": "node_86",
+      "position": {
+        "x": 650,
+        "y": 50
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_19",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/ai/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [
+            "LlmProvider",
+            "AiError",
+            "RiskLevel",
+            "AiResponse",
+            "QuotaStatus",
+            "AiProvider",
+            "std"
+          ],
+          "functions": [
+            "fmt",
+            "name",
+            "get_quota_status",
+            "generate_response"
+          ],
+          "references": [
+            "Deserialize",
+            "SystemContext",
+            "async_trait",
+            "Error"
+          ]
+        }
+      },
+      "id": "node_87",
+      "position": {
+        "x": 800,
+        "y": 50
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_19",
+        "color": "#b8bb26",
+        "description": "prompts.rs (Auto-detected)",
+        "file": "src/ai/prompts.rs",
+        "label": "prompts.rs",
+        "summary": {
+          "classes": [
+            "SystemPrompt"
+          ],
+          "functions": [
+            "build"
+          ],
+          "references": [
+            "SystemContext"
+          ]
+        }
+      },
+      "id": "node_88",
+      "position": {
+        "x": 650,
+        "y": 200
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_19",
+        "color": "#b8bb26",
+        "description": "router.rs (Auto-detected)",
+        "file": "src/ai/router.rs",
+        "label": "router.rs",
+        "summary": {
+          "classes": [
+            "SmartRouter",
+            "EngineType"
+          ],
+          "functions": [
+            "determine_engine",
+            "get_provider",
+            "get_cache_path",
+            "load_quota_state",
+            "save_quota_state",
+            "generate_with_fallback",
+            "get_context_summary"
+          ],
+          "references": [
+            "GeminiProvider",
+            "OfflineEngine",
+            "VertexAiProvider",
+            "AiProvider",
+            "debug",
+            "BufRead"
+          ]
+        }
+      },
+      "id": "node_89",
+      "position": {
+        "x": 800,
+        "y": 200
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_20",
+        "color": "#b8bb26",
+        "description": "gemini.rs (Auto-detected)",
+        "file": "src/ai/providers/gemini.rs",
+        "label": "gemini.rs",
+        "summary": {
+          "classes": [
+            "GeminiProvider"
+          ],
+          "functions": [
+            "new",
+            "list_models",
+            "name",
+            "get_quota_status",
+            "generate_response"
+          ],
+          "references": [
+            "AiProvider",
+            "SystemContext",
+            "keyring",
+            "async_trait",
+            "Error",
+            "Client",
+            "json"
+          ]
+        }
+      },
+      "id": "node_90",
+      "position": {
+        "x": 1250,
+        "y": 50
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_20",
+        "color": "#b8bb26",
+        "description": "mock.rs (Auto-detected)",
+        "file": "src/ai/providers/mock.rs",
+        "label": "mock.rs",
+        "summary": {
+          "classes": [
+            "MockProvider"
+          ],
+          "functions": [
+            "new",
+            "add_response",
+            "name",
+            "get_quota_status",
+            "generate_response"
+          ],
+          "references": [
+            "AiProvider",
+            "SystemContext",
+            "async_trait",
+            "HashMap"
+          ]
+        }
+      },
+      "id": "node_91",
+      "position": {
+        "x": 1400,
+        "y": 50
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_20",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/ai/providers/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_92",
+      "position": {
+        "x": 1550,
+        "y": 50
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_20",
+        "color": "#b8bb26",
+        "description": "offline.rs (Auto-detected)",
+        "file": "src/ai/providers/offline.rs",
+        "label": "offline.rs",
+        "summary": {
+          "classes": [
+            "OfflineEngine"
+          ],
+          "functions": [
+            "new",
+            "map_query",
+            "name",
+            "get_quota_status",
+            "generate_response",
+            "search_history"
+          ],
+          "references": [
+            "AiProvider",
+            "SystemContext",
+            "sanitize_string",
+            "async_trait",
+            "json",
+            "BufRead"
+          ]
+        }
+      },
+      "id": "node_93",
+      "position": {
+        "x": 1250,
+        "y": 200
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_20",
+        "color": "#b8bb26",
+        "description": "vertex_ai.rs (Auto-detected)",
+        "file": "src/ai/providers/vertex_ai.rs",
+        "label": "vertex_ai.rs",
+        "summary": {
+          "classes": [
+            "VertexAiProvider"
+          ],
+          "functions": [
+            "new",
+            "build_url",
+            "name",
+            "get_quota_status",
+            "generate_response"
+          ],
+          "references": [
+            "AiProvider",
+            "SystemContext",
+            "keyring",
+            "async_trait",
+            "Client",
+            "json"
+          ]
+        }
+      },
+      "id": "node_94",
+      "position": {
+        "x": 1400,
+        "y": 200
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_20",
+        "color": "#b8bb26",
+        "description": "web_session.rs (Auto-detected)",
+        "file": "src/ai/providers/web_session.rs",
+        "label": "web_session.rs",
+        "summary": {
+          "classes": [
+            "WebSessionProvider"
+          ],
+          "functions": [
+            "new",
+            "name",
+            "get_quota_status",
+            "generate_response"
+          ],
+          "references": [
+            "AiProvider",
+            "SystemContext",
+            "keyring",
+            "async_trait",
+            "Client",
+            "json",
+            "Error"
+          ]
+        }
+      },
+      "id": "node_95",
+      "position": {
+        "x": 1550,
+        "y": 200
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_21",
+        "color": "#b8bb26",
+        "description": "google.rs (Auto-detected)",
+        "file": "src/auth/google.rs",
+        "label": "google.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "login",
+            "prompt_input"
+          ],
+          "references": [
+            "BasicClient",
+            "BufRead",
+            "TcpListener"
+          ]
+        }
+      },
+      "id": "node_96",
+      "position": {
+        "x": 1850,
+        "y": 50
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_21",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/auth/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_97",
+      "position": {
+        "x": 2000,
+        "y": 50
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "config.rs (Auto-detected)",
+        "file": "src/config.rs",
+        "label": "config.rs",
+        "summary": {
+          "classes": [
+            "VegaConfig",
+            "AiConfig",
+            "VertexAiConfig",
+            "SystemConfig",
+            "DependenciesConfig",
+            "ExecutionConfig",
+            "OptimizationConfig"
+          ],
+          "functions": [
+            "load",
+            "validate"
+          ],
+          "references": [
+            "Deserialize",
+            "fs"
+          ]
+        }
+      },
+      "id": "node_98",
+      "position": {
+        "x": 2450,
+        "y": 50
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "context.rs (Auto-detected)",
+        "file": "src/context.rs",
+        "label": "context.rs",
+        "summary": {
+          "classes": [
+            "SystemContext"
+          ],
+          "functions": [
+            "collect",
+            "get_os_info",
+            "get_kernel_version",
+            "get_load_avg",
+            "get_mem_info",
+            "get_block_devices",
+            "detect_pkg_manager",
+            "detect_vm",
+            "detect_git_user",
+            "detect_current_project"
+          ],
+          "references": [
+            "fs",
+            "Command",
+            "Serialize",
+            "Value"
+          ]
+        }
+      },
+      "id": "node_99",
+      "position": {
+        "x": 2600,
+        "y": 50
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "engine.py (Auto-detected)",
+        "file": "src/engine.py",
+        "label": "engine.py",
+        "summary": {
+          "classes": [
+            "GameEngine"
+          ],
+          "functions": [
+            "__init__",
+            "setup_terminal",
+            "restore_terminal",
+            "clear_buffer",
+            "render_to_terminal",
+            "log",
+            "render_debug_map",
+            "rasterize_line",
+            "find_safe_spawn",
+            "load_level",
+            "rasterize_line",
+            "init_game",
+            "load_wad_textures",
+            "load_wad_assets",
+            "run"
+          ],
+          "references": [
+            "sys\nimport",
+            "Motion",
+            "PhysicsMode",
+            "Render",
+            "Wall",
+            "Stats",
+            "Weapon\nfrom",
+            "PI\nfrom",
+            "src.ecs.components",
+            "src.utils.math_core",
+            "src.systems.combat_sys",
+            "traceback\n\n",
+            "src.systems.render_sys"
+          ]
+        }
+      },
+      "id": "node_100",
+      "position": {
+        "x": 2750,
+        "y": 50
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "init.rs (Auto-detected)",
+        "file": "src/init.rs",
+        "label": "init.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "bootstrap",
+            "get_config_path"
+          ],
+          "references": [
+            "PathBuf",
+            "fs",
+            "VegaConfig",
+            "SystemContext",
+            "dirs"
+          ]
+        }
+      },
+      "id": "node_101",
+      "position": {
+        "x": 2900,
+        "y": 50
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "interactor.rs (Auto-detected)",
+        "file": "src/interactor.rs",
+        "label": "interactor.rs",
+        "summary": {
+          "classes": [
+            "Interactor"
+          ],
+          "functions": [
+            "select_with_fzf",
+            "confirm"
+          ],
+          "references": [
+            "Command",
+            "Write",
+            "self"
+          ]
+        }
+      },
+      "id": "node_102",
+      "position": {
+        "x": 2450,
+        "y": 200
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "knowledge.rs (Auto-detected)",
+        "file": "src/knowledge.rs",
+        "label": "knowledge.rs",
+        "summary": {
+          "classes": [
+            "KnowledgeEntry",
+            "KnowledgeBase"
+          ],
+          "functions": [
+            "load",
+            "save",
+            "add",
+            "get",
+            "get_path"
+          ],
+          "references": [
+            "Deserialize",
+            "HashMap",
+            "fs",
+            "PathBuf",
+            "md5"
+          ]
+        }
+      },
+      "id": "node_103",
+      "position": {
+        "x": 2600,
+        "y": 200
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "lib.rs (Auto-detected)",
+        "file": "src/lib.rs",
+        "label": "lib.rs",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_104",
+      "position": {
+        "x": 2750,
+        "y": 200
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "logger.rs (Auto-detected)",
+        "file": "src/logger.rs",
+        "label": "logger.rs",
+        "summary": {
+          "classes": [
+            "LogEntry",
+            "ExecutionLogger"
+          ],
+          "functions": [
+            "new",
+            "log"
+          ],
+          "references": [
+            "OpenOptions",
+            "Write",
+            "Local",
+            "Serialize",
+            "OpenOptionsExt"
+          ]
+        }
+      },
+      "id": "node_105",
+      "position": {
+        "x": 2900,
+        "y": 200
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "main.rs (Auto-detected)",
+        "file": "src/main.rs",
+        "label": "main.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "main"
+          ],
+          "references": [
+            "env",
+            "Command",
+            "SystemContext",
+            "Interactor",
+            "ExecutionLogger",
+            "SetupWizard",
+            "ShellSnapshot",
+            "Action",
+            "Colorize",
+            "SshConnection",
+            "pkg",
+            "KnowledgeBase",
+            "VmScanner",
+            "Healer",
+            "SmartStorage",
+            "VmController",
+            "self",
+            "AiResponse"
+          ]
+        }
+      },
+      "id": "node_106",
+      "position": {
+        "x": 2450,
+        "y": 350
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "main.ts (Auto-detected)",
+        "file": "src/main.ts",
+        "label": "main.ts",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_107",
+      "position": {
+        "x": 2600,
+        "y": 350
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "setup.rs (Auto-detected)",
+        "file": "src/setup.rs",
+        "label": "setup.rs",
+        "summary": {
+          "classes": [
+            "SetupWizard"
+          ],
+          "functions": [
+            "run",
+            "select_provider",
+            "discover_and_confirm_key",
+            "prompt",
+            "confirm"
+          ],
+          "references": [
+            "self",
+            "fs",
+            "env",
+            "VegaConfig",
+            "SystemContext",
+            "scan"
+          ]
+        }
+      },
+      "id": "node_108",
+      "position": {
+        "x": 2750,
+        "y": 350
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "shell.rs (Auto-detected)",
+        "file": "src/shell.rs",
+        "label": "shell.rs",
+        "summary": {
+          "classes": [
+            "ShellSnapshot"
+          ],
+          "functions": [
+            "new",
+            "save",
+            "load",
+            "dump_aliases",
+            "dump_zoxide"
+          ],
+          "references": [
+            "Command",
+            "fs",
+            "Deserialize",
+            "HashMap"
+          ]
+        }
+      },
+      "id": "node_109",
+      "position": {
+        "x": 2900,
+        "y": 350
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_22",
+        "color": "#b8bb26",
+        "description": "token_saver.rs (Auto-detected)",
+        "file": "src/token_saver.rs",
+        "label": "token_saver.rs",
+        "summary": {
+          "classes": [
+            "Action",
+            "TokenSaver"
+          ],
+          "functions": [
+            "new",
+            "load_cache",
+            "load_history",
+            "match_local_intent",
+            "check_cache",
+            "search_history"
+          ],
+          "references": [
+            "HashMap",
+            "fs",
+            "Deserialize",
+            "Regex",
+            "Value"
+          ]
+        }
+      },
+      "id": "node_110",
+      "position": {
+        "x": 2450,
+        "y": 500
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_23",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/connection/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_111",
+      "position": {
+        "x": 50,
+        "y": 450
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_23",
+        "color": "#b8bb26",
+        "description": "ssh.rs (Auto-detected)",
+        "file": "src/connection/ssh.rs",
+        "label": "ssh.rs",
+        "summary": {
+          "classes": [
+            "SshConnection",
+            "DiagnosticResult",
+            "std"
+          ],
+          "functions": [
+            "fmt",
+            "check_connection",
+            "connect",
+            "detect_os",
+            "diagnose",
+            "execute_remote_async"
+          ],
+          "references": [
+            "Command"
+          ]
+        }
+      },
+      "id": "node_112",
+      "position": {
+        "x": 200,
+        "y": 450
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_24",
+        "color": "#b8bb26",
+        "description": "components.py (Auto-detected)",
+        "file": "src/ecs/components.py",
+        "label": "components.py",
+        "summary": {
+          "classes": [
+            "Transform",
+            "Motion",
+            "Body",
+            "Stats",
+            "PhysicsModeType",
+            "PhysicsMode",
+            "Render",
+            "Wall",
+            "Weapon"
+          ],
+          "functions": [],
+          "references": [
+            "dataclasses",
+            "src.utils.math_core"
+          ]
+        }
+      },
+      "id": "node_113",
+      "position": {
+        "x": 650,
+        "y": 450
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_24",
+        "color": "#b8bb26",
+        "description": "world.py (Auto-detected)",
+        "file": "src/ecs/world.py",
+        "label": "world.py",
+        "summary": {
+          "classes": [
+            "World"
+          ],
+          "functions": [
+            "__init__",
+            "create_entity",
+            "add_component",
+            "get_component",
+            "has_component",
+            "remove_entity",
+            "add_system",
+            "update",
+            "get_entities_with",
+            "init_map",
+            "create_wall"
+          ],
+          "references": [
+            "src.ecs.components"
+          ]
+        }
+      },
+      "id": "node_114",
+      "position": {
+        "x": 800,
+        "y": 450
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_25",
+        "color": "#b8bb26",
+        "description": "healer.rs (Auto-detected)",
+        "file": "src/executor/healer.rs",
+        "label": "healer.rs",
+        "summary": {
+          "classes": [
+            "Healer"
+          ],
+          "functions": [
+            "diagnose",
+            "suggest_install"
+          ],
+          "references": [
+            "ExecuteResult",
+            "OsInfo"
+          ]
+        }
+      },
+      "id": "node_115",
+      "position": {
+        "x": 1250,
+        "y": 450
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_25",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/executor/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [
+            "ExecuteResult"
+          ],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_116",
+      "position": {
+        "x": 1400,
+        "y": 450
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_25",
+        "color": "#b8bb26",
+        "description": "orchestrator.rs (Auto-detected)",
+        "file": "src/executor/orchestrator.rs",
+        "label": "orchestrator.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "update_all"
+          ],
+          "references": [
+            "KnowledgeBase",
+            "SshConnection",
+            "join_all",
+            "Arc",
+            "Semaphore",
+            "signal"
+          ]
+        }
+      },
+      "id": "node_117",
+      "position": {
+        "x": 1550,
+        "y": 450
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_25",
+        "color": "#b8bb26",
+        "description": "pkg.rs (Auto-detected)",
+        "file": "src/executor/pkg.rs",
+        "label": "pkg.rs",
+        "summary": {
+          "classes": [
+            "PackageSystem",
+            "PackageManager",
+            "Apt",
+            "Dnf",
+            "Pacman",
+            "Flatpak"
+          ],
+          "functions": [
+            "install",
+            "update",
+            "remove",
+            "search",
+            "name",
+            "kind",
+            "normalize",
+            "detect"
+          ],
+          "references": [
+            "SystemContext"
+          ]
+        }
+      },
+      "id": "node_118",
+      "position": {
+        "x": 1250,
+        "y": 600
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_25",
+        "color": "#b8bb26",
+        "description": "status.rs (Auto-detected)",
+        "file": "src/executor/status.rs",
+        "label": "status.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "show_status"
+          ],
+          "references": [
+            "KnowledgeBase"
+          ]
+        }
+      },
+      "id": "node_119",
+      "position": {
+        "x": 1400,
+        "y": 600
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_26",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/remote/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [
+            "RemoteManager"
+          ],
+          "functions": [
+            "new",
+            "connect",
+            "exec_command"
+          ],
+          "references": [
+            "Session",
+            "TcpStream",
+            "Read",
+            "info"
+          ]
+        }
+      },
+      "id": "node_120",
+      "position": {
+        "x": 1850,
+        "y": 450
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_27",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/reporting/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [
+            "ReportGenerator"
+          ],
+          "functions": [
+            "generate_markdown",
+            "generate_pdf"
+          ],
+          "references": [
+            "elements",
+            "fonts",
+            "Local",
+            "info"
+          ]
+        }
+      },
+      "id": "node_121",
+      "position": {
+        "x": 2450,
+        "y": 450
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_28",
+        "color": "#b8bb26",
+        "description": "checker.rs (Auto-detected)",
+        "file": "src/safety/checker.rs",
+        "label": "checker.rs",
+        "summary": {
+          "classes": [
+            "RiskLevel"
+          ],
+          "functions": [
+            "check_risk_level"
+          ],
+          "references": []
+        }
+      },
+      "id": "node_122",
+      "position": {
+        "x": 50,
+        "y": 850
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_28",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/safety/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_123",
+      "position": {
+        "x": 200,
+        "y": 850
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_28",
+        "color": "#b8bb26",
+        "description": "sanitizer.rs (Auto-detected)",
+        "file": "src/safety/sanitizer.rs",
+        "label": "sanitizer.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "sanitize_input"
+          ],
+          "references": [
+            "Regex",
+            "OnceLock"
+          ]
+        }
+      },
+      "id": "node_124",
+      "position": {
+        "x": 50,
+        "y": 1000
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_28",
+        "color": "#b8bb26",
+        "description": "ui.rs (Auto-detected)",
+        "file": "src/safety/ui.rs",
+        "label": "ui.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "confirm_action"
+          ],
+          "references": [
+            "self",
+            "Colorize",
+            "RiskLevel"
+          ]
+        }
+      },
+      "id": "node_125",
+      "position": {
+        "x": 200,
+        "y": 1000
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_29",
+        "color": "#b8bb26",
+        "description": "env.rs (Auto-detected)",
+        "file": "src/scan/env.rs",
+        "label": "env.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "find_key"
+          ],
+          "references": [
+            "Regex",
+            "fs",
+            "env"
+          ]
+        }
+      },
+      "id": "node_126",
+      "position": {
+        "x": 650,
+        "y": 850
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_29",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/scan/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_127",
+      "position": {
+        "x": 800,
+        "y": 850
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_29",
+        "color": "#b8bb26",
+        "description": "vm.rs (Auto-detected)",
+        "file": "src/scan/vm.rs",
+        "label": "vm.rs",
+        "summary": {
+          "classes": [
+            "VmInfo",
+            "VmScanner"
+          ],
+          "functions": [
+            "scan",
+            "get_ip"
+          ],
+          "references": [
+            "Command"
+          ]
+        }
+      },
+      "id": "node_128",
+      "position": {
+        "x": 650,
+        "y": 1000
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_30",
+        "color": "#b8bb26",
+        "description": "keyring.rs (Auto-detected)",
+        "file": "src/security/keyring.rs",
+        "label": "keyring.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "get_api_key",
+            "set_api_key",
+            "get_token",
+            "set_token",
+            "delete_token"
+          ],
+          "references": [
+            "Entry",
+            "env"
+          ]
+        }
+      },
+      "id": "node_129",
+      "position": {
+        "x": 1250,
+        "y": 850
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_30",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/security/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_130",
+      "position": {
+        "x": 1400,
+        "y": 850
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_31",
+        "color": "#b8bb26",
+        "description": "db.rs (Auto-detected)",
+        "file": "src/storage/db.rs",
+        "label": "db.rs",
+        "summary": {
+          "classes": [
+            "Database",
+            "TaskEntry"
+          ],
+          "functions": [
+            "get_current_session_id",
+            "new",
+            "migrate",
+            "start_session",
+            "log_command",
+            "save_chat_message",
+            "add_execution_log",
+            "get_recent_history",
+            "get_failure_count",
+            "log_task",
+            "learn_solution",
+            "get_solution",
+            "record_task",
+            "get_session_tasks",
+            "set_metadata",
+            "get_metadata",
+            "calculate_weight"
+          ],
+          "references": [
+            "params",
+            "SystemTime",
+            "PermissionsExt",
+            "fs"
+          ]
+        }
+      },
+      "id": "node_131",
+      "position": {
+        "x": 1850,
+        "y": 850
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_31",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/storage/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_132",
+      "position": {
+        "x": 2000,
+        "y": 850
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "archivist.rs (Auto-detected)",
+        "file": "src/system/archivist.rs",
+        "label": "archivist.rs",
+        "summary": {
+          "classes": [
+            "ArchiveEntry",
+            "Archivist"
+          ],
+          "functions": [
+            "log_execution",
+            "get_history_dir",
+            "append_to_json_history",
+            "append_to_daily_report",
+            "sanitize_command",
+            "archive_session"
+          ],
+          "references": [
+            "Database",
+            "ExecuteResult",
+            "AppConfig",
+            "self",
+            "Write",
+            "PathBuf",
+            "Local",
+            "Serialize",
+            "Regex",
+            "json",
+            "sanitize_string"
+          ]
+        }
+      },
+      "id": "node_133",
+      "position": {
+        "x": 2450,
+        "y": 850
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "config.rs (Auto-detected)",
+        "file": "src/system/config.rs",
+        "label": "config.rs",
+        "summary": {
+          "classes": [
+            "ProviderConfig",
+            "Project",
+            "AppConfig"
+          ],
+          "functions": [
+            "default",
+            "get_config_path",
+            "load",
+            "load_from_path",
+            "save"
+          ],
+          "references": [
+            "Deserialize",
+            "fs",
+            "Path",
+            "env",
+            "OsInfo"
+          ]
+        }
+      },
+      "id": "node_134",
+      "position": {
+        "x": 2600,
+        "y": 850
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "context.rs (Auto-detected)",
+        "file": "src/system/context.rs",
+        "label": "context.rs",
+        "summary": {
+          "classes": [
+            "Partition",
+            "PartitionType",
+            "SystemContext"
+          ],
+          "functions": [
+            "new"
+          ],
+          "references": [
+            "HashMap",
+            "Deserialize",
+            "VirtualMachine"
+          ]
+        }
+      },
+      "id": "node_135",
+      "position": {
+        "x": 2750,
+        "y": 850
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "discovery.rs (Auto-detected)",
+        "file": "src/system/discovery.rs",
+        "label": "discovery.rs",
+        "summary": {
+          "classes": [
+            "Discovery"
+          ],
+          "functions": [
+            "run"
+          ],
+          "references": [
+            "Command"
+          ]
+        }
+      },
+      "id": "node_136",
+      "position": {
+        "x": 2900,
+        "y": 850
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "docker.rs (Auto-detected)",
+        "file": "src/system/docker.rs",
+        "label": "docker.rs",
+        "summary": {
+          "classes": [
+            "Container",
+            "DockerManager"
+          ],
+          "functions": [
+            "list_containers"
+          ],
+          "references": [
+            "Command",
+            "Deserialize"
+          ]
+        }
+      },
+      "id": "node_137",
+      "position": {
+        "x": 2450,
+        "y": 1000
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "env_scanner.rs (Auto-detected)",
+        "file": "src/system/env_scanner.rs",
+        "label": "env_scanner.rs",
+        "summary": {
+          "classes": [
+            "EnvScanner",
+            "EnvKey"
+          ],
+          "functions": [
+            "scan_shell_configs",
+            "get_locale",
+            "validate_url"
+          ],
+          "references": [
+            "env",
+            "File",
+            "self",
+            "PathBuf",
+            "Regex",
+            "HashMap",
+            "debug"
+          ]
+        }
+      },
+      "id": "node_138",
+      "position": {
+        "x": 2600,
+        "y": 1000
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "global.rs (Auto-detected)",
+        "file": "src/system/global.rs",
+        "label": "global.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "initialize",
+            "get_context"
+          ],
+          "references": [
+            "OnceLock",
+            "SystemContext",
+            "scanner"
+          ]
+        }
+      },
+      "id": "node_139",
+      "position": {
+        "x": 2750,
+        "y": 1000
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "healer.rs (Auto-detected)",
+        "file": "src/system/healer.rs",
+        "label": "healer.rs",
+        "summary": {
+          "classes": [
+            "Healer"
+          ],
+          "functions": [
+            "analyze_journal",
+            "diagnose",
+            "rotate_logs"
+          ],
+          "references": [
+            "Command"
+          ]
+        }
+      },
+      "id": "node_140",
+      "position": {
+        "x": 2900,
+        "y": 1000
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "mod.rs (Auto-detected)",
+        "file": "src/system/mod.rs",
+        "label": "mod.rs",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_141",
+      "position": {
+        "x": 2450,
+        "y": 1150
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "os.rs (Auto-detected)",
+        "file": "src/system/os.rs",
+        "label": "os.rs",
+        "summary": {
+          "classes": [
+            "PackageManager",
+            "OsInfo"
+          ],
+          "functions": [
+            "detect",
+            "detect_package_manager"
+          ],
+          "references": [
+            "fs",
+            "Command"
+          ]
+        }
+      },
+      "id": "node_142",
+      "position": {
+        "x": 2600,
+        "y": 1150
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "sanitizer.rs (Auto-detected)",
+        "file": "src/system/sanitizer.rs",
+        "label": "sanitizer.rs",
+        "summary": {
+          "classes": [
+            "Sanitizer"
+          ],
+          "functions": [
+            "new",
+            "clean",
+            "sanitize_string"
+          ],
+          "references": [
+            "Regex"
+          ]
+        }
+      },
+      "id": "node_143",
+      "position": {
+        "x": 2750,
+        "y": 1150
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "scanner.rs (Auto-detected)",
+        "file": "src/system/scanner.rs",
+        "label": "scanner.rs",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "scan_system",
+            "scan_os_info",
+            "scan_partitions"
+          ],
+          "references": [
+            "fs",
+            "Command",
+            "HashMap",
+            "env",
+            "SystemContext",
+            "VirtManager"
+          ]
+        }
+      },
+      "id": "node_144",
+      "position": {
+        "x": 2900,
+        "y": 1150
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "storage.rs (Auto-detected)",
+        "file": "src/system/storage.rs",
+        "label": "storage.rs",
+        "summary": {
+          "classes": [
+            "SmartStorage"
+          ],
+          "functions": [
+            "new",
+            "backup_cmd",
+            "list_remotes"
+          ],
+          "references": [
+            "Command",
+            "HashMap"
+          ]
+        }
+      },
+      "id": "node_145",
+      "position": {
+        "x": 2450,
+        "y": 1300
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_32",
+        "color": "#b8bb26",
+        "description": "virt.rs (Auto-detected)",
+        "file": "src/system/virt.rs",
+        "label": "virt.rs",
+        "summary": {
+          "classes": [
+            "VmController"
+          ],
+          "functions": [
+            "start",
+            "get_ip"
+          ],
+          "references": [
+            "Command",
+            "VmScanner"
+          ]
+        }
+      },
+      "id": "node_146",
+      "position": {
+        "x": 2600,
+        "y": 1300
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_33",
+        "color": "#b8bb26",
+        "description": "combat_sys.py (Auto-detected)",
+        "file": "src/systems/combat_sys.py",
+        "label": "combat_sys.py",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "combat_system"
+          ],
+          "references": [
+            "src.ecs.components"
+          ]
+        }
+      },
+      "id": "node_147",
+      "position": {
+        "x": 50,
+        "y": 1250
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_33",
+        "color": "#b8bb26",
+        "description": "input_sys.py (Auto-detected)",
+        "file": "src/systems/input_sys.py",
+        "label": "input_sys.py",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "input_system"
+          ],
+          "references": [
+            "sys\nimport",
+            "Motion",
+            "Weapon\nfrom",
+            "get_cos\n\ndef"
+          ]
+        }
+      },
+      "id": "node_148",
+      "position": {
+        "x": 200,
+        "y": 1250
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_33",
+        "color": "#b8bb26",
+        "description": "physics_sys.py (Auto-detected)",
+        "file": "src/systems/physics_sys.py",
+        "label": "physics_sys.py",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "physics_system",
+            "is_occupied",
+            "collides_at"
+          ],
+          "references": [
+            "src.ecs.components",
+            "traceback\n"
+          ]
+        }
+      },
+      "id": "node_149",
+      "position": {
+        "x": 350,
+        "y": 1250
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_33",
+        "color": "#b8bb26",
+        "description": "render_sys.py (Auto-detected)",
+        "file": "src/systems/render_sys.py",
+        "label": "render_sys.py",
+        "summary": {
+          "classes": [
+            "RenderSystem"
+          ],
+          "functions": [
+            "__init__",
+            "render",
+            "downsample_to_terminal",
+            "draw_sprite_to_virtual",
+            "draw_weapon_overlay",
+            "draw_ui_overlay",
+            "draw_face_overlay",
+            "render_system"
+          ],
+          "references": [
+            "math\nfrom",
+            "src.utils.wad_loader",
+            "src.ecs.components"
+          ]
+        }
+      },
+      "id": "node_150",
+      "position": {
+        "x": 50,
+        "y": 1400
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_33",
+        "color": "#b8bb26",
+        "description": "ui_sys.py (Auto-detected)",
+        "file": "src/systems/ui_sys.py",
+        "label": "ui_sys.py",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "ui_system",
+            "draw_text"
+          ],
+          "references": [
+            "src.ecs.components",
+            "src.utils.visual_assets"
+          ]
+        }
+      },
+      "id": "node_151",
+      "position": {
+        "x": 200,
+        "y": 1400
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_34",
+        "color": "#b8bb26",
+        "description": "schema.ts (Auto-detected)",
+        "file": "src/types/schema.ts",
+        "label": "schema.ts",
+        "summary": {
+          "classes": [],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_152",
+      "position": {
+        "x": 650,
+        "y": 1250
+      },
+      "status": "proposed",
+      "type": "source",
+      "visual": {
+        "dashArray": "5,5",
+        "opacity": 0.5
+      }
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_35",
+        "color": "#b8bb26",
+        "description": "ascii_texture_gen.py (Auto-detected)",
+        "file": "src/utils/ascii_texture_gen.py",
+        "label": "ascii_texture_gen.py",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "generate_ascii_texture"
+          ],
+          "references": [
+            "src.utils.visual_assets"
+          ]
+        }
+      },
+      "id": "node_153",
+      "position": {
+        "x": 1250,
+        "y": 1250
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_35",
+        "color": "#b8bb26",
+        "description": "config_loader.py (Auto-detected)",
+        "file": "src/utils/config_loader.py",
+        "label": "config_loader.py",
+        "summary": {
+          "classes": [
+            "ConfigLoader"
+          ],
+          "functions": [
+            "__new__",
+            "load_config",
+            "get",
+            "config"
+          ],
+          "references": [
+            "os\nimport",
+            "Dict",
+            "Optional\n\nclass"
+          ]
+        }
+      },
+      "id": "node_154",
+      "position": {
+        "x": 1400,
+        "y": 1250
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_35",
+        "color": "#b8bb26",
+        "description": "dir_resolver.py (Auto-detected)",
+        "file": "src/utils/dir_resolver.py",
+        "label": "dir_resolver.py",
+        "summary": {
+          "classes": [
+            "DirectoryResolver"
+          ],
+          "functions": [
+            "get_home_dir",
+            "get_xdg_dirs",
+            "get_user_dirs",
+            "detect_custom_configs"
+          ],
+          "references": [
+            "os\nimport",
+            "List",
+            "Optional\n\nclass"
+          ]
+        }
+      },
+      "id": "node_155",
+      "position": {
+        "x": 1550,
+        "y": 1250
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_35",
+        "color": "#b8bb26",
+        "description": "logger.py (Auto-detected)",
+        "file": "src/utils/logger.py",
+        "label": "logger.py",
+        "summary": {
+          "classes": [
+            "ExecutionLogger"
+          ],
+          "functions": [
+            "__init__",
+            "log_command"
+          ],
+          "references": [
+            "json\nimport",
+            "Optional\n\nclass"
+          ]
+        }
+      },
+      "id": "node_156",
+      "position": {
+        "x": 1250,
+        "y": 1400
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_35",
+        "color": "#b8bb26",
+        "description": "math_core.py (Auto-detected)",
+        "file": "src/utils/math_core.py",
+        "label": "math_core.py",
+        "summary": {
+          "classes": [
+            "Vector3"
+          ],
+          "functions": [
+            "get_sin",
+            "get_cos",
+            "normalize_angle",
+            "__init__",
+            "__add__",
+            "__mul__",
+            "length"
+          ],
+          "references": [
+            "math"
+          ]
+        }
+      },
+      "id": "node_157",
+      "position": {
+        "x": 1400,
+        "y": 1400
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_35",
+        "color": "#b8bb26",
+        "description": "sprite_renderer.py (Auto-detected)",
+        "file": "src/utils/sprite_renderer.py",
+        "label": "sprite_renderer.py",
+        "summary": {
+          "classes": [
+            "SpriteRenderer"
+          ],
+          "functions": [
+            "__init__",
+            "get_ascii_char",
+            "load_sprite",
+            "load_sprite_raw",
+            "get_weapon_sprite"
+          ],
+          "references": [
+            "src.utils.visual_assets"
+          ]
+        }
+      },
+      "id": "node_158",
+      "position": {
+        "x": 1550,
+        "y": 1400
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_35",
+        "color": "#b8bb26",
+        "description": "system_context.py (Auto-detected)",
+        "file": "src/utils/system_context.py",
+        "label": "system_context.py",
+        "summary": {
+          "classes": [
+            "SystemContextExecutor"
+          ],
+          "functions": [
+            "get_context",
+            "check_libraries",
+            "get_binary_dependencies",
+            "get_package_status",
+            "get_process_info",
+            "_get_os_info",
+            "_scan_block_devices",
+            "_read_loadavg",
+            "_read_meminfo",
+            "_read_cpuinfo"
+          ],
+          "references": [
+            "subprocess\nimport",
+            "Any",
+            "List",
+            ".dir_resolver",
+            "sys\n",
+            "dir_resolver"
+          ]
+        }
+      },
+      "id": "node_159",
+      "position": {
+        "x": 1250,
+        "y": 1550
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_35",
+        "color": "#b8bb26",
+        "description": "visual_assets.py (Auto-detected)",
+        "file": "src/utils/visual_assets.py",
+        "label": "visual_assets.py",
+        "summary": {
+          "classes": [],
+          "functions": [
+            "get_texture_id_from_name"
+          ],
+          "references": []
+        }
+      },
+      "id": "node_160",
+      "position": {
+        "x": 1400,
+        "y": 1550
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_35",
+        "color": "#b8bb26",
+        "description": "wad_loader.py (Auto-detected)",
+        "file": "src/utils/wad_loader.py",
+        "label": "wad_loader.py",
+        "summary": {
+          "classes": [
+            "WADLoader"
+          ],
+          "functions": [
+            "__init__",
+            "_resolve_path",
+            "__del__",
+            "load_directory",
+            "find_lump",
+            "load_playpal",
+            "load_pnames",
+            "load_texture1",
+            "load_patch_data",
+            "get_decoded_texture",
+            "load_flat",
+            "read_vertexes",
+            "read_sidedefs",
+            "read_linedefs",
+            "read_things",
+            "load_map_data"
+          ],
+          "references": [
+            "struct\nimport"
+          ]
+        }
+      },
+      "id": "node_161",
+      "position": {
+        "x": 1550,
+        "y": 1550
+      },
+      "status": "active",
+      "type": "source",
+      "visual": {}
+    }
+  ],
+  "project_name": "vega"
+}

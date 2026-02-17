@@ -155,6 +155,31 @@ impl Database {
             [],
         )?;
 
+        // Local RAG: FTS5 Virtual Table for semantic-like search
+        self.conn.execute(
+            "CREATE VIRTUAL TABLE IF NOT EXISTS search_index USING fts5(content, origin_table UNINDEXED, timestamp UNINDEXED);",
+            [],
+        )?;
+
+        // Sync triggers: chat_history -> search_index
+        self.conn.execute(
+            "CREATE TRIGGER IF NOT EXISTS sync_chat_search AFTER INSERT ON chat_history
+             WHEN NEW.role = 'user'
+             BEGIN
+                INSERT INTO search_index(content, origin_table, timestamp) VALUES (NEW.content, 'chat_history', NEW.timestamp);
+             END;",
+            [],
+        )?;
+
+        // Sync triggers: commands -> search_index
+        self.conn.execute(
+            "CREATE TRIGGER IF NOT EXISTS sync_command_search AFTER INSERT ON commands
+             BEGIN
+                INSERT INTO search_index(content, origin_table, timestamp) VALUES (NEW.command, 'commands', NEW.timestamp);
+             END;",
+            [],
+        )?;
+
     // Migration logic moved to migrate()
     Ok(()) 
     }
@@ -373,6 +398,53 @@ impl Database {
         } else {
             Ok(None)
         }
+    }
+
+    // --- Phase 3: Local RAG (Pseudo-Semantic Search) ---
+    pub fn search_relevant_context(&self, query: &str, limit: usize) -> Result<Vec<String>> {
+        // Clean query for FTS5 (remove special Chars that break syntax)
+        let cleaned: String = query.chars()
+            .filter(|c| c.is_alphanumeric() || c.is_whitespace())
+            .collect();
+            
+        if cleaned.is_empty() { return Ok(vec![]); }
+
+        let mut stmt = self.conn.prepare(
+            "SELECT content FROM search_index 
+             WHERE content MATCH ? 
+             ORDER BY rank 
+             LIMIT ?"
+        )?;
+
+        // FTS5 Match Query: "word1 OR word2 OR ..." to handle non-exact matches
+        let fts_query = cleaned.split_whitespace().collect::<Vec<_>>().join(" OR ");
+        
+        let rows = stmt.query_map(params![fts_query, limit], |row| {
+            Ok(row.get(0)?)
+        })?;
+
+        let mut results = Vec::new();
+        for res in rows {
+            if let Ok(content) = res {
+                results.push(content);
+            }
+        }
+        Ok(results)
+    }
+
+    pub fn get_all_commands(&self) -> Result<Vec<String>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT DISTINCT command FROM commands ORDER BY timestamp DESC LIMIT 100"
+        )?;
+        let rows = stmt.query_map([], |row| row.get(0))?;
+        
+        let mut commands = Vec::new();
+        for res in rows {
+            if let Ok(cmd) = res {
+                commands.push(cmd);
+            }
+        }
+        Ok(commands)
     }
 }
 
