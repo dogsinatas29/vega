@@ -145,7 +145,7 @@ Phase 3 (Optimization) [COMPLETED]: Persona Hardening, CoT 강화, SQLite FTS5 �
 
 Phase 4 (Discovery & Security) [COMPLETED]: Nvim 플러그인 매니저 감지 (lazy-lock.json), `SSH_AUTH_SOCK` 상속 로직, `SystemContext` 아키텍처 일원화.
 
-Phase 5 (Enterprise) [PLANNED]: SSH/FTP 원격 관리, PDF/이메일 리포트 발송, 하이브리드 클라우드 동기화.
+Phase 5 (Enterprise) [PLANNED]: rclone 기반 Cloud Sync, 영구 Metadata 저장소, PDF/이메일 리포트 발송.
 
 12. Phase 4 Implementation Specs (Discovery & sudo Enhancement) [COMPLETED]
 A. Discovery Logic 2.0
@@ -155,6 +155,15 @@ A. Discovery Logic 2.0
 B. Security & Environment
 - **SSH Agent Inheritance**: Automatically prepends `SSH_AUTH_SOCK` to `sudo` commands for seamless agent forwarding during privileged operations.
 - **Context Consolidation**: Merged all system metadata into a single unified `SystemContext` in `src/context.rs`.
+
+13. Phase 5 Implementation Specs (Cloud & Persistence) [PLANNED]
+A. Cloud Sync Integration
+- **Mechanism**: Leverage `rclone` for seamless, non-disruptive project backups and state synchronization.
+- **Trigger**: Automated sync upon session completion or manual `vega sync` command.
+
+B. Persistent Metadata
+- **Storage**: Maintain a dedicated `metadata` table in SQLite for user-specific configurations and persistent system state (beyond FTS5 memory).
+- **Security**: Sensitive metadata is encrypted at rest using local keyring-derived keys.
 
 10. Phase 2 Implementation Specs (Intelligence) [COMPLETED]
 A. AI Architecture

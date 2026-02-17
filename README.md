@@ -21,8 +21,10 @@
 VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) to gather information autonomously. Discovered context is immediately persisted in the State DB for future operations.
 
 -   **Silent Discovery:** Background scanning triggered upon incomplete information (e.g., missing IP).
--   **Resolve & Persist:** Found system info is cached to prevent redundant queries.
--   **Dynamic State DB:** Acts as a persistent vault for discovered system metadata and reasoning history.
+- **Resolve & Persist:** Found system info is cached to prevent redundant queries.
+- **Cloud Sync Integration:** Non-disruptive project backup and state synchronization powered by `rclone`.
+- **Persistent Metadata:** Dedicated SQLite storage for system-specific configurations and long-term state.
+- **Dynamic State DB:** Acts as a persistent vault for discovered system metadata and reasoning history.
 
 ---
 
@@ -176,6 +178,7 @@ Vega provides several built-in commands for direct control.
 | `backup <src> <dst>` | Smart backup with validation |
 | `refresh <target>` | Refresh SSH host context |
 | `update --all` | Update system packages |
+| `sync` | rclone-based cloud project & state synchronization |
 | `config` | Sync shell environment snapshot |
 
 ---
