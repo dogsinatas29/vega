@@ -54,13 +54,13 @@ Before building from source, install the required development packages:
 
 ```bash
 # Fedora / RHEL / CentOS
-sudo dnf install -y openssl-devel pkg-config
+sudo dnf install -y openssl-devel pkg-config sqlite-devel
 
 # Ubuntu / Debian
-sudo apt install -y libssl-dev pkg-config
+sudo apt install -y libssl-dev pkg-config libsqlite3-dev sqlite3
 
 # Arch Linux
-sudo pacman -S openssl pkg-config
+sudo pacman -S openssl pkg-config sqlite
 ```
 
 **Common Build Dependencies (Rust Crates):**
