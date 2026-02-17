@@ -1,4 +1,3 @@
-
 use crate::context::SystemContext;
 
 pub enum PackageSystem {
@@ -36,45 +35,102 @@ fn normalize(pkg: &str, kind: &PackageSystem) -> String {
 #[allow(dead_code)]
 pub struct Apt;
 impl PackageManager for Apt {
-    fn install(&self, package: &str) -> String { format!("sudo apt install -y {}", normalize(package, &self.kind())) }
-    fn update(&self) -> String { "sudo apt update && sudo apt upgrade -y".to_string() }
-    fn remove(&self, package: &str) -> String { format!("sudo apt remove -y {}", package) }
-    fn search(&self, query: &str) -> String { format!("apt search {}", query) }
-    fn name(&self) -> &str { "apt (Debian/Ubuntu)" }
-    fn kind(&self) -> PackageSystem { PackageSystem::Apt }
+    fn install(&self, package: &str) -> String {
+        prepend_auth_sock(format!(
+            "sudo apt install -y {}",
+            normalize(package, &self.kind())
+        ))
+    }
+    fn update(&self) -> String {
+        prepend_auth_sock("sudo apt update && sudo apt upgrade -y".to_string())
+    }
+    fn remove(&self, package: &str) -> String {
+        prepend_auth_sock(format!("sudo apt remove -y {}", package))
+    }
+    fn search(&self, query: &str) -> String {
+        format!("apt search {}", query)
+    }
+    fn name(&self) -> &str {
+        "apt (Debian/Ubuntu)"
+    }
+    fn kind(&self) -> PackageSystem {
+        PackageSystem::Apt
+    }
 }
 
 #[allow(dead_code)]
 pub struct Dnf;
 impl PackageManager for Dnf {
-    fn install(&self, package: &str) -> String { format!("sudo dnf install -y {}", normalize(package, &self.kind())) }
-    fn update(&self) -> String { "sudo dnf update -y".to_string() }
-    fn remove(&self, package: &str) -> String { format!("sudo dnf remove -y {}", package) }
-    fn search(&self, query: &str) -> String { format!("dnf search {}", query) }
-    fn name(&self) -> &str { "dnf (Fedora/RHEL)" }
-    fn kind(&self) -> PackageSystem { PackageSystem::Dnf }
+    fn install(&self, package: &str) -> String {
+        prepend_auth_sock(format!(
+            "sudo dnf install -y {}",
+            normalize(package, &self.kind())
+        ))
+    }
+    fn update(&self) -> String {
+        prepend_auth_sock("sudo dnf update -y".to_string())
+    }
+    fn remove(&self, package: &str) -> String {
+        prepend_auth_sock(format!("sudo dnf remove -y {}", package))
+    }
+    fn search(&self, query: &str) -> String {
+        format!("dnf search {}", query)
+    }
+    fn name(&self) -> &str {
+        "dnf (Fedora/RHEL)"
+    }
+    fn kind(&self) -> PackageSystem {
+        PackageSystem::Dnf
+    }
 }
 
 #[allow(dead_code)]
 pub struct Pacman;
 impl PackageManager for Pacman {
-    fn install(&self, package: &str) -> String { format!("sudo pacman -S --noconfirm {}", normalize(package, &self.kind())) }
-    fn update(&self) -> String { "sudo pacman -Syu --noconfirm".to_string() }
-    fn remove(&self, package: &str) -> String { format!("sudo pacman -Rns --noconfirm {}", package) }
-    fn search(&self, query: &str) -> String { format!("pacman -Ss {}", query) }
-    fn name(&self) -> &str { "pacman (Arch)" }
-    fn kind(&self) -> PackageSystem { PackageSystem::Pacman }
+    fn install(&self, package: &str) -> String {
+        prepend_auth_sock(format!(
+            "sudo pacman -S --noconfirm {}",
+            normalize(package, &self.kind())
+        ))
+    }
+    fn update(&self) -> String {
+        prepend_auth_sock("sudo pacman -Syu --noconfirm".to_string())
+    }
+    fn remove(&self, package: &str) -> String {
+        prepend_auth_sock(format!("sudo pacman -Rns --noconfirm {}", package))
+    }
+    fn search(&self, query: &str) -> String {
+        format!("pacman -Ss {}", query)
+    }
+    fn name(&self) -> &str {
+        "pacman (Arch)"
+    }
+    fn kind(&self) -> PackageSystem {
+        PackageSystem::Pacman
+    }
 }
 
 #[allow(dead_code)]
 pub struct Flatpak;
 impl PackageManager for Flatpak {
-    fn install(&self, package: &str) -> String { format!("flatpak install -y flathub {}", package) }
-    fn update(&self) -> String { "flatpak update -y".to_string() }
-    fn remove(&self, package: &str) -> String { format!("flatpak uninstall -y {}", package) }
-    fn search(&self, query: &str) -> String { format!("flatpak search {}", query) }
-    fn name(&self) -> &str { "flatpak (Universal)" }
-    fn kind(&self) -> PackageSystem { PackageSystem::Flatpak }
+    fn install(&self, package: &str) -> String {
+        format!("flatpak install -y flathub {}", package)
+    }
+    fn update(&self) -> String {
+        "flatpak update -y".to_string()
+    }
+    fn remove(&self, package: &str) -> String {
+        format!("flatpak uninstall -y {}", package)
+    }
+    fn search(&self, query: &str) -> String {
+        format!("flatpak search {}", query)
+    }
+    fn name(&self) -> &str {
+        "flatpak (Universal)"
+    }
+    fn kind(&self) -> PackageSystem {
+        PackageSystem::Flatpak
+    }
 }
 
 pub fn detect(ctx: &SystemContext) -> Box<dyn PackageManager> {
@@ -84,4 +140,11 @@ pub fn detect(ctx: &SystemContext) -> Box<dyn PackageManager> {
         "pacman" => Box::new(Pacman),
         _ => Box::new(Apt), // Default fallback
     }
+}
+
+fn prepend_auth_sock(cmd: String) -> String {
+    if let Ok(sock) = std::env::var("SSH_AUTH_SOCK") {
+        return format!("SSH_AUTH_SOCK={} {}", sock, cmd);
+    }
+    cmd
 }

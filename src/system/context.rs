@@ -1,8 +1,6 @@
-
-use std::collections::HashMap;
-use serde::{Deserialize, Serialize};
 use crate::system::virt::VirtualMachine;
-
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Partition {
@@ -30,6 +28,8 @@ pub struct SystemContext {
     pub partitions: Vec<Partition>,
     pub vms: Vec<VirtualMachine>,
     pub env_vars: HashMap<String, String>,
+    pub plugin_manager: Option<String>,
+    pub ssh_auth_sock: Option<String>,
 }
 
 impl SystemContext {
@@ -40,6 +40,8 @@ impl SystemContext {
             partitions: Vec::new(),
             vms: Vec::new(),
             env_vars: HashMap::new(),
+            plugin_manager: None,
+            ssh_auth_sock: None,
         }
     }
 }
