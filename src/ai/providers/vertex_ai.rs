@@ -1,9 +1,9 @@
-use async_trait::async_trait;
-use reqwest::Client;
-use serde_json::json;
 use crate::ai::AiProvider;
 use crate::context::SystemContext;
 use crate::security::keyring;
+use async_trait::async_trait;
+use reqwest::Client;
+use serde_json::json;
 
 pub struct VertexAiProvider {
     oauth_token: Option<String>,
@@ -19,7 +19,9 @@ impl VertexAiProvider {
         let oauth_token = keyring::get_token("google_oauth_token");
 
         if oauth_token.is_none() {
-            return Err("Vertex AI requires OAuth authentication. Please run 'vega login' first.".into());
+            return Err(
+                "Vertex AI requires OAuth authentication. Please run 'vega login' first.".into(),
+            );
         }
 
         println!("🔑 DEBUG: Using OAuth Token for Vertex AI.");
@@ -51,7 +53,11 @@ impl AiProvider for VertexAiProvider {
         crate::ai::QuotaStatus::Unlimited
     }
 
-    async fn generate_response(&self, ctx: &SystemContext, user_input: &str) -> Result<String, Box<dyn std::error::Error>> {
+    async fn generate_response(
+        &self,
+        ctx: &SystemContext,
+        user_input: &str,
+    ) -> Result<String, crate::ai::AiError> {
         let url = self.build_url();
         let system_prompt = crate::ai::prompts::SystemPrompt::build(ctx);
 
@@ -75,15 +81,35 @@ impl AiProvider for VertexAiProvider {
             req = req.header("Authorization", format!("Bearer {}", token));
         }
 
-        let res = req.send().await?;
+        let res = req
+            .send()
+            .await
+            .map_err(|e| crate::ai::AiError::NetworkError(e.to_string()))?;
+
         let status = res.status();
 
         if !status.is_success() {
-            let error_text = res.text().await?;
-            return Err(format!("Vertex AI Error (Status: {})\nError: {}", status, error_text).into());
+            let error_text = res
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unknown error".to_string());
+
+            if status.as_u16() == 429 {
+                return Err(crate::ai::AiError::QuotaExceeded);
+            } else if status.as_u16() == 401 || status.as_u16() == 403 {
+                return Err(crate::ai::AiError::AuthError(error_text));
+            }
+
+            return Err(crate::ai::AiError::Unknown(format!(
+                "Vertex AI Error Status: {}, Body: {}",
+                status, error_text
+            )));
         }
 
-        let json_res: serde_json::Value = res.json().await?;
+        let json_res: serde_json::Value = res
+            .json()
+            .await
+            .map_err(|e| crate::ai::AiError::Unknown(format!("JSON Parse Error: {}", e)))?;
 
         // Parse Vertex AI response
         let text = json_res["candidates"][0]["content"]["parts"][0]["text"]

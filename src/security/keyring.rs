@@ -10,7 +10,7 @@ pub fn get_api_key(key_name: &str) -> Option<String> {
             if let Ok(pw) = entry.get_password() {
                 return Some(pw);
             }
-        },
+        }
         Err(_) => {}
     }
 
@@ -26,8 +26,9 @@ pub fn get_api_key(key_name: &str) -> Option<String> {
 pub fn set_api_key(key_name: &str, value: &str) -> Result<(), String> {
     let entry = Entry::new(SERVICE_NAME, key_name)
         .map_err(|e| format!("Failed to create keyring entry: {}", e))?;
-        
-    entry.set_password(value)
+
+    entry
+        .set_password(value)
         .map_err(|e| format!("Failed to save secret: {}", e))
 }
 
@@ -41,6 +42,15 @@ pub fn get_token(user: &str) -> Option<String> {
 pub fn set_token(user: &str, value: &str) -> Result<(), String> {
     let entry = Entry::new(SERVICE_NAME, user)
         .map_err(|e| format!("Failed to create keyring entry: {}", e))?;
-    entry.set_password(value)
+    entry
+        .set_password(value)
         .map_err(|e| format!("Failed to save secret: {}", e))
+}
+
+pub fn delete_token(user: &str) -> Result<(), String> {
+    let entry = Entry::new(SERVICE_NAME, user)
+        .map_err(|e| format!("Failed to create keyring entry: {}", e))?;
+    entry
+        .delete_credential()
+        .map_err(|e| format!("Failed to delete secret: {}", e))
 }
