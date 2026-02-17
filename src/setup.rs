@@ -1,8 +1,8 @@
-use std::io::{self, Write};
-use std::fs;
-use std::env;
-use crate::config::{VegaConfig, AiConfig, OptimizationConfig};
+use crate::config::{AiConfig, OptimizationConfig, VegaConfig};
 use crate::context::SystemContext;
+use std::env;
+use std::fs;
+use std::io::{self, Write};
 
 use crate::scan;
 
@@ -24,15 +24,15 @@ impl SetupWizard {
         // 1. System Scan
         if !silent_mode {
             println!("🔍 Scanning System...");
-            let ctx = SystemContext::collect();
-            println!("   - OS: {}", ctx.os_info);
+            let context = SystemContext::collect();
+            println!("🏠 OS: {}", context.os_name);
         }
-        
+
         // 2. AI Onboarding
         if !silent_mode {
             println!("\n[1] Setup Intelligence (LLM)");
         }
-        
+
         let provider = if silent_mode {
             "gemini".to_string() // Default for silent
         } else {
@@ -40,7 +40,7 @@ impl SetupWizard {
         };
 
         let (_api_key, source) = if silent_mode {
-            // In silent mode, try to find key, if not, fail or use dummy? 
+            // In silent mode, try to find key, if not, fail or use dummy?
             // Design decision: Try to find env var first.
             let env_key = match provider.as_str() {
                 "gemini" => env::var("GEMINI_API_KEY"),
@@ -56,8 +56,11 @@ impl SetupWizard {
                 if let Some((_, path)) = scan::env::find_key(&provider) {
                     ("***MASKED***".to_string(), format!("file:{}", path))
                 } else {
-                    println!("❌ Silent Mode Error: No API Key found for {}. Please set env var.", provider);
-                    return; 
+                    println!(
+                        "❌ Silent Mode Error: No API Key found for {}. Please set env var.",
+                        provider
+                    );
+                    return;
                 }
             }
         } else {
@@ -72,7 +75,7 @@ impl SetupWizard {
         // 3. Generate Config
         let mut config = VegaConfig::default();
         config.system.log_level = Some("INFO".to_string());
-        
+
         config.ai = Some(AiConfig {
             provider: provider.clone(),
             api_key_source: source,
@@ -89,7 +92,7 @@ impl SetupWizard {
 
         // Save
         let config_path = crate::init::get_config_path();
-        
+
         // Ensure parent dir exists
         if let Some(parent) = config_path.parent() {
             let _ = fs::create_dir_all(parent);
@@ -97,8 +100,11 @@ impl SetupWizard {
 
         let toml_str = toml::to_string(&config).unwrap();
         fs::write(&config_path, toml_str).expect("Failed to write config");
-        
-        println!("✨ Setup Complete. Configuration saved to {:?}", config_path);
+
+        println!(
+            "✨ Setup Complete. Configuration saved to {:?}",
+            config_path
+        );
     }
 
     fn select_provider() -> String {
@@ -106,15 +112,15 @@ impl SetupWizard {
         println!("   1) Gemini (Recommended)");
         println!("   2) ChatGPT");
         println!("   3) Claude");
-        
+
         loop {
-             let choice = Self::prompt("   Select (1-3): ", Some("1"));
-             match choice.as_str() {
-                 "1" | "gemini" => return "gemini".to_string(),
-                 "2" | "chatgpt" => return "chatgpt".to_string(),
-                 "3" | "claude" => return "claude".to_string(),
-                 _ => println!("   ❌ Invalid choice."),
-             }
+            let choice = Self::prompt("   Select (1-3): ", Some("1"));
+            match choice.as_str() {
+                "1" | "gemini" => return "gemini".to_string(),
+                "2" | "chatgpt" => return "chatgpt".to_string(),
+                "3" | "claude" => return "claude".to_string(),
+                _ => println!("   ❌ Invalid choice."),
+            }
         }
     }
 
@@ -123,7 +129,7 @@ impl SetupWizard {
             "gemini" => "GEMINI_API_KEY",
             "chatgpt" => "OPENAI_API_KEY",
             "claude" => "ANTHROPIC_API_KEY",
-            _ => "UNKNOWN_KEY"
+            _ => "UNKNOWN_KEY",
         };
 
         // 1. Check current env
@@ -136,10 +142,10 @@ impl SetupWizard {
 
         // 2. Advanced Regex Scan
         if let Some((masked_key, path)) = scan::env::find_key(provider) {
-             println!("   🔍 Detected API Key in {} ({})", path, masked_key);
-             if Self::confirm(&format!("   Use key from {}? (Y/n): ", path), Some("Y")) {
-                 return (masked_key, format!("file:{}", path));
-             }
+            println!("   🔍 Detected API Key in {} ({})", path, masked_key);
+            if Self::confirm(&format!("   Use key from {}? (Y/n): ", path), Some("Y")) {
+                return (masked_key, format!("file:{}", path));
+            }
         }
 
         // 3. Manual Fallback

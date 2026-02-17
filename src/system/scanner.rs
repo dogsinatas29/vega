@@ -1,4 +1,4 @@
-use crate::system::context::{Partition, PartitionType, SystemContext};
+use crate::context::{Partition, PartitionType, SystemContext};
 use crate::system::virt::VirtManager;
 use std::collections::HashMap;
 use std::env;

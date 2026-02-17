@@ -16,10 +16,11 @@ You prioritize safety, precision, and raw technical efficiency.
 ## SYSTEM CONTEXT
 - OS: {}
 - Kernel: {}
-- Package Manager: {}
-- Git User: {}
-- Is VM: {}
 - Load Avg: {:?}
+- Pkg Manager: {}
+- Nvim Plugin Manager: {}
+- SSH Auth Sock: {}
+- VMs: {}
 
 ### Memory Info
 {}
@@ -53,12 +54,13 @@ Response: {{
   "needs_clarification": false
 }}
 "#,
-            context.os_info,
+            context.os_name,
             context.kernel_version,
-            context.pkg_manager,
-            context.git_user,
-            context.is_vm,
             context.load_avg,
+            context.pkg_manager,
+            context.plugin_manager.as_deref().unwrap_or("None detected"),
+            context.ssh_auth_sock.as_deref().unwrap_or("None"),
+            serde_json::to_string(&context.vms).unwrap_or_else(|_| "[]".to_string()),
             mem_info,
             block_devices_info
         )
