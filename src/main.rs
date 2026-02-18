@@ -420,9 +420,31 @@ async fn main() {
 
                                     if Interactor::confirm("Execute this command?") {
                                         println!("⚡ Executing...");
+
+                                        let mut final_cmd = ai_res.command.clone();
+
+                                        // Internal Pruning Logic: Auto-inject blacklist for find/grep
+                                        if final_cmd.trim().starts_with("find ")
+                                            && !final_cmd.contains("-prune")
+                                        {
+                                            let mut prune_rules = Vec::new();
+                                            for path in crate::system::SRE_BLACKLIST {
+                                                prune_rules
+                                                    .push(format!("-path '{}' -prune", path));
+                                            }
+                                            let prune_str = prune_rules.join(" -o ");
+                                            final_cmd = final_cmd.replacen(
+                                                "find ",
+                                                &format!("find {} -o ", prune_str),
+                                                1,
+                                            );
+                                            println!("   🛡️  [SRE Protection] Applied internal pruning rules.");
+                                        }
+
                                         let status = Command::new("sh")
                                             .arg("-c")
-                                            .arg(&ai_res.command)
+                                            .arg(&final_cmd)
+                                            .stderr(std::process::Stdio::null()) // Sovereign SRE: Suppress "Permission denied" noise
                                             .status();
 
                                         match status {
