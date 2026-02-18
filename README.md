@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)]()
 
-[한국어 문서 (Korean Documentation)](README_KR.md)
+[한국어 문서 (Korean Documentation)](README_KR.md) | [Development Roadmap](ROADMAP.md)
 
 > **🚧 Current Status**: Testing system configuration tasks via SSH access to OS running on QEMU.
 
@@ -35,13 +35,17 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 
 ## 🧠 Core Architecture
 
-Vega operates on a 3-stage **Reasoning Engine** to ensure safety and accuracy.
+Vega operates on an evolved **3-stage Reasoning Engine** that synthesizes system context with LLM intelligence to ensure SRE-grade safety.
 
-![Vega Logic Flow](assets/logic_flow.png)
-
-1.  **Logical Scan**: Understand user intent and identify target objects (files, processes, paths).
-2.  **Physical Mapping**: Map targets to physical resources (Partitions, SSH hosts) and verify existence.
-3.  **Privilege Enforcement**: Apply 'Least Privilege' principles and generate the safest possible command.
+1.  **Logical Scan & Context Synthesis**:
+    *   **Intent Analysis**: Uses **SmartRouter** to determine if the task requires CoT reasoning via LLMs or a local fallback.
+    *   **Context Gathering**: Gathers "Self-Awareness" metadata (OS, Kernel, Partitions) and scans shell environments (`.bashrc`, `.zshrc`) for aliases and environment variables.
+2.  **Physical Mapping & Discovery**:
+    *   **Resource Discovery**: Autonomously identifies system objects (IPs, project files like `lazy-lock.json`) through the **Discovery** module.
+    *   **Mapping**: Bridges the gap between your logical intent and physical system resources (SSH hosts, disk partitions).
+3.  **Privilege Enforcement & Execution**:
+    *   **Safety Guardrails**: Validates commands against the **Safety Registry** and redacts sensitive data via the **Deidentifier**.
+    *   **Orchestration & Learning**: Executes commands via the **Orchestrator**. Outcomes are stored in the **State DB** to enable **Local RAG** (Retrieval-Augmented Generation) for future learning.
 
 ---
 
@@ -193,6 +197,41 @@ Vega provides several built-in commands for direct control.
 *   **Explicit Confirmation**: Critical commands (`rm`, `dd`) require typing "YES".
 *   **Data Redaction**: Sensitive data (IPs, Keys) is redacted before sending to AI.
 *   **Local Processing**: Simple commands match locally without API calls.
+
+---
+
+## 📂 Project Structure & File Roles
+
+Below is an overview of the core components in the `src` directory:
+
+### 🛠️ Core Infrastructure
+*   [`main.rs`](src/main.rs): The application entry point. Handles CLI arguments and top-level command routing.
+*   [`context.rs`](src/context.rs): The heart of VEGA's "Self-Awareness". Manages OS, hardware, and network metadata.
+*   [`init.rs`](src/init.rs): Orchestrates the bootstrap process, ensuring DBs and configs are ready.
+*   [`config.rs`](src/config.rs): Handles the loading and validation of `vega.toml`.
+
+### 🧠 AI & Reasoning (`src/ai`)
+*   [`router.rs`](src/ai/router.rs): The logic that decides which AI engine to use based on the complexity of the query.
+*   [`providers/`](src/ai/providers/): Specialized connectors for Gemini (Flash/Pro), Claude, and local regex-based engines.
+*   [`prompts.rs`](src/ai/prompts.rs): Manages system personas and context injection for LLM prompts.
+
+### 🚀 Execution Layer (`src/executor`)
+*   [`orchestrator.rs`](src/executor/orchestrator.rs): Manages the lifecycle of task execution, including multi-step recovery.
+*   [`pkg.rs`](src/executor/pkg.rs): Abstracted package manager (apt, dnf, pacman) for cross-distro compatibility.
+*   [`healer.rs`](src/executor/healer.rs): Logic for analyzing failures and suggesting automated fixes.
+
+### 🔍 System Intelligence (`src/system`)
+*   [`discovery.rs`](src/system/discovery.rs): Autonomous scanning for project-specific metadata (e.g., Node/Rust projects).
+*   [`archivist.rs`](src/system/archivist.rs): Manages long-term storage of reasoning history and system snapshots.
+*   [`env_scanner.rs`](src/system/env_scanner.rs): Deep-dives into `.bashrc` and `.zshrc` to understand your custom environment.
+
+### 🛡️ Safety & Security
+*   `src/safety/`: Contains the **Safety Registry** which validates commands against a list of dangerous patterns.
+*   `src/security/`: Handlers for sensitive information redaction and `keyring` management.
+
+### 💾 Storage & Knowledge
+*   `src/storage/`: Direct interactions with the SQLite backend.
+*   [`knowledge.rs`](src/knowledge.rs): Management of the local RAG system and FTS5 search index.
 
 ---
 

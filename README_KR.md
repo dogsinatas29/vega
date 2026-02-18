@@ -4,6 +4,8 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
 [![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)]()
 
+[English Documentation](README.md) | [개발 로드맵](ROADMAP_KR.md)
+
 > **🚧 현재 상태**: QEMU에서 구동 중인 OS에 SSH로 접속하여 시스템 설정 작업을 테스트 중입니다.
 
 > **"공돌이의 직관과 AI의 추론을 결합한 리눅스 자율 운영 시스템"**
@@ -33,11 +35,17 @@ VEGA는 네트워크(DHCP), 가상화 에이전트(QEMU Agent), ARP 테이블 �
 
 ## 🧠 핵심 아키텍처
 
-Vega는 안전하고 정확한 실행을 위해 3단계 **추론 엔진**을 기반으로 작동합니다.
+Vega는 시스템 컨텍스트와 LLM 인텔리전스를 결합하여 SRE 수준의 안전성을 보장하는 **진화된 3단계 추론 엔진**을 기반으로 작동합니다.
 
-1.  **Logical Scan (논리적 분석)**: 사용자의 의도를 파악하고 대상 객체(파일, 프로세스, 경로)를 식별합니다.
-2.  **Physical Mapping (물리적 대조)**: 대상이 실제 존재하는지, 어느 파티션이나 원격지에 위치하는지 확인합니다.
-3.  **Privilege Enforcement (권한 및 보안)**: '최소 권한' 원칙을 적용하여 가장 안전한 실행 명령어를 생성합니다.
+1.  **논리적 스캔 및 컨텍스트 합성 (Logical Scan & Context Synthesis)**:
+    *   **의도 분석**: **SmartRouter**를 통해 작업이 LLM의 사고 사슬(CoT) 추론이 필요한지, 아니면 로컬에서 즉시 처리 가능한지 판단합니다.
+    *   **맥락 수집**: OS, 커널, 파티션 등의 '자기 인식' 메타데이터를 수집하고, `.bashrc`, `.zshrc` 등 쉘 환경에서 에일리어스와 환경 변수를 스캔합니다.
+2.  **물리적 매핑 및 탐색 (Physical Mapping & Discovery)**:
+    *   **리소스 탐색**: **Discovery** 모듈을 통해 IP, 프로젝트 파일(`lazy-lock.json` 등)과 같은 시스템 객체를 자율적으로 식별합니다.
+    *   **매핑**: 사용자의 논리적 의도와 물리적 시스템 리소스(SSH 호스트, 디스크 파티션 등) 사이의 간극을 메웁니다.
+3.  **권한 집행 및 실행 (Privilege Enforcement & Execution)**:
+    *   **안전 가드레일**: **Safety Registry**를 통해 명령어를 검증하고, **Deidentifier**를 사용하여 민감 정보를 비식별화합니다.
+    *   **오케스트레이션 및 학습**: **Orchestrator**를 통해 명령을 실행합니다. 결과는 **State DB**에 저장되어 향후 학습을 위한 **Local RAG**(Retrieval-Augmented Generation) 데이터로 활용됩니다.
 
 ---
 
@@ -142,6 +150,41 @@ vega "현재 디렉토리에서 1GB 이상인 파일 찾아줘"
 *   **명시적 승인**: 치명적인 명령어(`rm`, `dd`)는 "YES" 입력을 요구합니다.
 *   **데이터 비식별화**: API 전송 전 IP, 키 등 민감 정보는 마스킹 처리됩니다.
 *   **로컬 처리**: 단순 명령은 인터넷 연결 없이 로컬에서 즉시 안전하게 처리됩니다.
+
+---
+
+## 📂 프로젝트 구조 및 파일 역할
+
+`src` 디렉토리의 핵심 컴포넌트와 그 기능은 다음과 같습니다:
+
+### 🛠️ 핵심 인프라 (Core Infrastructure)
+*   [`main.rs`](src/main.rs): 애플리케이션 진입점. CLI 인자 파싱 및 최상위 명령어 라우팅을 담당합니다.
+*   [`context.rs`](src/context.rs): VEGA의 '자기 인식'의 핵심. OS, 하드웨어, 네트워크 메타데이터를 관리합니다.
+*   [`init.rs`](src/init.rs): 부트스트랩 프로세스를 조율하며 DB와 설정 파일의 준비 상태를 보장합니다.
+*   [`config.rs`](src/config.rs): `vega.toml` 설정 파일의 로드 및 검증을 처리합니다.
+
+### 🧠 AI 및 추론 (AI & Reasoning) (`src/ai`)
+*   [`router.rs`](src/ai/router.rs): 쿼리의 복잡도에 따라 어떤 AI 엔진을 사용할지 결정하는 로직입니다.
+*   [`providers/`](src/ai/providers/): Gemini, Claude, 그리고 로컬 정규표현식 기반 엔진을 위한 전용 커넥터들입니다.
+*   [`prompts.rs`](src/ai/prompts.rs): LLM 프롬프트를 위한 시스템 페르소나 및 컨텍스트 주입을 관리합니다.
+
+### 🚀 실행 레이어 (Execution Layer) (`src/executor`)
+*   [`orchestrator.rs`](src/executor/orchestrator.rs): 다단계 복구 작업을 포함한 작업 실행의 생명주기를 관리합니다.
+*   [`pkg.rs`](src/executor/pkg.rs): 다양한 배포판(apt, dnf, pacman) 간 호환성을 위한 추상화된 패키지 매니저입니다.
+*   [`healer.rs`](src/executor/healer.rs): 실패를 분석하고 자동화된 해결책을 제안하는 로직입니다.
+
+### 🔍 시스템 인텔리전스 (System Intelligence) (`src/system`)
+*   [`discovery.rs`](src/system/discovery.rs): 프로젝트별 메타데이터(예: Node/Rust 프로젝트)를 자율적으로 스캔합니다.
+*   [`archivist.rs`](src/system/archivist.rs): 추론 기록 및 시스템 스냅샷의 장기 저장을 관리합니다.
+*   [`env_scanner.rs`](src/system/env_scanner.rs): `.bashrc` 및 `.zshrc`를 깊이 분석하여 사용자의 커스텀 환경을 이해합니다.
+
+### 🛡️ 안전 및 보안 (Safety & Security)
+*   `src/safety/`: 위험한 패턴 목록에 대해 명령어를 검증하는 **Safety Registry**가 포함되어 있습니다.
+*   `src/security/`: 민감 정보 비식별화 및 `keyring` 관리 핸들러입니다.
+
+### 💾 저장소 및 지식 (Storage & Knowledge)
+*   `src/storage/`: SQLite 백엔드와의 직접적인 상호작용을 담당합니다.
+*   [`knowledge.rs`](src/knowledge.rs): 로컬 RAG 시스템 및 FTS5 검색 인덱스 관리자입니다.
 
 ---
 
