@@ -1,9 +1,5 @@
 # 🌌 Vega: The Sovereign SRE Agent
 
-[![Status](https://img.shields.io/badge/status-active-success.svg)]()
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
-[![Rust](https://img.shields.io/badge/rust-1.70%2B-orange.svg)]()
-
 [한국어 문서 (Korean Documentation)](README_KR.md) | [Development Roadmap](ROADMAP.md)
 
 > **🚧 Current Status**: Testing system configuration tasks via SSH access to OS running on QEMU.
