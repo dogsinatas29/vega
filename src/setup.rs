@@ -105,6 +105,26 @@ impl SetupWizard {
         );
     }
 
+    pub fn setup_cookie() {
+        println!("🍪 Gemini Web Session Setup");
+        println!("---------------------------");
+        println!("To bypass API quotas, VEGA can use your browser session.");
+        println!("1. Open https://gemini.google.com in Chrome/Firefox.");
+        println!("2. F12 -> Application/Storage -> Cookies.");
+        println!("3. Copy the value of '__Secure-1PSID'.");
+
+        let cookie = Self::prompt("\n🔑 Enter __Secure-1PSID: ", None);
+        if cookie.is_empty() || cookie.len() < 20 {
+            println!("❌ Invalid cookie format.");
+            return;
+        }
+
+        match crate::security::keyring::set_token("google_1psid", &cookie) {
+            Ok(_) => println!("✅ Cookie saved securely to keyring."),
+            Err(e) => println!("❌ Failed to save cookie: {}", e),
+        }
+    }
+
     fn select_provider() -> String {
         println!("   Select LLM Provider:");
         println!("   1) Gemini (Recommended)");

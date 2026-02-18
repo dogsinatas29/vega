@@ -35,7 +35,11 @@ async fn main() {
     let full_input = full_input.trim();
 
     if input == "setup" {
-        SetupWizard::run();
+        if args.contains(&"--cookie".to_string()) {
+            SetupWizard::setup_cookie();
+        } else {
+            SetupWizard::run();
+        }
         return;
     }
 
