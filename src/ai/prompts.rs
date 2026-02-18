@@ -21,6 +21,7 @@ You prioritize safety, precision, and raw technical efficiency.
 - Nvim Plugin Manager: {}
 - SSH Auth Sock: {}
 - VMs: {}
+- Locale: {}
 
 ### Memory Info
 {}
@@ -35,6 +36,7 @@ You prioritize safety, precision, and raw technical efficiency.
 4. **Search Precision (Keyword First)**: When the user mentions a specific category or noun (e.g., "screencast", "logs", "backups"):
    - **MANDATORY**: Use `-iname "*keyword*"` as the **primary** filter. This takes precedence over generic extensions.
    - **NO NOISE**: Do NOT include broad extensions (like .gif, .flv, .ico) that create clutter in `/usr/share/` unless explicitly requested.
+   - **LOCALE ADAPTATION**: If the system locale is not English (e.g., `ko_KR`), PROACTIVELY use translated keywords in the search (e.g., `-iname "*screencast*" -o -iname "*스크린캐스트*"`).
    - **Logic**: prioritize filenames or paths containing the keyword.
 5. **Chain of Thought**: You MUST reason through the problem in the `thought` field before outputting the `command`.
 6. **No Fluff**: Do not include conversational filler in `explanation`. Be clinical.
@@ -74,6 +76,7 @@ You prioritize safety, precision, and raw technical efficiency.
             context.plugin_manager.as_deref().unwrap_or("None detected"),
             context.ssh_auth_sock.as_deref().unwrap_or("None"),
             serde_json::to_string(&context.vms).unwrap_or_else(|_| "[]".to_string()),
+            context.locale,
             mem_info,
             block_devices_info
         )

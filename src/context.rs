@@ -39,6 +39,7 @@ pub struct SystemContext {
     pub env_vars: HashMap<String, String>,
     pub plugin_manager: Option<String>,
     pub ssh_auth_sock: Option<String>,
+    pub locale: String,
 }
 
 impl SystemContext {
@@ -57,6 +58,7 @@ impl SystemContext {
             env_vars: HashMap::new(),
             plugin_manager: None,
             ssh_auth_sock: None,
+            locale: "en_US.UTF-8".to_string(),
         }
     }
 
@@ -75,7 +77,26 @@ impl SystemContext {
             env_vars: HashMap::new(),
             plugin_manager: Self::detect_plugin_manager(),
             ssh_auth_sock: std::env::var("SSH_AUTH_SOCK").ok(),
+            locale: Self::get_locale(),
         }
+    }
+
+    fn get_locale() -> String {
+        std::env::var("LANG")
+            .or_else(|_| std::env::var("LC_ALL"))
+            .unwrap_or_else(|_| {
+                Command::new("locale")
+                    .arg("-a")
+                    .output()
+                    .ok()
+                    .and_then(|o| {
+                        String::from_utf8_lossy(&o.stdout)
+                            .lines()
+                            .next()
+                            .map(|s| s.to_string())
+                    })
+                    .unwrap_or_else(|| "en_US.UTF-8".to_string())
+            })
     }
 
     fn scan_partitions() -> Vec<Partition> {
