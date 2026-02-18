@@ -26,6 +26,11 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 - **Persistent Metadata:** Dedicated SQLite storage for system-specific configurations and long-term state.
 - **Dynamic State DB:** Acts as a persistent vault for discovered system metadata and reasoning history.
 
+### 📜 SRE Operating Principles
+1. **Error Budgets**: "No system is perfect. Automate as much as possible within acceptable failure margins."
+2. **Toil Reduction**: "Manual repetition is a sin. All ops must be defined as code (IaC) and executed by VEGA."
+3. **Blameless Postmortems**: "Failures are system issues, not human errors. VEGA logs heavily to protect your future self."
+
 ---
 
 ## 🧠 Core Architecture
