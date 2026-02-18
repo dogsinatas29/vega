@@ -1,5 +1,5 @@
 pub mod archivist;
-pub mod config;
+
 pub use crate::context::{Partition, PartitionType, SystemContext};
 pub mod discovery;
 pub mod env_scanner;

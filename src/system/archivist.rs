@@ -1,6 +1,6 @@
 use crate::storage::db::Database;
 use crate::executor::ExecuteResult;
-use crate::system::config::AppConfig;
+
 use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::PathBuf;
@@ -70,7 +70,7 @@ impl Archivist {
     }
 
     fn get_history_dir(year: &str, month: &str) -> PathBuf {
-        let config_path = AppConfig::get_config_path();
+        let config_path = crate::init::get_config_path();
         let history_dir = config_path.parent().unwrap().join("history").join(year).join(month);
         if !history_dir.exists() {
             fs::create_dir_all(&history_dir).ok();
