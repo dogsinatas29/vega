@@ -82,8 +82,10 @@ impl SystemContext {
     }
 
     fn get_locale() -> String {
-        std::env::var("LANG")
+        // Senior's Prescription: Priority order LANGUAGE -> LC_ALL -> LANG
+        std::env::var("LANGUAGE")
             .or_else(|_| std::env::var("LC_ALL"))
+            .or_else(|_| std::env::var("LANG"))
             .unwrap_or_else(|_| {
                 Command::new("locale")
                     .arg("-a")

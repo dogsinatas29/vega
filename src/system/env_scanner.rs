@@ -87,7 +87,10 @@ impl EnvScanner {
     /// Reads system LANG environment variable
     #[allow(dead_code)]
     pub fn get_locale() -> String {
-        env::var("LANG").unwrap_or_else(|_| "en_US.UTF-8".to_string())
+        env::var("LANGUAGE")
+            .or_else(|_| env::var("LC_ALL"))
+            .or_else(|_| env::var("LANG"))
+            .unwrap_or_else(|_| "en_US.UTF-8".to_string())
     }
 
     /// Validates if a string looks like a valid URL (basic check)
