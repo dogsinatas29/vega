@@ -1,0 +1,3451 @@
+[
+  {
+    "id": "snap_1771404574572",
+    "timestamp": 1771404574572,
+    "label": "Selection Ungrouped",
+    "data": {
+      "nodes": [
+        {
+          "data": {
+            "cluster_id": "doc_shelf",
+            "color": "#fabd2f",
+            "description": "2026-02-17_save_token.md (Doc)",
+            "file": "2026-02-17_save_token.md",
+            "label": "2026-02-17_save_token.md",
+            "layer": 0,
+            "priority": 1,
+            "summary": {
+              "classes": [
+                "2026-02-17_save_token"
+              ],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_2026_02_17_save_token_md",
+          "position": {
+            "x": 1876.3542816556862,
+            "y": -236.62710716375165
+          },
+          "status": "proposed",
+          "type": "documentation",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "doc_shelf",
+            "color": "#fabd2f",
+            "description": "GEMINI.md (Doc)",
+            "file": "GEMINI.md",
+            "label": "GEMINI.md",
+            "layer": 0,
+            "priority": 1,
+            "summary": {
+              "classes": [
+                "Current Architecture (Phase 1)",
+                "Current Architecture (Phase 4) [LATEST]"
+              ],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_GEMINI_md",
+          "position": {
+            "x": 2076.3542816556856,
+            "y": -236.62710716375165
+          },
+          "status": "proposed",
+          "type": "documentation",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "doc_shelf",
+            "color": "#fabd2f",
+            "description": "README.md (Doc)",
+            "file": "README.md",
+            "label": "README.md",
+            "layer": 0,
+            "priority": 1,
+            "summary": {
+              "classes": [
+                "🌌 Vega: The Sovereign SRE Agent",
+                "🛡️ Core Logic Update: \"Discovery First\"",
+                "🧠 Core Architecture",
+                "📦 Build Prerequisites",
+                "Fedora / RHEL / CentOS",
+                "Ubuntu / Debian",
+                "Arch Linux",
+                "🔧 Troubleshooting Build Issues",
+                "Check if openssl.pc exists",
+                "If the above fails, find openssl.pc manually",
+                "Common locations (adjust based on your system)",
+                "Fedora/RHEL",
+                "Ubuntu/Debian",
+                "Then retry build",
+                "This will compile OpenSSL from source (slower but more reliable)",
+                "⚡ Installation",
+                "1. Build Release Binary",
+                "2. Create local bin directory",
+                "3. Install to local bin",
+                "4. Add to PATH",
+                "5. Verify installation",
+                "🛠️ Usage",
+                "1. Setup",
+                "2. Google Login & Managed Billing",
+                "3. History & Memory Management",
+                "4. Natural Language Commands",
+                "English",
+                "📋 Internal Commands",
+                "🛡️ Safety Features",
+                "📄 License"
+              ],
+              "functions": [],
+              "references": [
+                "README_KR",
+                "logic_flow"
+              ]
+            }
+          },
+          "id": "node_README_md",
+          "position": {
+            "x": 2276.354281655686,
+            "y": -236.62710716375165
+          },
+          "status": "proposed",
+          "type": "documentation",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "doc_shelf",
+            "color": "#fabd2f",
+            "description": "README_KR.md (Doc)",
+            "file": "README_KR.md",
+            "label": "README_KR.md",
+            "layer": 0,
+            "priority": 1,
+            "summary": {
+              "classes": [
+                "🌌 Vega: The Sovereign SRE Agent",
+                "🛡️ 핵심 로직 업데이트: \"탐색 우선 (Discovery First)\"",
+                "🧠 핵심 아키텍처",
+                "📦 빌드 사전 요구사항",
+                "Fedora / RHEL / CentOS",
+                "Ubuntu / Debian",
+                "Arch Linux",
+                "⚡ 설치 방법",
+                "1. 릴리스 바이너리 빌드",
+                "2. 로컬 bin 디렉토리 생성 (없는 경우)",
+                "3. 바이너리 복사",
+                "4. PATH 추가 (필요한 경우)",
+                "5. 설치 확인",
+                "🛠️ 사용 방법",
+                "1. 초기 설정 (Setup)",
+                "2. 구글 로그인 및 할당량 관리",
+                "3. 히스토리 및 메모리 관리",
+                "4. 자연어 명령 (Natural Language)",
+                "📋 내부 명령어",
+                "🛡️ 보안 기능",
+                "📄 라이선스"
+              ],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_README_KR_md",
+          "position": {
+            "x": 2476.354281655686,
+            "y": -236.62710716375165
+          },
+          "status": "proposed",
+          "type": "documentation",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "doc_shelf",
+            "color": "#fabd2f",
+            "description": "architecture.md (Doc)",
+            "file": "architecture.md",
+            "label": "architecture.md",
+            "layer": 0,
+            "priority": 1,
+            "summary": {
+              "classes": [
+                "프로젝트 아키텍처"
+              ],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_architecture_md",
+          "position": {
+            "x": 2681.297018951035,
+            "y": -239.46433576413455
+          },
+          "status": "proposed",
+          "type": "documentation",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "auth_manager.rs (Auto-detected)",
+            "file": "auth_manager.rs",
+            "label": "auth_manager.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_auth_manager_rs",
+          "position": {
+            "x": -2730.344611766257,
+            "y": -1114.7606574848196
+          },
+          "status": "active",
+          "type": "source",
+          "visual": {}
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "config.rs (Auto-detected)",
+            "file": "config.rs",
+            "label": "config.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_config_rs",
+          "position": {
+            "x": -2530.344611766256,
+            "y": -1064.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_15",
+            "color": "#b8bb26",
+            "description": "env.rs (Auto-detected)",
+            "file": "env.rs",
+            "label": "env.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_env_rs",
+          "position": {
+            "x": 1840.8199550522274,
+            "y": 84.98095917223911
+          },
+          "status": "active",
+          "type": "source",
+          "visual": {}
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "env_scanner.rs (Auto-detected)",
+            "file": "env_scanner.rs",
+            "label": "env_scanner.rs",
+            "layer": 0,
+            "priority": 8,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_env_scanner_rs",
+          "position": {
+            "x": -2330.344611766256,
+            "y": -864.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "gemini.rs (Auto-detected)",
+            "file": "gemini.rs",
+            "label": "gemini.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_gemini_rs",
+          "position": {
+            "x": -2730.344611766257,
+            "y": -964.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "global.rs (Auto-detected)",
+            "file": "global.rs",
+            "label": "global.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_global_rs",
+          "position": {
+            "x": -2530.344611766256,
+            "y": -914.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "init_env.sh (Auto-detected)",
+            "file": "init_env.sh",
+            "label": "init_env.sh",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": [
+                "2",
+                "rustup",
+                "rs"
+              ]
+            }
+          },
+          "id": "node_init_env_sh",
+          "position": {
+            "x": -2330.344611766256,
+            "y": -864.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_15",
+            "color": "#b8bb26",
+            "description": "keyring.rs (Auto-detected)",
+            "file": "keyring.rs",
+            "label": "keyring.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_keyring_rs",
+          "position": {
+            "x": 2124.7312337946482,
+            "y": 87.03848211744678
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "main.rs (Auto-detected)",
+            "file": "main.rs",
+            "label": "main.rs",
+            "layer": 0,
+            "priority": 5,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_main_rs",
+          "position": {
+            "x": -2730.344611766257,
+            "y": -814.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "mod.rs",
+            "label": "mod.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_mod_rs",
+          "position": {
+            "x": -2530.344611766256,
+            "y": -764.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "os.rs (Auto-detected)",
+            "file": "os.rs",
+            "label": "os.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_os_rs",
+          "position": {
+            "x": -2330.344611766256,
+            "y": -714.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_15",
+            "color": "#b8bb26",
+            "description": "pkg.rs (Auto-detected)",
+            "file": "pkg.rs",
+            "label": "pkg.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_pkg_rs",
+          "position": {
+            "x": 2577.0289633949405,
+            "y": 106.77328647371142
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_15",
+            "color": "#b8bb26",
+            "description": "scanner.rs (Auto-detected)",
+            "file": "scanner.rs",
+            "label": "scanner.rs",
+            "layer": 0,
+            "priority": 8,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_scanner_rs",
+          "position": {
+            "x": 2341.937749208995,
+            "y": 92.97220880617878
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "setup.rs (Auto-detected)",
+            "file": "setup.rs",
+            "label": "setup.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_setup_rs",
+          "position": {
+            "x": -2530.344611766256,
+            "y": -614.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "vertex_ai.rs (Auto-detected)",
+            "file": "vertex_ai.rs",
+            "label": "vertex_ai.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_vertex_ai_rs",
+          "position": {
+            "x": -2330.344611766256,
+            "y": -564.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "vm.rs (Auto-detected)",
+            "file": "vm.rs",
+            "label": "vm.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_vm_rs",
+          "position": {
+            "x": -2730.344611766257,
+            "y": -514.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "web_session.rs (Auto-detected)",
+            "file": "web_session.rs",
+            "label": "web_session.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_web_session_rs",
+          "position": {
+            "x": -2530.344611766256,
+            "y": -464.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "doc_shelf",
+            "color": "#fabd2f",
+            "description": "2026-02-17_save_token.md (Doc)",
+            "file": "prompts/2026-02-17_save_token.md",
+            "label": "2026-02-17_save_token.md",
+            "layer": 0,
+            "priority": 1,
+            "summary": {
+              "classes": [
+                "save_token",
+                "🎯 Goal",
+                "🧠 Key Decisions",
+                "🔗 Context & References",
+                "📝 Original Prompt"
+              ],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_prompts_2026_02_17_save_token_md",
+          "position": {
+            "x": 1876.3542816556862,
+            "y": -236.62710716375165
+          },
+          "status": "proposed",
+          "type": "documentation",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_17",
+            "color": "#b8bb26",
+            "description": "auth_manager.rs (Auto-detected)",
+            "file": "src/ai/auth_manager.rs",
+            "label": "auth_manager.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "AuthManager"
+              ],
+              "functions": [
+                "get_bearer_token",
+                "refresh_token",
+                "get_adc_token"
+              ],
+              "references": [
+                "keyring",
+                "BasicClient",
+                "AuthUrl",
+                "Value",
+                "Error",
+                "fs"
+              ]
+            }
+          },
+          "id": "node_src_ai_auth_manager_rs",
+          "position": {
+            "x": 1575.036073400426,
+            "y": 656.6299916917317
+          },
+          "status": "active",
+          "type": "source",
+          "visual": {}
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/ai/mod.rs",
+            "label": "mod.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "LlmProvider",
+                "AiError",
+                "RiskLevel",
+                "AiResponse",
+                "QuotaStatus",
+                "AiProvider",
+                "std"
+              ],
+              "functions": [
+                "fmt",
+                "name",
+                "get_quota_status",
+                "generate_response"
+              ],
+              "references": [
+                "Deserialize",
+                "SystemContext",
+                "async_trait",
+                "Error"
+              ]
+            }
+          },
+          "id": "node_src_ai_mod_rs",
+          "position": {
+            "x": -930.344611766257,
+            "y": -1064.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "prompts.rs (Auto-detected)",
+            "file": "src/ai/prompts.rs",
+            "label": "prompts.rs",
+            "layer": 1,
+            "priority": 20,
+            "summary": {
+              "classes": [
+                "SystemPrompt"
+              ],
+              "functions": [
+                "build"
+              ],
+              "references": [
+                "SystemContext"
+              ]
+            }
+          },
+          "id": "node_src_ai_prompts_rs",
+          "position": {
+            "x": -724.1559390846851,
+            "y": -1014.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "router.rs (Auto-detected)",
+            "file": "src/ai/router.rs",
+            "label": "router.rs",
+            "layer": 1,
+            "priority": 20,
+            "summary": {
+              "classes": [
+                "SmartRouter",
+                "EngineType"
+              ],
+              "functions": [
+                "determine_engine",
+                "get_provider",
+                "get_cache_path",
+                "load_quota_state",
+                "save_quota_state",
+                "generate_with_fallback",
+                "get_context_summary"
+              ],
+              "references": [
+                "GeminiProvider",
+                "OfflineEngine",
+                "VertexAiProvider",
+                "AiProvider",
+                "debug",
+                "BufRead"
+              ]
+            }
+          },
+          "id": "node_src_ai_router_rs",
+          "position": {
+            "x": -1145.5036583164265,
+            "y": -964.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_18",
+            "color": "#b8bb26",
+            "description": "gemini.rs (Auto-detected)",
+            "file": "src/ai/providers/gemini.rs",
+            "label": "gemini.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "GeminiProvider"
+              ],
+              "functions": [
+                "new",
+                "list_models",
+                "name",
+                "get_quota_status",
+                "generate_response"
+              ],
+              "references": [
+                "AiProvider",
+                "SystemContext",
+                "keyring",
+                "async_trait",
+                "Error",
+                "Client",
+                "json"
+              ]
+            }
+          },
+          "id": "node_src_ai_providers_gemini_rs",
+          "position": {
+            "x": 1869.6859597284217,
+            "y": 648.8333755747768
+          },
+          "status": "active",
+          "type": "source",
+          "visual": {}
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mock.rs (Auto-detected)",
+            "file": "src/ai/providers/mock.rs",
+            "label": "mock.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "MockProvider"
+              ],
+              "functions": [
+                "new",
+                "add_response",
+                "name",
+                "get_quota_status",
+                "generate_response"
+              ],
+              "references": [
+                "AiProvider",
+                "SystemContext",
+                "async_trait",
+                "json",
+                "HashMap"
+              ]
+            }
+          },
+          "id": "node_src_ai_providers_mock_rs",
+          "position": {
+            "x": -130.344611766257,
+            "y": -1064.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/ai/providers/mod.rs",
+            "label": "mod.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_src_ai_providers_mod_rs",
+          "position": {
+            "x": 69.655388233743,
+            "y": -1014.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "offline.rs (Auto-detected)",
+            "file": "src/ai/providers/offline.rs",
+            "label": "offline.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "OfflineEngine"
+              ],
+              "functions": [
+                "new",
+                "map_query",
+                "name",
+                "get_quota_status",
+                "generate_response",
+                "search_history_rag"
+              ],
+              "references": [
+                "AiProvider",
+                "SystemContext",
+                "sanitize_string",
+                "async_trait",
+                "json"
+              ]
+            }
+          },
+          "id": "node_src_ai_providers_offline_rs",
+          "position": {
+            "x": -330.344611766257,
+            "y": -964.7606574848196
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_18",
+            "color": "#b8bb26",
+            "description": "vertex_ai.rs (Auto-detected)",
+            "file": "src/ai/providers/vertex_ai.rs",
+            "label": "vertex_ai.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "VertexAiProvider"
+              ],
+              "functions": [
+                "new",
+                "build_url",
+                "name",
+                "get_quota_status",
+                "generate_response"
+              ],
+              "references": [
+                "AiProvider",
+                "SystemContext",
+                "keyring",
+                "async_trait",
+                "Client",
+                "json"
+              ]
+            }
+          },
+          "id": "node_src_ai_providers_vertex_ai_rs",
+          "position": {
+            "x": 2076.1366463747713,
+            "y": 644.8460170669138
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_18",
+            "color": "#b8bb26",
+            "description": "web_session.rs (Auto-detected)",
+            "file": "src/ai/providers/web_session.rs",
+            "label": "web_session.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "WebSessionProvider"
+              ],
+              "functions": [
+                "new",
+                "name",
+                "get_quota_status",
+                "generate_response"
+              ],
+              "references": [
+                "AiProvider",
+                "SystemContext",
+                "keyring",
+                "async_trait",
+                "Client",
+                "json",
+                "Error"
+              ]
+            }
+          },
+          "id": "node_src_ai_providers_web_session_rs",
+          "position": {
+            "x": 2275.2993821372493,
+            "y": 648.154929767547
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "google.rs (Auto-detected)",
+            "file": "src/auth/google.rs",
+            "label": "google.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "login",
+                "prompt_input"
+              ],
+              "references": [
+                "BufRead",
+                "TcpListener"
+              ]
+            }
+          },
+          "id": "node_src_auth_google_rs",
+          "position": {
+            "x": -2730.344611766257,
+            "y": 85.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/auth/mod.rs",
+            "label": "mod.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_src_auth_mod_rs",
+          "position": {
+            "x": -2530.344611766256,
+            "y": 135.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "config.rs (Auto-detected)",
+            "file": "src/config.rs",
+            "label": "config.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "VegaConfig",
+                "AiConfig",
+                "VertexAiConfig",
+                "SystemConfig",
+                "DependenciesConfig",
+                "ExecutionConfig",
+                "OptimizationConfig"
+              ],
+              "functions": [
+                "load",
+                "validate"
+              ],
+              "references": [
+                "Deserialize",
+                "fs"
+              ]
+            }
+          },
+          "id": "node_src_config_rs",
+          "position": {
+            "x": -1930.344611766256,
+            "y": 85.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "context.rs (Auto-detected)",
+            "file": "src/context.rs",
+            "label": "context.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "Partition",
+                "PartitionType",
+                "SystemContext"
+              ],
+              "functions": [
+                "new",
+                "collect",
+                "get_os_info",
+                "get_kernel_version",
+                "get_load_avg",
+                "get_mem_info",
+                "get_block_devices",
+                "detect_pkg_manager",
+                "detect_vm",
+                "detect_git_user",
+                "detect_plugin_manager",
+                "detect_current_project"
+              ],
+              "references": [
+                "VirtualMachine",
+                "Deserialize",
+                "Value",
+                "HashMap",
+                "fs",
+                "Command"
+              ]
+            }
+          },
+          "id": "node_src_context_rs",
+          "position": {
+            "x": -1730.344611766257,
+            "y": 135.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "init.rs (Auto-detected)",
+            "file": "src/init.rs",
+            "label": "init.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "bootstrap",
+                "get_config_path"
+              ],
+              "references": [
+                "PathBuf",
+                "fs",
+                "VegaConfig",
+                "SystemContext",
+                "dirs"
+              ]
+            }
+          },
+          "id": "node_src_init_rs",
+          "position": {
+            "x": -1530.344611766257,
+            "y": 185.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "interactor.rs (Auto-detected)",
+            "file": "src/interactor.rs",
+            "label": "interactor.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "Interactor"
+              ],
+              "functions": [
+                "select_with_fzf",
+                "confirm"
+              ],
+              "references": [
+                "Command",
+                "Write",
+                "self"
+              ]
+            }
+          },
+          "id": "node_src_interactor_rs",
+          "position": {
+            "x": -1930.344611766256,
+            "y": 235.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "knowledge.rs (Auto-detected)",
+            "file": "src/knowledge.rs",
+            "label": "knowledge.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "KnowledgeEntry",
+                "KnowledgeBase"
+              ],
+              "functions": [
+                "load",
+                "save",
+                "add",
+                "get",
+                "get_path"
+              ],
+              "references": [
+                "Deserialize",
+                "HashMap",
+                "fs",
+                "PathBuf",
+                "md5"
+              ]
+            }
+          },
+          "id": "node_src_knowledge_rs",
+          "position": {
+            "x": -1730.344611766257,
+            "y": 285.23934251518017
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "lib.rs (Auto-detected)",
+            "file": "src/lib.rs",
+            "label": "lib.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_src_lib_rs",
+          "position": {
+            "x": -1530.344611766257,
+            "y": 335.23934251518017
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "logger.rs (Auto-detected)",
+            "file": "src/logger.rs",
+            "label": "logger.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "LogEntry",
+                "ExecutionLogger"
+              ],
+              "functions": [
+                "new",
+                "log"
+              ],
+              "references": [
+                "OpenOptions",
+                "Write",
+                "Local",
+                "Serialize",
+                "OpenOptionsExt"
+              ]
+            }
+          },
+          "id": "node_src_logger_rs",
+          "position": {
+            "x": -1930.344611766256,
+            "y": 385.23934251518017
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_20",
+            "color": "#b8bb26",
+            "description": "main.rs (Auto-detected)",
+            "file": "src/main.rs",
+            "label": "main.rs",
+            "layer": 0,
+            "priority": 5,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "main"
+              ],
+              "references": [
+                "env",
+                "Command",
+                "SystemContext",
+                "Interactor",
+                "ExecutionLogger",
+                "SetupWizard",
+                "ShellSnapshot",
+                "Action",
+                "Colorize",
+                "SshConnection",
+                "pkg",
+                "KnowledgeBase",
+                "VmScanner",
+                "Healer",
+                "SmartStorage",
+                "VmController",
+                "self",
+                "AiResponse"
+              ]
+            }
+          },
+          "id": "node_src_main_rs",
+          "position": {
+            "x": 2471.066801724604,
+            "y": 651.487034283828
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_20",
+            "color": "#b8bb26",
+            "description": "setup.rs (Auto-detected)",
+            "file": "src/setup.rs",
+            "label": "setup.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "SetupWizard"
+              ],
+              "functions": [
+                "run",
+                "select_provider",
+                "discover_and_confirm_key",
+                "prompt",
+                "confirm"
+              ],
+              "references": [
+                "AiConfig",
+                "SystemContext",
+                "env",
+                "fs",
+                "self",
+                "scan"
+              ]
+            }
+          },
+          "id": "node_src_setup_rs",
+          "position": {
+            "x": 2680.9805740571314,
+            "y": 640.8545234926621
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "shell.rs (Auto-detected)",
+            "file": "src/shell.rs",
+            "label": "shell.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "ShellSnapshot"
+              ],
+              "functions": [
+                "new",
+                "save",
+                "load",
+                "dump_aliases",
+                "dump_zoxide"
+              ],
+              "references": [
+                "Command",
+                "fs",
+                "Deserialize",
+                "HashMap"
+              ]
+            }
+          },
+          "id": "node_src_shell_rs",
+          "position": {
+            "x": -1530.344611766257,
+            "y": 485.23934251518017
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "token_saver.rs (Auto-detected)",
+            "file": "src/token_saver.rs",
+            "label": "token_saver.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "Action",
+                "TokenSaver"
+              ],
+              "functions": [
+                "new",
+                "load_cache",
+                "load_history",
+                "match_local_intent",
+                "check_cache",
+                "search_history"
+              ],
+              "references": [
+                "HashMap",
+                "fs",
+                "Deserialize",
+                "Regex",
+                "Value"
+              ]
+            }
+          },
+          "id": "node_src_token_saver_rs",
+          "position": {
+            "x": -1930.344611766256,
+            "y": 535.2393425151802
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/connection/mod.rs",
+            "label": "mod.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_src_connection_mod_rs",
+          "position": {
+            "x": -1130.344611766257,
+            "y": 85.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "ssh.rs (Auto-detected)",
+            "file": "src/connection/ssh.rs",
+            "label": "ssh.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "SshConnection",
+                "DiagnosticResult",
+                "std"
+              ],
+              "functions": [
+                "fmt",
+                "check_connection",
+                "connect",
+                "detect_os",
+                "diagnose",
+                "execute_remote_async"
+              ],
+              "references": [
+                "Command"
+              ]
+            }
+          },
+          "id": "node_src_connection_ssh_rs",
+          "position": {
+            "x": -930.344611766257,
+            "y": 135.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "healer.rs (Auto-detected)",
+            "file": "src/executor/healer.rs",
+            "label": "healer.rs",
+            "layer": 2,
+            "priority": 80,
+            "summary": {
+              "classes": [
+                "Healer"
+              ],
+              "functions": [
+                "diagnose",
+                "suggest_install"
+              ],
+              "references": [
+                "ExecuteResult",
+                "OsInfo"
+              ]
+            }
+          },
+          "id": "node_src_executor_healer_rs",
+          "position": {
+            "x": -330.344611766257,
+            "y": 85.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/executor/mod.rs",
+            "label": "mod.rs",
+            "layer": 2,
+            "priority": 80,
+            "summary": {
+              "classes": [
+                "ExecuteResult"
+              ],
+              "functions": [],
+              "references": [
+                "Deserialize"
+              ]
+            }
+          },
+          "id": "node_src_executor_mod_rs",
+          "position": {
+            "x": -130.344611766257,
+            "y": 135.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "orchestrator.rs (Auto-detected)",
+            "file": "src/executor/orchestrator.rs",
+            "label": "orchestrator.rs",
+            "layer": 2,
+            "priority": 80,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "update_all"
+              ],
+              "references": [
+                "SshConnection",
+                "KnowledgeBase",
+                "join_all",
+                "Arc",
+                "signal",
+                "Semaphore"
+              ]
+            }
+          },
+          "id": "node_src_executor_orchestrator_rs",
+          "position": {
+            "x": 69.655388233743,
+            "y": 185.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": null,
+            "color": "#b8bb26",
+            "description": "pkg.rs (Auto-detected)",
+            "file": "src/executor/pkg.rs",
+            "label": "pkg.rs",
+            "layer": 2,
+            "priority": 80,
+            "summary": {
+              "classes": [
+                "PackageSystem",
+                "PackageManager",
+                "Apt",
+                "Dnf",
+                "Pacman",
+                "Flatpak"
+              ],
+              "functions": [
+                "install",
+                "update",
+                "remove",
+                "search",
+                "name",
+                "kind",
+                "normalize",
+                "detect",
+                "prepend_auth_sock"
+              ],
+              "references": [
+                "SystemContext"
+              ]
+            }
+          },
+          "id": "node_src_executor_pkg_rs",
+          "position": {
+            "x": 2829.831698638116,
+            "y": 85.02518673531189
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          },
+          "cluster_id": null
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "status.rs (Auto-detected)",
+            "file": "src/executor/status.rs",
+            "label": "status.rs",
+            "layer": 2,
+            "priority": 80,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "show_status"
+              ],
+              "references": [
+                "KnowledgeBase"
+              ]
+            }
+          },
+          "id": "node_src_executor_status_rs",
+          "position": {
+            "x": -130.344611766257,
+            "y": 285.23934251518017
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/remote/mod.rs",
+            "label": "mod.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "RemoteManager"
+              ],
+              "functions": [
+                "new",
+                "connect",
+                "exec_command"
+              ],
+              "references": [
+                "Session",
+                "TcpStream",
+                "Read",
+                "info"
+              ]
+            }
+          },
+          "id": "node_src_remote_mod_rs",
+          "position": {
+            "x": -2730.344611766257,
+            "y": 1285.2393425151809
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/reporting/mod.rs",
+            "label": "mod.rs",
+            "layer": 2,
+            "priority": 80,
+            "summary": {
+              "classes": [
+                "ReportGenerator"
+              ],
+              "functions": [
+                "generate_markdown",
+                "generate_pdf"
+              ],
+              "references": [
+                "elements",
+                "fonts",
+                "Local",
+                "info"
+              ]
+            }
+          },
+          "id": "node_src_reporting_mod_rs",
+          "position": {
+            "x": -1930.344611766256,
+            "y": 1285.2393425151809
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "checker.rs (Auto-detected)",
+            "file": "src/safety/checker.rs",
+            "label": "checker.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "RiskLevel"
+              ],
+              "functions": [
+                "check_risk_level"
+              ],
+              "references": []
+            }
+          },
+          "id": "node_src_safety_checker_rs",
+          "position": {
+            "x": -1130.344611766257,
+            "y": 1285.2393425151809
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/safety/mod.rs",
+            "label": "mod.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_src_safety_mod_rs",
+          "position": {
+            "x": -930.344611766257,
+            "y": 1335.2393425151809
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "sanitizer.rs (Auto-detected)",
+            "file": "src/safety/sanitizer.rs",
+            "label": "sanitizer.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "sanitize_input"
+              ],
+              "references": [
+                "Regex",
+                "OnceLock"
+              ]
+            }
+          },
+          "id": "node_src_safety_sanitizer_rs",
+          "position": {
+            "x": -730.344611766257,
+            "y": 1385.2393425151809
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "ui.rs (Auto-detected)",
+            "file": "src/safety/ui.rs",
+            "label": "ui.rs",
+            "layer": 2,
+            "priority": 80,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "confirm_action"
+              ],
+              "references": [
+                "self",
+                "Colorize",
+                "RiskLevel"
+              ]
+            }
+          },
+          "id": "node_src_safety_ui_rs",
+          "position": {
+            "x": -1130.344611766257,
+            "y": 1285.2393425151809
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_26",
+            "color": "#b8bb26",
+            "description": "env.rs (Auto-detected)",
+            "file": "src/scan/env.rs",
+            "label": "env.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "find_key"
+              ],
+              "references": [
+                "Regex",
+                "fs",
+                "env"
+              ]
+            }
+          },
+          "id": "node_src_scan_env_rs",
+          "position": {
+            "x": 2638.763956679813,
+            "y": 940.8548349489605
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/scan/mod.rs",
+            "label": "mod.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_src_scan_mod_rs",
+          "position": {
+            "x": -130.344611766257,
+            "y": 1335.2393425151809
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "vm.rs (Auto-detected)",
+            "file": "src/scan/vm.rs",
+            "label": "vm.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "VmInfo",
+                "VmScanner"
+              ],
+              "functions": [
+                "scan",
+                "get_ip"
+              ],
+              "references": [
+                "Deserialize",
+                "Command"
+              ]
+            }
+          },
+          "id": "node_src_scan_vm_rs",
+          "position": {
+            "x": 69.655388233743,
+            "y": 1385.2393425151809
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_27",
+            "color": "#b8bb26",
+            "description": "keyring.rs (Auto-detected)",
+            "file": "src/security/keyring.rs",
+            "label": "keyring.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "get_api_key",
+                "set_api_key",
+                "get_token",
+                "set_token",
+                "delete_token"
+              ],
+              "references": [
+                "Entry",
+                "env"
+              ]
+            }
+          },
+          "id": "node_src_security_keyring_rs",
+          "position": {
+            "x": 1503.966212020761,
+            "y": 975.830267852179
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/security/mod.rs",
+            "label": "mod.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_src_security_mod_rs",
+          "position": {
+            "x": -2530.344611766256,
+            "y": 2535.239342515181
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "db.rs (Auto-detected)",
+            "file": "src/storage/db.rs",
+            "label": "db.rs",
+            "layer": 2,
+            "priority": 70,
+            "summary": {
+              "classes": [
+                "Database",
+                "TaskEntry"
+              ],
+              "functions": [
+                "get_current_session_id",
+                "new",
+                "migrate",
+                "start_session",
+                "log_command",
+                "save_chat_message",
+                "add_execution_log",
+                "get_recent_history",
+                "get_failure_count",
+                "log_task",
+                "learn_solution",
+                "get_solution",
+                "record_task",
+                "get_session_tasks",
+                "set_metadata",
+                "get_metadata",
+                "search_relevant_context",
+                "get_all_commands",
+                "calculate_weight"
+              ],
+              "references": [
+                "params",
+                "SystemTime",
+                "PermissionsExt",
+                "fs"
+              ]
+            }
+          },
+          "id": "node_src_storage_db_rs",
+          "position": {
+            "x": -1930.344611766256,
+            "y": 2485.239342515181
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/storage/mod.rs",
+            "label": "mod.rs",
+            "layer": 2,
+            "priority": 80,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_src_storage_mod_rs",
+          "position": {
+            "x": -1730.344611766257,
+            "y": 2535.239342515181
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "archivist.rs (Auto-detected)",
+            "file": "src/system/archivist.rs",
+            "label": "archivist.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "ArchiveEntry",
+                "Archivist"
+              ],
+              "functions": [
+                "log_execution",
+                "get_history_dir",
+                "append_to_json_history",
+                "append_to_daily_report",
+                "sanitize_command",
+                "archive_session"
+              ],
+              "references": [
+                "Database",
+                "ExecuteResult",
+                "AppConfig",
+                "self",
+                "Write",
+                "PathBuf",
+                "Local",
+                "Serialize",
+                "Regex",
+                "json",
+                "sanitize_string"
+              ]
+            }
+          },
+          "id": "node_src_system_archivist_rs",
+          "position": {
+            "x": -1130.344611766257,
+            "y": 2485.239342515181
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_29",
+            "color": "#b8bb26",
+            "description": "config.rs (Auto-detected)",
+            "file": "src/system/config.rs",
+            "label": "config.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "ProviderConfig",
+                "Project",
+                "AppConfig"
+              ],
+              "functions": [
+                "default",
+                "get_config_path",
+                "load",
+                "load_from_path",
+                "save"
+              ],
+              "references": [
+                "Deserialize",
+                "fs",
+                "Path",
+                "env",
+                "OsInfo"
+              ]
+            }
+          },
+          "id": "node_src_system_config_rs",
+          "position": {
+            "x": 1992.7882769532057,
+            "y": 1100.0907598669378
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "discovery.rs (Auto-detected)",
+            "file": "src/system/discovery.rs",
+            "label": "discovery.rs",
+            "layer": 0,
+            "priority": 8,
+            "summary": {
+              "classes": [
+                "Discovery"
+              ],
+              "functions": [
+                "run",
+                "detect_plugin_manager"
+              ],
+              "references": [
+                "Command"
+              ]
+            }
+          },
+          "id": "node_src_system_discovery_rs",
+          "position": {
+            "x": -1130.344611766257,
+            "y": 2485.239342515181
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "docker.rs (Auto-detected)",
+            "file": "src/system/docker.rs",
+            "label": "docker.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "Container",
+                "DockerManager"
+              ],
+              "functions": [
+                "list_containers"
+              ],
+              "references": [
+                "Command",
+                "Deserialize"
+              ]
+            }
+          },
+          "id": "node_src_system_docker_rs",
+          "position": {
+            "x": -730.344611766257,
+            "y": 2585.239342515181
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_29",
+            "color": "#b8bb26",
+            "description": "env_scanner.rs (Auto-detected)",
+            "file": "src/system/env_scanner.rs",
+            "label": "env_scanner.rs",
+            "layer": 0,
+            "priority": 8,
+            "summary": {
+              "classes": [
+                "EnvScanner",
+                "EnvKey"
+              ],
+              "functions": [
+                "scan_shell_configs",
+                "get_locale",
+                "validate_url"
+              ],
+              "references": [
+                "env",
+                "File",
+                "self",
+                "PathBuf",
+                "Regex",
+                "HashMap",
+                "debug"
+              ]
+            }
+          },
+          "id": "node_src_system_env_scanner_rs",
+          "position": {
+            "x": 1813.0879685024624,
+            "y": 1092.232025109313
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_29",
+            "color": "#b8bb26",
+            "description": "global.rs (Auto-detected)",
+            "file": "src/system/global.rs",
+            "label": "global.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "initialize",
+                "get_context"
+              ],
+              "references": [
+                "scanner",
+                "SystemContext",
+                "OnceLock"
+              ]
+            }
+          },
+          "id": "node_src_system_global_rs",
+          "position": {
+            "x": 2350.6470117108297,
+            "y": 1098.0602479070412
+          },
+          "status": "active",
+          "type": "source",
+          "visual": {}
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "healer.rs (Auto-detected)",
+            "file": "src/system/healer.rs",
+            "label": "healer.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "Healer"
+              ],
+              "functions": [
+                "analyze_journal",
+                "diagnose",
+                "rotate_logs"
+              ],
+              "references": [
+                "Command"
+              ]
+            }
+          },
+          "id": "node_src_system_healer_rs",
+          "position": {
+            "x": -930.344611766257,
+            "y": 2685.239342515181
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "mod.rs (Auto-detected)",
+            "file": "src/system/mod.rs",
+            "label": "mod.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [],
+              "functions": [],
+              "references": []
+            }
+          },
+          "id": "node_src_system_mod_rs",
+          "position": {
+            "x": -730.344611766257,
+            "y": 2735.239342515181
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "os.rs (Auto-detected)",
+            "file": "src/system/os.rs",
+            "label": "os.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "PackageManager",
+                "OsInfo"
+              ],
+              "functions": [
+                "detect",
+                "detect_package_manager"
+              ],
+              "references": [
+                "fs",
+                "Command"
+              ]
+            }
+          },
+          "id": "node_src_system_os_rs",
+          "position": {
+            "x": -1130.344611766257,
+            "y": 2785.239342515181
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "sanitizer.rs (Auto-detected)",
+            "file": "src/system/sanitizer.rs",
+            "label": "sanitizer.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "Sanitizer"
+              ],
+              "functions": [
+                "new",
+                "clean",
+                "sanitize_string"
+              ],
+              "references": [
+                "Regex"
+              ]
+            }
+          },
+          "id": "node_src_system_sanitizer_rs",
+          "position": {
+            "x": -930.344611766257,
+            "y": 2835.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "cluster_29",
+            "color": "#b8bb26",
+            "description": "scanner.rs (Auto-detected)",
+            "file": "src/system/scanner.rs",
+            "label": "scanner.rs",
+            "layer": 0,
+            "priority": 8,
+            "summary": {
+              "classes": [],
+              "functions": [
+                "scan_system",
+                "detect_plugin_manager",
+                "scan_os_info",
+                "scan_partitions"
+              ],
+              "references": [
+                "Partition",
+                "VirtManager",
+                "HashMap",
+                "env",
+                "fs",
+                "Command"
+              ]
+            }
+          },
+          "id": "node_src_system_scanner_rs",
+          "position": {
+            "x": 2163.0879685024624,
+            "y": 1092.232025109313
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "storage.rs (Auto-detected)",
+            "file": "src/system/storage.rs",
+            "label": "storage.rs",
+            "layer": 2,
+            "priority": 80,
+            "summary": {
+              "classes": [
+                "SmartStorage"
+              ],
+              "functions": [
+                "new",
+                "backup_cmd",
+                "list_remotes"
+              ],
+              "references": [
+                "Command",
+                "HashMap"
+              ]
+            }
+          },
+          "id": "node_src_system_storage_rs",
+          "position": {
+            "x": -1130.344611766257,
+            "y": 2485.239342515181
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        },
+        {
+          "data": {
+            "cluster_id": "storage_cluster",
+            "color": "#b8bb26",
+            "description": "virt.rs (Auto-detected)",
+            "file": "src/system/virt.rs",
+            "label": "virt.rs",
+            "layer": 1,
+            "priority": 50,
+            "summary": {
+              "classes": [
+                "VmController",
+                "VmScanner"
+              ],
+              "functions": [
+                "list_vms",
+                "start",
+                "get_ip"
+              ],
+              "references": [
+                "Command"
+              ]
+            }
+          },
+          "id": "node_src_system_virt_rs",
+          "position": {
+            "x": -730.344611766257,
+            "y": 2885.2393425151804
+          },
+          "status": "proposed",
+          "type": "source",
+          "visual": {
+            "dashArray": "5,5",
+            "opacity": 0.5
+          }
+        }
+      ],
+      "edges": [
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_README_md",
+          "id": "edge_14",
+          "is_approved": false,
+          "to": "node_README_KR_md",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_ai_auth_manager_rs",
+          "id": "edge_15",
+          "is_approved": false,
+          "to": "node_keyring_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_ai_providers_gemini_rs",
+          "id": "edge_16",
+          "is_approved": false,
+          "to": "node_keyring_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_ai_providers_vertex_ai_rs",
+          "id": "edge_17",
+          "is_approved": false,
+          "to": "node_keyring_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_ai_providers_web_session_rs",
+          "id": "edge_18",
+          "is_approved": false,
+          "to": "node_keyring_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_main_rs",
+          "id": "edge_19",
+          "is_approved": false,
+          "to": "node_env_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_main_rs",
+          "id": "edge_20",
+          "is_approved": false,
+          "to": "node_pkg_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_scan_env_rs",
+          "id": "edge_21",
+          "is_approved": false,
+          "to": "node_env_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_security_keyring_rs",
+          "id": "edge_22",
+          "is_approved": false,
+          "to": "node_env_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_setup_rs",
+          "id": "edge_23",
+          "is_approved": false,
+          "to": "node_env_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_system_config_rs",
+          "id": "edge_24",
+          "is_approved": false,
+          "to": "node_env_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_system_env_scanner_rs",
+          "id": "edge_25",
+          "is_approved": false,
+          "to": "node_env_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_system_global_rs",
+          "id": "edge_26",
+          "is_approved": false,
+          "to": "node_scanner_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "_validationReason": "Appropriate architectural relationship.",
+          "from": "node_src_system_scanner_rs",
+          "id": "edge_27",
+          "is_approved": false,
+          "to": "node_env_rs",
+          "type": "dependency",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "visual": {
+            "animated": false,
+            "color": "#ebdbb2",
+            "style": "dashed",
+            "thickness": 2
+          }
+        },
+        {
+          "id": "edge_auto_1771404520590_520",
+          "from": "node_README_md",
+          "to": "node_README_KR_md",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_486",
+          "from": "node_src_ai_auth_manager_rs",
+          "to": "node_src_security_keyring_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_228",
+          "from": "node_src_ai_providers_gemini_rs",
+          "to": "node_src_security_keyring_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_788",
+          "from": "node_src_ai_providers_vertex_ai_rs",
+          "to": "node_src_security_keyring_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_684",
+          "from": "node_src_ai_providers_web_session_rs",
+          "to": "node_src_security_keyring_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_460",
+          "from": "node_src_main_rs",
+          "to": "node_src_scan_env_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_163",
+          "from": "node_src_main_rs",
+          "to": "node_src_executor_pkg_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_571",
+          "from": "node_src_setup_rs",
+          "to": "node_src_scan_env_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_860",
+          "from": "node_src_security_keyring_rs",
+          "to": "node_src_scan_env_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_427",
+          "from": "node_src_system_config_rs",
+          "to": "node_src_scan_env_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_100",
+          "from": "node_src_system_env_scanner_rs",
+          "to": "node_src_scan_env_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_17",
+          "from": "node_src_system_global_rs",
+          "to": "node_src_system_scanner_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        },
+        {
+          "id": "edge_auto_1771404520590_307",
+          "from": "node_src_system_scanner_rs",
+          "to": "node_src_scan_env_rs",
+          "type": "dependency",
+          "label": "ref",
+          "validation": {
+            "valid": true,
+            "reason": "Appropriate architectural relationship.",
+            "confidence": 0.95
+          },
+          "_validationReason": "Appropriate architectural relationship."
+        }
+      ],
+      "clusters": [
+        {
+          "_headerBounds": {
+            "x": 1820.8199550522274,
+            "y": 34.98095917223911,
+            "width": 896.2090083427131,
+            "height": 30
+          },
+          "bounds": {
+            "height": 1250,
+            "width": 5100,
+            "x": 0,
+            "y": 0
+          },
+          "children": [
+            "node_env_rs",
+            "node_keyring_rs",
+            "node_pkg_rs",
+            "node_scanner_rs"
+          ],
+          "collapsed": false,
+          "id": "cluster_15",
+          "label": "ROOT"
+        },
+        {
+          "_headerBounds": {
+            "x": 1555.036073400426,
+            "y": 606.6299916917317,
+            "width": 160,
+            "height": 30
+          },
+          "bounds": {
+            "height": 1250,
+            "width": 1600,
+            "x": 1600,
+            "y": 0
+          },
+          "children": [
+            "node_src_ai_auth_manager_rs"
+          ],
+          "collapsed": false,
+          "id": "cluster_17",
+          "label": "src/ai"
+        },
+        {
+          "_headerBounds": {
+            "x": 1849.6859597284217,
+            "y": 594.8460170669138,
+            "width": 565.6134224088275,
+            "height": 30
+          },
+          "bounds": {
+            "height": 1250,
+            "width": 2300,
+            "x": 2400,
+            "y": 0
+          },
+          "children": [
+            "node_src_ai_providers_gemini_rs",
+            "node_src_ai_providers_vertex_ai_rs",
+            "node_src_ai_providers_web_session_rs"
+          ],
+          "collapsed": false,
+          "id": "cluster_18",
+          "label": "src/ai/providers"
+        },
+        {
+          "_headerBounds": {
+            "x": 2451.066801724604,
+            "y": 590.8545234926621,
+            "width": 369.9137723325275,
+            "height": 30
+          },
+          "bounds": {
+            "height": 1250,
+            "width": 3700,
+            "x": 800,
+            "y": 1200
+          },
+          "children": [
+            "node_src_main_rs",
+            "node_src_setup_rs"
+          ],
+          "collapsed": false,
+          "id": "cluster_20",
+          "label": "src"
+        },
+        {
+          "_headerBounds": {
+            "x": 2618.763956679813,
+            "y": 890.8548349489605,
+            "width": 160,
+            "height": 30
+          },
+          "bounds": {
+            "height": 1250,
+            "width": 1250,
+            "x": 2400,
+            "y": 2400
+          },
+          "children": [
+            "node_src_scan_env_rs"
+          ],
+          "collapsed": false,
+          "id": "cluster_26",
+          "label": "src/scan"
+        },
+        {
+          "_headerBounds": {
+            "x": 1483.966212020761,
+            "y": 925.830267852179,
+            "width": 160,
+            "height": 30
+          },
+          "bounds": {
+            "height": 1250,
+            "width": 1250,
+            "x": 0,
+            "y": 3600
+          },
+          "children": [
+            "node_src_security_keyring_rs"
+          ],
+          "collapsed": false,
+          "id": "cluster_27",
+          "label": "src/security"
+        },
+        {
+          "_headerBounds": {
+            "x": 1793.0879685024624,
+            "y": 1042.232025109313,
+            "width": 697.5590432083673,
+            "height": 30
+          },
+          "bounds": {
+            "height": 1250,
+            "width": 3350,
+            "x": 1600,
+            "y": 3600
+          },
+          "children": [
+            "node_src_system_config_rs",
+            "node_src_system_env_scanner_rs",
+            "node_src_system_global_rs",
+            "node_src_system_scanner_rs"
+          ],
+          "collapsed": false,
+          "id": "cluster_29",
+          "label": "src/system"
+        },
+        {
+          "_headerBounds": {
+            "x": 1856.3542816556862,
+            "y": -289.46433576413455,
+            "width": 964.9427372953489,
+            "height": 30
+          },
+          "bounds": {
+            "height": 1200,
+            "width": 900,
+            "x": -1600,
+            "y": -100
+          },
+          "children": [
+            "node_2026_02_17_save_token_md",
+            "node_GEMINI_md",
+            "node_README_md",
+            "node_README_KR_md",
+            "node_architecture_md",
+            "node_prompts_2026_02_17_save_token_md"
+          ],
+          "collapsed": false,
+          "id": "doc_shelf",
+          "label": "📚 Documentation Shelf"
+        },
+        {
+          "_headerBounds": {
+            "x": -2750.344611766257,
+            "y": -1164.7606574848196,
+            "width": 5720.176310404373,
+            "height": 30
+          },
+          "bounds": {
+            "height": 1200,
+            "width": 800,
+            "x": 4200,
+            "y": 0
+          },
+          "children": [
+            "node_auth_manager_rs",
+            "node_config_rs",
+            "node_env_scanner_rs",
+            "node_gemini_rs",
+            "node_global_rs",
+            "node_init_env_sh",
+            "node_main_rs",
+            "node_mod_rs",
+            "node_os_rs",
+            "node_setup_rs",
+            "node_vertex_ai_rs",
+            "node_vm_rs",
+            "node_web_session_rs",
+            "node_src_ai_mod_rs",
+            "node_src_ai_prompts_rs",
+            "node_src_ai_router_rs",
+            "node_src_ai_providers_mock_rs",
+            "node_src_ai_providers_mod_rs",
+            "node_src_ai_providers_offline_rs",
+            "node_src_auth_google_rs",
+            "node_src_auth_mod_rs",
+            "node_src_config_rs",
+            "node_src_context_rs",
+            "node_src_init_rs",
+            "node_src_interactor_rs",
+            "node_src_knowledge_rs",
+            "node_src_lib_rs",
+            "node_src_logger_rs",
+            "node_src_shell_rs",
+            "node_src_token_saver_rs",
+            "node_src_connection_mod_rs",
+            "node_src_connection_ssh_rs",
+            "node_src_executor_healer_rs",
+            "node_src_executor_mod_rs",
+            "node_src_executor_orchestrator_rs",
+            "node_src_executor_pkg_rs",
+            "node_src_executor_status_rs",
+            "node_src_remote_mod_rs",
+            "node_src_reporting_mod_rs",
+            "node_src_safety_checker_rs",
+            "node_src_safety_mod_rs",
+            "node_src_safety_sanitizer_rs",
+            "node_src_safety_ui_rs",
+            "node_src_scan_mod_rs",
+            "node_src_scan_vm_rs",
+            "node_src_security_mod_rs",
+            "node_src_storage_db_rs",
+            "node_src_storage_mod_rs",
+            "node_src_system_archivist_rs",
+            "node_src_system_discovery_rs",
+            "node_src_system_docker_rs",
+            "node_src_system_healer_rs",
+            "node_src_system_mod_rs",
+            "node_src_system_os_rs",
+            "node_src_system_sanitizer_rs",
+            "node_src_system_storage_rs",
+            "node_src_system_virt_rs"
+          ],
+          "collapsed": true,
+          "id": "storage_cluster",
+          "label": "📦 Ghost Nodes (Storage)"
+        }
+      ]
+    }
+  }
+]
