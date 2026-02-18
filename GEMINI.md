@@ -39,37 +39,11 @@
 
 철학: KISS (Keep It Simple, Stupid). 단일 정적 바이너리로 의존성 없이 어디서나 실행될 것.
 
-9. Phase 1 Implementation Specs (Technical Detail)
-A. System Discovery Module (Context Awareness)
-- Logic:
-  - OS: Parses PRETTY_NAME from /etc/os-release. Fallback to "Unknown Linux" if file missing.
-  - Partitions: Executes df -h.
-    - Root: /
-    - User: /home or mount points containing "User"/"Home"
-    - Media: /media, /mnt, /run/media
-- Error Handling: Failures in df or file reading return "Safe Defaults" (empty lists or "Unknown") instead of panicking.
+SRE 운영 3대 원칙 (SRE Operating Principles):
+- **Error Budgets**: "완벽한 시스템은 없다. 하지만 허용 가능한 장애 범위 내에서 최대한의 자동화를 추구한다."
+- **Toil Reduction**: "반복되는 수동 작업(Toil)은 죄악이다. 모든 관리 행위는 코드로 정의(IaC)하고 VEGA가 집행한다."
+- **Blameless Postmortems**: "장애는 시스템의 문제다. VEGA는 사고 발생 시 비난 대신 SQLite에 가중치 높은 로그를 남겨 미래의 자네를 지킨다."
 
-B. Data Storage (SQLite Schema)
-- File: vega.db (Created in CWD)
-- Schema:
-  - sessions(id PK, start_time, end_time, total_weight)
-  - commands(id PK, session_id FK, command, ai_comment, weight, timestamp, success)
-  - metadata(key PK, value)
-- Weighting Logic:
-  - Critical (20): rm -rf, mkfs, dd
-  - Warning (7): systemctl, service
-  - Install (5): apt, dnf, pacman
-  - Info (1): ls, cd, echo
-
-C. Safety Interceptor (Sanitizer & Barrier)
-- Sanitizer (Regex Redaction):
-  - IPv4: \d{1,3}\.\d{1,3}... -> [REDACTED_IP]
-  - Email: ...@... -> [REDACTED_EMAIL]
-  - Secrets: sk-..., Bearer ... -> [REDACTED_SECRET]
-- Safety Barrier (UI):
-  - CRITICAL: Requires case-sensitive "YES" input.
-  - WARNING: Requires "y" input.
-  - INFO: Auto-proceed.
 
 2. 초기화 및 설정 (Bootstrap & Setup)
 
@@ -166,24 +140,19 @@ C. High-Availability Routing (Quota Fallback 2.0)
 - **Context Sync**: Summarizes and injects history when falling back between providers.
 
 7. 개발 로드맵 (Roadmap)
-Phase 1 (Foundation) [COMPLETED]: OS 스캔 엔진, 로컬 파일 제어, SQLite 가중치 로깅, Safety Interceptor 구축.
+Phase 1 (Foundation) [COMPLETED]: Unified System Context (Context.rs), SQLite Logging, Basic Safety Modules.
 
 Phase 2 (Intelligence) [COMPLETED]: 멀티 AI 라우팅(OpenAI/Claude/Gemini), 비식별화 로직, ASCII 차트 리포트 엔진.
 
 Phase 3 (Optimization) [COMPLETED]: Persona Hardening, CoT 강화, SQLite FTS5 기반 Local RAG, fzf 히스토리 UI.
 
-Phase 4 (Discovery & Security) [COMPLETED]: Nvim 플러그인 매니저 감지 (lazy-lock.json), `SSH_AUTH_SOCK` 상속 로직, `SystemContext` 아키텍처 일원화.
+Phase 4 (Discovery & Security) [COMPLETED]: Rust-based Discovery (lazy-lock.json), SSH Agent Inheritance, Unified Context Architecture.
 
 Phase 5 (Enterprise) [PLANNED]: rclone 기반 Cloud Sync, 영구 Metadata 저장소, PDF/이메일 리포트 발송.
 
-12. Phase 4 Implementation Specs (Discovery & sudo Enhancement) [COMPLETED]
-A. Discovery Logic 2.0
-- **Plugin Manager Detection**: Checks for `~/.config/nvim/lazy-lock.json` as the primary indicator for `lazy.nvim`.
-- **Architectural Purity**: Discovery logic refactored into `src/system/discovery.rs`.
-
-B. Security & Environment
-- **SSH Agent Inheritance**: Automatically prepends `SSH_AUTH_SOCK` to `sudo` commands for seamless agent forwarding during privileged operations.
-- **Context Consolidation**: Merged all system metadata into a single unified `SystemContext` in `src/context.rs`.
+12. Phase 4 Implementation Specs (Discovery & Security) [COMPLETED]
+- **Discovery**: Pure Rust implementation in `src/system/discovery.rs` (checking `lazy-lock.json`).
+- **Context**: Consolidated all metadata into `src/context.rs`.
 
 13. Phase 5 Implementation Specs (Cloud & Persistence) [PLANNED]
 A. Cloud Sync Integration
@@ -221,14 +190,5 @@ Step-by-Step: 복잡한 작업은 반드시 '가독성 높은 브리핑'을 선�
 Sync: 작업 완료 시 rclone을 통해 구글 드라이브에 코드를 즉시 동기화하여 시니어의 검수를 받을 것.
 
 
-## Current Architecture (Phase 1)
-- **System Discovery**: `SystemContext` global singleton via `df -h` and `/etc/os-release`.
-- **Storage**: SQLite (`vega.db`) with `rusqlite` (bundled). Tracks Sessions and Commands.
-- **Safety**: `Sanitizer` (Regex) -> `Checker` (Risk Level) -> `SafetyUI` (Confirmation).
 
-## Current Architecture (Phase 4) [LATEST]
-- **AI Reasoning**: Hardened SRE Persona + Mandatory Chain-of-Thought (CoT) + Environment Injection (`plugin_manager`, `ssh_auth_sock`).
-- **Context Retrieval**: SQLite FTS5 Virtual Table (`search_index`) for high-performance Local RAG.
-- **Reliability**: Smart Quota Fallback 2.0 with persistent state and context summaries.
-- **Privacy**: Automated Regex Sanitization for all history-based suggestions.
-- **Universal Context**: Single source of truth via unified `SystemContext` in `src/context.rs`.
+

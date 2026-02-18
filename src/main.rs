@@ -14,7 +14,7 @@ use colored::Colorize;
 use crate::connection::ssh::SshConnection;
 use crate::executor::pkg;
 use crate::knowledge::{KnowledgeBase, KnowledgeEntry};
-use crate::scan::vm::VmScanner;
+use crate::system::virt::VmScanner;
 
 use crate::system::healer::Healer;
 use crate::system::storage::SmartStorage;
@@ -252,7 +252,7 @@ async fn main() {
                     kb.add(
                         target_name,
                         KnowledgeEntry {
-                            ip: ip.clone(),
+                            ip: ip.to_string(),
                             user: None,
                             protocol: "ssh".to_string(),
                             port: Some(22),

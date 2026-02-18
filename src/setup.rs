@@ -4,8 +4,6 @@ use std::env;
 use std::fs;
 use std::io::{self, Write};
 
-use crate::scan;
-
 pub struct SetupWizard;
 
 impl SetupWizard {
@@ -53,7 +51,7 @@ impl SetupWizard {
                 ("***MASKED***".to_string(), "env_var".to_string())
             } else {
                 // Try file scan
-                if let Some((_, path)) = scan::env::find_key(&provider) {
+                if let Some((_, path)) = crate::system::env_scanner::find_key(&provider) {
                     ("***MASKED***".to_string(), format!("file:{}", path))
                 } else {
                     println!(
@@ -141,7 +139,7 @@ impl SetupWizard {
         }
 
         // 2. Advanced Regex Scan
-        if let Some((masked_key, path)) = scan::env::find_key(provider) {
+        if let Some((masked_key, path)) = crate::system::env_scanner::find_key(provider) {
             println!("   🔍 Detected API Key in {} ({})", path, masked_key);
             if Self::confirm(&format!("   Use key from {}? (Y/n): ", path), Some("Y")) {
                 return (masked_key, format!("file:{}", path));

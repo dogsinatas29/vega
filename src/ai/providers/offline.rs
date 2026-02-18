@@ -1,6 +1,6 @@
 use crate::ai::{AiProvider, QuotaStatus};
 use crate::context::SystemContext;
-use crate::system::sanitizer::sanitize_string;
+use crate::safety::sanitizer::sanitize_input as sanitize_string;
 use async_trait::async_trait;
 use serde_json::json;
 

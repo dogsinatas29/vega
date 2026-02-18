@@ -1,41 +1,30 @@
-use std::process::Command;
+use std::path::PathBuf;
 
-#[allow(dead_code)]
-pub const DISCOVERY_SCRIPT: &str = "/home/dogsinatas/python_project2/src/utils/discovery.py";
-
-#[allow(dead_code)]
 pub struct Discovery;
 
-#[allow(dead_code)]
 impl Discovery {
-    /// Runs the discovery script as a subprocess
     pub fn run() -> Result<(), String> {
         eprintln!("⚠️  IP Unknown. Running automatic discovery...");
 
-        let output = Command::new("python3")
-            .arg(DISCOVERY_SCRIPT)
-            .output()
-            .map_err(|e| format!("Failed to execute discovery script: {}", e))?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            eprintln!("❌ Discovery script failed: {}", stderr);
-            return Err("Discovery failed".to_string());
+        // 1. Check for lazy-lock.json (Plugin Manager)
+        if let Some(pm) = Self::detect_plugin_manager() {
+            println!("🔍 Discovery: Found specific configuration: {}", pm);
         }
 
-        // Print discovery output
-        let stdout = String::from_utf8_lossy(&output.stdout);
-        eprint!("{}", stdout);
+        // 2. Mock Discovery (Replace Python)
+        // Since we removed external dependencies, we can't do nmap or complex scanning easily
+        // without adding crates. The KISS principle suggests simple checks.
+        // For now, we print a message that discovery is limited in pure Rust mode without deps.
+        eprintln!("ℹ️  Network discovery is limited to local configuration checks in strict mode.");
 
-        eprintln!("✅ Discovery completed successfully.");
         Ok(())
     }
+
     pub fn detect_plugin_manager() -> Option<String> {
-        if let Some(home) = dirs::home_dir() {
-            // Senior's Advice: Check for lockfile instead of config file for higher accuracy
-            let lazy_lock = home.join(".config/nvim/lazy-lock.json");
+        if let Ok(home) = std::env::var("HOME") {
+            let lazy_lock = PathBuf::from(&home).join(".config/nvim/lazy-lock.json");
             if lazy_lock.exists() {
-                return Some("lazy".to_string());
+                return Some("lazy.nvim".to_string());
             }
         }
         None

@@ -1,9 +1,7 @@
 use serde::{Deserialize, Serialize};
+use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
-use std::env;
-
-use crate::system::os::OsInfo;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ProviderConfig {
@@ -19,7 +17,7 @@ impl Default for ProviderConfig {
     fn default() -> Self {
         ProviderConfig {
             default_engine: "gemini".to_string(),
-            daily_quota: 150000, 
+            daily_quota: 150000,
             usage_today: 0,
             api_key_source: "Environment".to_string(),
         }
@@ -36,7 +34,6 @@ pub struct Project {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
-    pub os_info: OsInfo,
     pub providers: ProviderConfig,
     #[serde(default)]
     pub projects: Vec<Project>,
@@ -46,7 +43,10 @@ impl AppConfig {
     pub fn get_config_path() -> PathBuf {
         // 1. Try XDG Config Home (~/.config/vega/config.toml)
         if let Ok(home) = env::var("HOME") {
-            let xdg_path = Path::new(&home).join(".config").join("vega").join("config.toml");
+            let xdg_path = Path::new(&home)
+                .join(".config")
+                .join("vega")
+                .join("config.toml");
             // If parent dir exists, use it. Or if we are creating it later.
             return xdg_path;
         }
@@ -56,15 +56,15 @@ impl AppConfig {
 
     pub fn load() -> Option<Self> {
         // Strategy: Check CWD first for dev convenience, then XDG.
-        // Senior advice: "Dev in CWD, but verify XDG". 
+        // Senior advice: "Dev in CWD, but verify XDG".
         // Let's check XDG first as the "Real" path, then CWD as fallback/override?
         // User said: "CWD is convenient for test, but eventually go to XDG."
         // "Load() should check global path first with fallback" -> implied precedence?
         // Let's check CWD. IF exists, use it. ELSE check XDG.
-        
+
         let cwd_path = PathBuf::from("config.toml");
         if cwd_path.exists() {
-             return Self::load_from_path(&cwd_path);
+            return Self::load_from_path(&cwd_path);
         }
 
         let xdg_path = Self::get_config_path();
@@ -88,7 +88,7 @@ impl AppConfig {
 
     pub fn save(&self) {
         let path = Self::get_config_path();
-        
+
         // Ensure directory exists
         if let Some(parent) = path.parent() {
             if !parent.exists() {
@@ -98,13 +98,15 @@ impl AppConfig {
 
         // Add comments manually since TOML crate doesn't support comment preservation well
         let toml_str = toml::to_string_pretty(self).unwrap_or_default();
-        
+
         let commented_config = format!(
-r#"# 🌌 VEGA Configuration File
+            r#"# 🌌 VEGA Configuration File
 # ⚠️  DO NOT EDIT MANUALLY unless you know what you are doing.
 # 🔑 API Keys are NOT stored here. They are read from your Environment Variables (e.g. GEMINI_API_KEY).
 
-{}"#, toml_str);
+{}"#,
+            toml_str
+        );
 
         if let Err(e) = fs::write(&path, commented_config) {
             eprintln!("⚠️ Failed to write config to {:?}: {}", path, e);
@@ -113,5 +115,3 @@ r#"# 🌌 VEGA Configuration File
         }
     }
 }
-
-

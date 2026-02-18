@@ -14,32 +14,41 @@
     {
       "_headerBounds": {
         "height": 30,
-        "width": 622.0470433949552,
-        "x": 1905.3893410899211,
-        "y": 302.1155238649098
+        "width": 160,
+        "x": -749.1075723840369,
+        "y": 1350.7135621717996
       },
       "bounds": {
         "height": 1250,
-        "width": 5100,
+        "width": 1950,
         "x": 0,
         "y": 0
       },
       "children": [
-        "node_env_rs",
-        "node_keyring_rs",
-        "node_pkg_rs",
-        "node_scanner_rs"
+        "node_env_rs"
       ],
       "collapsed": false,
-      "id": "cluster_15",
+      "id": "cluster_14",
       "label": "ROOT"
+    },
+    {
+      "bounds": {
+        "height": 1250,
+        "width": 1250,
+        "x": 800,
+        "y": 0
+      },
+      "children": [],
+      "collapsed": false,
+      "id": "cluster_15",
+      "label": "prompts"
     },
     {
       "_headerBounds": {
         "height": 30,
         "width": 160,
-        "x": 1555.036073400426,
-        "y": 606.6299916917317
+        "x": -297.0654398726437,
+        "y": 1351.6414970736128
       },
       "bounds": {
         "height": 1250,
@@ -51,15 +60,15 @@
         "node_src_ai_auth_manager_rs"
       ],
       "collapsed": false,
-      "id": "cluster_17",
+      "id": "cluster_16",
       "label": "src/ai"
     },
     {
       "_headerBounds": {
         "height": 30,
-        "width": 565.6134224088275,
-        "x": 1849.6859597284217,
-        "y": 594.8460170669138
+        "width": 525.7275028754577,
+        "x": -549.1221867799212,
+        "y": 1549.9985321954848
       },
       "bounds": {
         "height": 1250,
@@ -73,15 +82,27 @@
         "node_src_ai_providers_web_session_rs"
       ],
       "collapsed": false,
-      "id": "cluster_18",
+      "id": "cluster_17",
       "label": "src/ai/providers"
+    },
+    {
+      "bounds": {
+        "height": 1250,
+        "width": 1250,
+        "x": 0,
+        "y": 1200
+      },
+      "children": [],
+      "collapsed": false,
+      "id": "cluster_18",
+      "label": "src/auth"
     },
     {
       "_headerBounds": {
         "height": 30,
-        "width": 369.9137723325275,
-        "x": 2451.066801724604,
-        "y": 590.8545234926621
+        "width": 308.82326609515906,
+        "x": -702.9676366617798,
+        "y": 1150.8418423301493
       },
       "bounds": {
         "height": 1250,
@@ -94,15 +115,83 @@
         "node_src_setup_rs"
       ],
       "collapsed": false,
-      "id": "cluster_20",
+      "id": "cluster_19",
       "label": "src"
+    },
+    {
+      "bounds": {
+        "height": 1250,
+        "width": 1250,
+        "x": 1600,
+        "y": 1200
+      },
+      "children": [],
+      "collapsed": false,
+      "id": "cluster_20",
+      "label": "src/connection"
     },
     {
       "_headerBounds": {
         "height": 30,
         "width": 160,
-        "x": 2618.763956679813,
-        "y": 890.8548349489605
+        "x": -949.2317088514757,
+        "y": 1151.5172691392593
+      },
+      "bounds": {
+        "height": 1250,
+        "width": 1950,
+        "x": 2400,
+        "y": 1200
+      },
+      "children": [
+        "node_src_executor_pkg_rs"
+      ],
+      "collapsed": false,
+      "id": "cluster_21",
+      "label": "src/executor"
+    },
+    {
+      "bounds": {
+        "height": 1250,
+        "width": 1250,
+        "x": 0,
+        "y": 2400
+      },
+      "children": [],
+      "collapsed": false,
+      "id": "cluster_22",
+      "label": "src/remote"
+    },
+    {
+      "bounds": {
+        "height": 1250,
+        "width": 1250,
+        "x": 800,
+        "y": 2400
+      },
+      "children": [],
+      "collapsed": false,
+      "id": "cluster_23",
+      "label": "src/reporting"
+    },
+    {
+      "bounds": {
+        "height": 1250,
+        "width": 1250,
+        "x": 1600,
+        "y": 2400
+      },
+      "children": [],
+      "collapsed": false,
+      "id": "cluster_24",
+      "label": "src/safety"
+    },
+    {
+      "_headerBounds": {
+        "height": 30,
+        "width": 160,
+        "x": -550.2686399583837,
+        "y": 1351.0106901163836
       },
       "bounds": {
         "height": 1250,
@@ -111,61 +200,51 @@
         "y": 2400
       },
       "children": [
-        "node_src_scan_env_rs"
+        "node_src_security_keyring_rs"
       ],
       "collapsed": false,
-      "id": "cluster_26",
-      "label": "src/scan"
+      "id": "cluster_25",
+      "label": "src/security"
     },
     {
-      "_headerBounds": {
-        "height": 30,
-        "width": 160,
-        "x": 1559.3334494282703,
-        "y": 854.650099189532
-      },
       "bounds": {
         "height": 1250,
         "width": 1250,
         "x": 0,
         "y": 3600
       },
-      "children": [
-        "node_src_security_keyring_rs"
-      ],
+      "children": [],
       "collapsed": false,
-      "id": "cluster_27",
-      "label": "src/security"
+      "id": "cluster_26",
+      "label": "src/storage"
     },
     {
       "_headerBounds": {
         "height": 30,
-        "width": 697.5590432083673,
-        "x": 1793.0879685024624,
-        "y": 1042.232025109313
+        "width": 365.7633249031471,
+        "x": -965.2680923809972,
+        "y": 1550.217832441699
       },
       "bounds": {
         "height": 1250,
-        "width": 3350,
-        "x": 1600,
+        "width": 2300,
+        "x": 800,
         "y": 3600
       },
       "children": [
         "node_src_system_config_rs",
-        "node_src_system_env_scanner_rs",
-        "node_src_system_global_rs",
-        "node_src_system_scanner_rs"
+        "node_src_system_env_scanner_rs"
       ],
       "collapsed": false,
-      "id": "cluster_29",
+      "id": "cluster_27",
       "label": "src/system"
     },
     {
       "_headerBounds": {
         "height": 30,
-        "width": 964.9427372953489,
-        "x": 1856.3542816556862,
-        "y": -289.46433576413455
+        "width": 915.1783794087746,
+        "x": -999.7527764683417,
+        "y": 950.5787551494662
       },
       "bounds": {
         "height": 1200,
@@ -179,7 +258,9 @@
         "node_README_md",
         "node_README_KR_md",
         "node_architecture_md",
-        "node_prompts_2026_02_17_save_token_md"
+        "node_prompts_2026_02_17_save_token_md",
+        "node_prompts_2026_02_18_manual_snapshot_md",
+        "node_prompts_2026_02_18_selection_ungrouped_md"
       ],
       "collapsed": false,
       "id": "doc_shelf",
@@ -188,9 +269,9 @@
     {
       "_headerBounds": {
         "height": 30,
-        "width": 2916.0210521917616,
-        "x": -1738.5269629682618,
-        "y": -449.68950630860894
+        "width": 160,
+        "x": 4569.634049874911,
+        "y": 200
       },
       "bounds": {
         "height": 1200,
@@ -198,65 +279,7 @@
         "x": 4200,
         "y": 0
       },
-      "children": [
-        "node_auth_manager_rs",
-        "node_config_rs",
-        "node_env_scanner_rs",
-        "node_gemini_rs",
-        "node_global_rs",
-        "node_init_env_sh",
-        "node_main_rs",
-        "node_mod_rs",
-        "node_os_rs",
-        "node_setup_rs",
-        "node_vertex_ai_rs",
-        "node_vm_rs",
-        "node_web_session_rs",
-        "node_src_ai_mod_rs",
-        "node_src_ai_prompts_rs",
-        "node_src_ai_router_rs",
-        "node_src_ai_providers_mock_rs",
-        "node_src_ai_providers_mod_rs",
-        "node_src_ai_providers_offline_rs",
-        "node_src_auth_google_rs",
-        "node_src_auth_mod_rs",
-        "node_src_config_rs",
-        "node_src_context_rs",
-        "node_src_init_rs",
-        "node_src_interactor_rs",
-        "node_src_knowledge_rs",
-        "node_src_lib_rs",
-        "node_src_logger_rs",
-        "node_src_shell_rs",
-        "node_src_token_saver_rs",
-        "node_src_connection_mod_rs",
-        "node_src_connection_ssh_rs",
-        "node_src_executor_healer_rs",
-        "node_src_executor_mod_rs",
-        "node_src_executor_orchestrator_rs",
-        "node_src_executor_pkg_rs",
-        "node_src_executor_status_rs",
-        "node_src_remote_mod_rs",
-        "node_src_reporting_mod_rs",
-        "node_src_safety_checker_rs",
-        "node_src_safety_mod_rs",
-        "node_src_safety_sanitizer_rs",
-        "node_src_safety_ui_rs",
-        "node_src_scan_mod_rs",
-        "node_src_scan_vm_rs",
-        "node_src_security_mod_rs",
-        "node_src_storage_db_rs",
-        "node_src_storage_mod_rs",
-        "node_src_system_archivist_rs",
-        "node_src_system_discovery_rs",
-        "node_src_system_docker_rs",
-        "node_src_system_healer_rs",
-        "node_src_system_mod_rs",
-        "node_src_system_os_rs",
-        "node_src_system_sanitizer_rs",
-        "node_src_system_storage_rs",
-        "node_src_system_virt_rs"
-      ],
+      "children": [],
       "collapsed": true,
       "id": "storage_cluster",
       "label": "📦 Ghost Nodes (Storage)"
@@ -266,7 +289,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_README_md",
-      "id": "edge_14",
+      "id": "edge_11",
       "is_approved": false,
       "to": "node_README_KR_md",
       "type": "dependency",
@@ -285,9 +308,9 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_auth_manager_rs",
-      "id": "edge_15",
+      "id": "edge_12",
       "is_approved": false,
-      "to": "node_keyring_rs",
+      "to": "node_src_security_keyring_rs",
       "type": "dependency",
       "validation": {
         "confidence": 0.95,
@@ -304,9 +327,9 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_providers_gemini_rs",
-      "id": "edge_16",
+      "id": "edge_13",
       "is_approved": false,
-      "to": "node_keyring_rs",
+      "to": "node_src_security_keyring_rs",
       "type": "dependency",
       "validation": {
         "confidence": 0.95,
@@ -323,9 +346,9 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_providers_vertex_ai_rs",
-      "id": "edge_17",
+      "id": "edge_14",
       "is_approved": false,
-      "to": "node_keyring_rs",
+      "to": "node_src_security_keyring_rs",
       "type": "dependency",
       "validation": {
         "confidence": 0.95,
@@ -342,9 +365,9 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_providers_web_session_rs",
-      "id": "edge_18",
+      "id": "edge_15",
       "is_approved": false,
-      "to": "node_keyring_rs",
+      "to": "node_src_security_keyring_rs",
       "type": "dependency",
       "validation": {
         "confidence": 0.95,
@@ -361,6 +384,63 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_main_rs",
+      "id": "edge_16",
+      "is_approved": false,
+      "to": "node_env_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_src_main_rs",
+      "id": "edge_17",
+      "is_approved": false,
+      "to": "node_src_executor_pkg_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_src_security_keyring_rs",
+      "id": "edge_18",
+      "is_approved": false,
+      "to": "node_env_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      },
+      "visual": {
+        "animated": false,
+        "color": "#ebdbb2",
+        "style": "dashed",
+        "thickness": 2
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_src_setup_rs",
       "id": "edge_19",
       "is_approved": false,
       "to": "node_env_rs",
@@ -379,10 +459,10 @@
     },
     {
       "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_main_rs",
+      "from": "node_src_system_config_rs",
       "id": "edge_20",
       "is_approved": false,
-      "to": "node_pkg_rs",
+      "to": "node_env_rs",
       "type": "dependency",
       "validation": {
         "confidence": 0.95,
@@ -398,7 +478,7 @@
     },
     {
       "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_scan_env_rs",
+      "from": "node_src_system_env_scanner_rs",
       "id": "edge_21",
       "is_approved": false,
       "to": "node_env_rs",
@@ -417,122 +497,8 @@
     },
     {
       "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_security_keyring_rs",
-      "id": "edge_22",
-      "is_approved": false,
-      "to": "node_env_rs",
-      "type": "dependency",
-      "validation": {
-        "confidence": 0.95,
-        "reason": "Appropriate architectural relationship.",
-        "valid": true
-      },
-      "visual": {
-        "animated": false,
-        "color": "#ebdbb2",
-        "style": "dashed",
-        "thickness": 2
-      }
-    },
-    {
-      "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_setup_rs",
-      "id": "edge_23",
-      "is_approved": false,
-      "to": "node_env_rs",
-      "type": "dependency",
-      "validation": {
-        "confidence": 0.95,
-        "reason": "Appropriate architectural relationship.",
-        "valid": true
-      },
-      "visual": {
-        "animated": false,
-        "color": "#ebdbb2",
-        "style": "dashed",
-        "thickness": 2
-      }
-    },
-    {
-      "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_system_config_rs",
-      "id": "edge_24",
-      "is_approved": false,
-      "to": "node_env_rs",
-      "type": "dependency",
-      "validation": {
-        "confidence": 0.95,
-        "reason": "Appropriate architectural relationship.",
-        "valid": true
-      },
-      "visual": {
-        "animated": false,
-        "color": "#ebdbb2",
-        "style": "dashed",
-        "thickness": 2
-      }
-    },
-    {
-      "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_system_env_scanner_rs",
-      "id": "edge_25",
-      "is_approved": false,
-      "to": "node_env_rs",
-      "type": "dependency",
-      "validation": {
-        "confidence": 0.95,
-        "reason": "Appropriate architectural relationship.",
-        "valid": true
-      },
-      "visual": {
-        "animated": false,
-        "color": "#ebdbb2",
-        "style": "dashed",
-        "thickness": 2
-      }
-    },
-    {
-      "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_system_global_rs",
-      "id": "edge_26",
-      "is_approved": false,
-      "to": "node_scanner_rs",
-      "type": "dependency",
-      "validation": {
-        "confidence": 0.95,
-        "reason": "Appropriate architectural relationship.",
-        "valid": true
-      },
-      "visual": {
-        "animated": false,
-        "color": "#ebdbb2",
-        "style": "dashed",
-        "thickness": 2
-      }
-    },
-    {
-      "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_system_scanner_rs",
-      "id": "edge_27",
-      "is_approved": false,
-      "to": "node_env_rs",
-      "type": "dependency",
-      "validation": {
-        "confidence": 0.95,
-        "reason": "Appropriate architectural relationship.",
-        "valid": true
-      },
-      "visual": {
-        "animated": false,
-        "color": "#ebdbb2",
-        "style": "dashed",
-        "thickness": 2
-      }
-    },
-    {
-      "_validationReason": "Appropriate architectural relationship.",
       "from": "node_README_md",
-      "id": "edge_auto_1771404890242_924",
+      "id": "edge_auto_1771414022074_473",
       "label": "ref",
       "to": "node_README_KR_md",
       "type": "dependency",
@@ -545,7 +511,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_auth_manager_rs",
-      "id": "edge_auto_1771404890243_875",
+      "id": "edge_auto_1771414022074_239",
       "label": "ref",
       "to": "node_src_security_keyring_rs",
       "type": "dependency",
@@ -558,7 +524,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_providers_gemini_rs",
-      "id": "edge_auto_1771404890243_217",
+      "id": "edge_auto_1771414022074_133",
       "label": "ref",
       "to": "node_src_security_keyring_rs",
       "type": "dependency",
@@ -571,7 +537,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_providers_vertex_ai_rs",
-      "id": "edge_auto_1771404890243_573",
+      "id": "edge_auto_1771414022074_40",
       "label": "ref",
       "to": "node_src_security_keyring_rs",
       "type": "dependency",
@@ -584,7 +550,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_providers_web_session_rs",
-      "id": "edge_auto_1771404890243_895",
+      "id": "edge_auto_1771414022074_619",
       "label": "ref",
       "to": "node_src_security_keyring_rs",
       "type": "dependency",
@@ -597,9 +563,9 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_main_rs",
-      "id": "edge_auto_1771404890243_580",
+      "id": "edge_auto_1771414022074_557",
       "label": "ref",
-      "to": "node_src_scan_env_rs",
+      "to": "node_env_rs",
       "type": "dependency",
       "validation": {
         "confidence": 0.95,
@@ -610,7 +576,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_main_rs",
-      "id": "edge_auto_1771404890243_280",
+      "id": "edge_auto_1771414022074_447",
       "label": "ref",
       "to": "node_src_executor_pkg_rs",
       "type": "dependency",
@@ -623,9 +589,9 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_setup_rs",
-      "id": "edge_auto_1771404890243_354",
+      "id": "edge_auto_1771414022074_924",
       "label": "ref",
-      "to": "node_src_scan_env_rs",
+      "to": "node_env_rs",
       "type": "dependency",
       "validation": {
         "confidence": 0.95,
@@ -636,9 +602,9 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_security_keyring_rs",
-      "id": "edge_auto_1771404890243_535",
+      "id": "edge_auto_1771414022074_528",
       "label": "ref",
-      "to": "node_src_scan_env_rs",
+      "to": "node_env_rs",
       "type": "dependency",
       "validation": {
         "confidence": 0.95,
@@ -649,9 +615,9 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_system_config_rs",
-      "id": "edge_auto_1771404890243_569",
+      "id": "edge_auto_1771414022074_326",
       "label": "ref",
-      "to": "node_src_scan_env_rs",
+      "to": "node_env_rs",
       "type": "dependency",
       "validation": {
         "confidence": 0.95,
@@ -662,35 +628,9 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_system_env_scanner_rs",
-      "id": "edge_auto_1771404890243_714",
+      "id": "edge_auto_1771414022074_59",
       "label": "ref",
-      "to": "node_src_scan_env_rs",
-      "type": "dependency",
-      "validation": {
-        "confidence": 0.95,
-        "reason": "Appropriate architectural relationship.",
-        "valid": true
-      }
-    },
-    {
-      "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_system_global_rs",
-      "id": "edge_auto_1771404890243_903",
-      "label": "ref",
-      "to": "node_src_system_scanner_rs",
-      "type": "dependency",
-      "validation": {
-        "confidence": 0.95,
-        "reason": "Appropriate architectural relationship.",
-        "valid": true
-      }
-    },
-    {
-      "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_system_scanner_rs",
-      "id": "edge_auto_1771404890243_505",
-      "label": "ref",
-      "to": "node_src_scan_env_rs",
+      "to": "node_env_rs",
       "type": "dependency",
       "validation": {
         "confidence": 0.95,
@@ -720,15 +660,12 @@
       },
       "id": "node_2026_02_17_save_token_md",
       "position": {
-        "x": 1876.3542816556862,
-        "y": -236.62710716375165
+        "x": -979.7527764683417,
+        "y": 1000.5787551494662
       },
-      "status": "proposed",
+      "status": "active",
       "type": "documentation",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
@@ -740,25 +677,19 @@
         "layer": 0,
         "priority": 1,
         "summary": {
-          "classes": [
-            "Current Architecture (Phase 1)",
-            "Current Architecture (Phase 4) [LATEST]"
-          ],
+          "classes": [],
           "functions": [],
           "references": []
         }
       },
       "id": "node_GEMINI_md",
       "position": {
-        "x": 2076.3542816556856,
-        "y": -236.62710716375165
+        "x": -779.7527764683424,
+        "y": 1000.5787551494662
       },
-      "status": "proposed",
+      "status": "active",
       "type": "documentation",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
@@ -811,15 +742,12 @@
       },
       "id": "node_README_md",
       "position": {
-        "x": 2276.354281655686,
-        "y": -236.62710716375165
+        "x": -579.7527764683425,
+        "y": 1000.5787551494662
       },
-      "status": "proposed",
+      "status": "active",
       "type": "documentation",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
@@ -860,15 +788,12 @@
       },
       "id": "node_README_KR_md",
       "position": {
-        "x": 2476.354281655686,
-        "y": -236.62710716375165
+        "x": -379.75277646834195,
+        "y": 1000.5787551494662
       },
-      "status": "proposed",
+      "status": "active",
       "type": "documentation",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
@@ -889,70 +814,16 @@
       },
       "id": "node_architecture_md",
       "position": {
-        "x": 2681.297018951035,
-        "y": -239.46433576413455
-      },
-      "status": "proposed",
-      "type": "documentation",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "auth_manager.rs (Auto-detected)",
-        "file": "auth_manager.rs",
-        "label": "auth_manager.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_auth_manager_rs",
-      "position": {
-        "x": -1718.5269629682618,
-        "y": -347.37086766611554
+        "x": -224.5743970595671,
+        "y": 1003.4685424368976
       },
       "status": "active",
-      "type": "source",
+      "type": "documentation",
       "visual": {}
     },
     {
       "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "config.rs (Auto-detected)",
-        "file": "config.rs",
-        "label": "config.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_config_rs",
-      "position": {
-        "x": -1518.526962968261,
-        "y": -297.37086766611526
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_15",
+        "cluster_id": "cluster_14",
         "color": "#b8bb26",
         "description": "env.rs (Auto-detected)",
         "file": "env.rs",
@@ -967,385 +838,12 @@
       },
       "id": "node_env_rs",
       "position": {
-        "x": 1925.3893410899211,
-        "y": 352.38798929036295
+        "x": -729.1075723840369,
+        "y": 1400.7135621717996
       },
       "status": "active",
       "type": "source",
       "visual": {}
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "env_scanner.rs (Auto-detected)",
-        "file": "env_scanner.rs",
-        "label": "env_scanner.rs",
-        "layer": 0,
-        "priority": 8,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_env_scanner_rs",
-      "position": {
-        "x": -1318.526962968261,
-        "y": -97.37086766611519
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "gemini.rs (Auto-detected)",
-        "file": "gemini.rs",
-        "label": "gemini.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_gemini_rs",
-      "position": {
-        "x": -1718.5269629682618,
-        "y": -197.37086766611523
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "global.rs (Auto-detected)",
-        "file": "global.rs",
-        "label": "global.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_global_rs",
-      "position": {
-        "x": -1518.526962968261,
-        "y": -147.37086766611523
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "init_env.sh (Auto-detected)",
-        "file": "init_env.sh",
-        "label": "init_env.sh",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": [
-            "2",
-            "rustup",
-            "rs"
-          ]
-        }
-      },
-      "id": "node_init_env_sh",
-      "position": {
-        "x": -1318.526962968261,
-        "y": -97.37086766611519
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_15",
-        "color": "#b8bb26",
-        "description": "keyring.rs (Auto-detected)",
-        "file": "keyring.rs",
-        "label": "keyring.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_keyring_rs",
-      "position": {
-        "x": 2087.36456176776,
-        "y": 352.1155238649098
-      },
-      "status": "active",
-      "type": "source",
-      "visual": {}
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "main.rs (Auto-detected)",
-        "file": "main.rs",
-        "label": "main.rs",
-        "layer": 0,
-        "priority": 5,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_main_rs",
-      "position": {
-        "x": -1718.5269629682618,
-        "y": -47.37086766611524
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "mod.rs",
-        "label": "mod.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_mod_rs",
-      "position": {
-        "x": -1518.526962968261,
-        "y": 2.629132333884761
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "os.rs (Auto-detected)",
-        "file": "os.rs",
-        "label": "os.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_os_rs",
-      "position": {
-        "x": -1318.526962968261,
-        "y": 52.629132333884776
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_15",
-        "color": "#b8bb26",
-        "description": "pkg.rs (Auto-detected)",
-        "file": "pkg.rs",
-        "label": "pkg.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_pkg_rs",
-      "position": {
-        "x": 2387.4363844848763,
-        "y": 360.2003863678702
-      },
-      "status": "active",
-      "type": "source",
-      "visual": {}
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_15",
-        "color": "#b8bb26",
-        "description": "scanner.rs (Auto-detected)",
-        "file": "scanner.rs",
-        "label": "scanner.rs",
-        "layer": 0,
-        "priority": 8,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_scanner_rs",
-      "position": {
-        "x": 2237.001414432942,
-        "y": 358.82591334386206
-      },
-      "status": "active",
-      "type": "source",
-      "visual": {}
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "setup.rs (Auto-detected)",
-        "file": "setup.rs",
-        "label": "setup.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_setup_rs",
-      "position": {
-        "x": -1518.526962968261,
-        "y": 152.62913233388477
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "vertex_ai.rs (Auto-detected)",
-        "file": "vertex_ai.rs",
-        "label": "vertex_ai.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_vertex_ai_rs",
-      "position": {
-        "x": -1318.526962968261,
-        "y": 202.62913233388477
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "vm.rs (Auto-detected)",
-        "file": "vm.rs",
-        "label": "vm.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_vm_rs",
-      "position": {
-        "x": -1718.5269629682618,
-        "y": 252.629132333885
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "web_session.rs (Auto-detected)",
-        "file": "web_session.rs",
-        "label": "web_session.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_web_session_rs",
-      "position": {
-        "x": -1518.526962968261,
-        "y": 302.62913233388497
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
     },
     {
       "data": {
@@ -1370,19 +868,76 @@
       },
       "id": "node_prompts_2026_02_17_save_token_md",
       "position": {
-        "x": 1876.3542816556862,
-        "y": -236.62710716375165
+        "x": -979.7527764683417,
+        "y": 1000.5787551494662
       },
-      "status": "proposed",
+      "status": "active",
       "type": "documentation",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
-        "cluster_id": "cluster_17",
+        "cluster_id": "doc_shelf",
+        "color": "#fabd2f",
+        "description": "2026-02-18_manual_snapshot.md (Doc)",
+        "file": "prompts/2026-02-18_manual_snapshot.md",
+        "label": "2026-02-18_manual_snapshot.md",
+        "layer": 0,
+        "priority": 1,
+        "summary": {
+          "classes": [
+            "Manual Snapshot",
+            "🎯 Goal",
+            "🧠 Key Decisions",
+            "🔗 Context & References",
+            "📝 Original Prompt"
+          ],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_prompts_2026_02_18_manual_snapshot_md",
+      "position": {
+        "x": -779.7527764683424,
+        "y": 1000.5787551494662
+      },
+      "status": "active",
+      "type": "documentation",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "doc_shelf",
+        "color": "#fabd2f",
+        "description": "2026-02-18_selection_ungrouped.md (Doc)",
+        "file": "prompts/2026-02-18_selection_ungrouped.md",
+        "label": "2026-02-18_selection_ungrouped.md",
+        "layer": 0,
+        "priority": 1,
+        "summary": {
+          "classes": [
+            "Selection Ungrouped",
+            "🎯 Goal",
+            "🧠 Key Decisions",
+            "🔗 Context & References",
+            "📝 Original Prompt"
+          ],
+          "functions": [],
+          "references": []
+        }
+      },
+      "id": "node_prompts_2026_02_18_selection_ungrouped_md",
+      "position": {
+        "x": -579.7527764683425,
+        "y": 1000.5787551494662
+      },
+      "status": "active",
+      "type": "documentation",
+      "visual": {}
+    },
+    {
+      "data": {
+        "cluster_id": "cluster_16",
         "color": "#b8bb26",
         "description": "auth_manager.rs (Auto-detected)",
         "file": "src/ai/auth_manager.rs",
@@ -1410,8 +965,8 @@
       },
       "id": "node_src_ai_auth_manager_rs",
       "position": {
-        "x": 1575.036073400426,
-        "y": 656.6299916917317
+        "x": -277.0654398726437,
+        "y": 1401.6414970736128
       },
       "status": "active",
       "type": "source",
@@ -1419,130 +974,7 @@
     },
     {
       "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/ai/mod.rs",
-        "label": "mod.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "LlmProvider",
-            "AiError",
-            "RiskLevel",
-            "AiResponse",
-            "QuotaStatus",
-            "AiProvider",
-            "std"
-          ],
-          "functions": [
-            "fmt",
-            "name",
-            "get_quota_status",
-            "generate_response"
-          ],
-          "references": [
-            "Deserialize",
-            "SystemContext",
-            "async_trait",
-            "Error"
-          ]
-        }
-      },
-      "id": "node_src_ai_mod_rs",
-      "position": {
-        "x": -60.63618330505842,
-        "y": -399.68950630860894
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "prompts.rs (Auto-detected)",
-        "file": "src/ai/prompts.rs",
-        "label": "prompts.rs",
-        "layer": 1,
-        "priority": 20,
-        "summary": {
-          "classes": [
-            "SystemPrompt"
-          ],
-          "functions": [
-            "build"
-          ],
-          "references": [
-            "SystemContext"
-          ]
-        }
-      },
-      "id": "node_src_ai_prompts_rs",
-      "position": {
-        "x": 145.55248937651348,
-        "y": -349.68950630860917
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "router.rs (Auto-detected)",
-        "file": "src/ai/router.rs",
-        "label": "router.rs",
-        "layer": 1,
-        "priority": 20,
-        "summary": {
-          "classes": [
-            "SmartRouter",
-            "EngineType"
-          ],
-          "functions": [
-            "determine_engine",
-            "get_provider",
-            "get_cache_path",
-            "load_quota_state",
-            "save_quota_state",
-            "generate_with_fallback",
-            "get_context_summary"
-          ],
-          "references": [
-            "GeminiProvider",
-            "OfflineEngine",
-            "VertexAiProvider",
-            "AiProvider",
-            "debug",
-            "BufRead"
-          ]
-        }
-      },
-      "id": "node_src_ai_router_rs",
-      "position": {
-        "x": -275.79522985522794,
-        "y": -299.6895063086091
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_18",
+        "cluster_id": "cluster_17",
         "color": "#b8bb26",
         "description": "gemini.rs (Auto-detected)",
         "file": "src/ai/providers/gemini.rs",
@@ -1573,8 +1005,8 @@
       },
       "id": "node_src_ai_providers_gemini_rs",
       "position": {
-        "x": 1869.6859597284217,
-        "y": 648.8333755747768
+        "x": -529.1221867799212,
+        "y": 1606.063413258077
       },
       "status": "active",
       "type": "source",
@@ -1582,117 +1014,7 @@
     },
     {
       "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mock.rs (Auto-detected)",
-        "file": "src/ai/providers/mock.rs",
-        "label": "mock.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "MockProvider"
-          ],
-          "functions": [
-            "new",
-            "add_response",
-            "name",
-            "get_quota_status",
-            "generate_response"
-          ],
-          "references": [
-            "AiProvider",
-            "SystemContext",
-            "async_trait",
-            "json",
-            "HashMap"
-          ]
-        }
-      },
-      "id": "node_src_ai_providers_mock_rs",
-      "position": {
-        "x": 739.3638166949414,
-        "y": -399.68950630860894
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/ai/providers/mod.rs",
-        "label": "mod.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_src_ai_providers_mod_rs",
-      "position": {
-        "x": 939.3638166949414,
-        "y": -349.68950630860917
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "offline.rs (Auto-detected)",
-        "file": "src/ai/providers/offline.rs",
-        "label": "offline.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "OfflineEngine"
-          ],
-          "functions": [
-            "new",
-            "map_query",
-            "name",
-            "get_quota_status",
-            "generate_response",
-            "search_history_rag"
-          ],
-          "references": [
-            "AiProvider",
-            "SystemContext",
-            "sanitize_string",
-            "async_trait",
-            "json"
-          ]
-        }
-      },
-      "id": "node_src_ai_providers_offline_rs",
-      "position": {
-        "x": 539.3638166949414,
-        "y": -299.6895063086091
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_18",
+        "cluster_id": "cluster_17",
         "color": "#b8bb26",
         "description": "vertex_ai.rs (Auto-detected)",
         "file": "src/ai/providers/vertex_ai.rs",
@@ -1722,19 +1044,16 @@
       },
       "id": "node_src_ai_providers_vertex_ai_rs",
       "position": {
-        "x": 2076.1366463747713,
-        "y": 644.8460170669138
+        "x": -361.7290421157956,
+        "y": 1599.9985321954848
       },
-      "status": "proposed",
+      "status": "active",
       "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
-        "cluster_id": "cluster_18",
+        "cluster_id": "cluster_17",
         "color": "#b8bb26",
         "description": "web_session.rs (Auto-detected)",
         "file": "src/ai/providers/web_session.rs",
@@ -1764,351 +1083,16 @@
       },
       "id": "node_src_ai_providers_web_session_rs",
       "position": {
-        "x": 2275.2993821372493,
-        "y": 648.154929767547
+        "x": -163.39468390446348,
+        "y": 1607.469374851918
       },
-      "status": "proposed",
+      "status": "active",
       "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "google.rs (Auto-detected)",
-        "file": "src/auth/google.rs",
-        "label": "google.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [
-            "login",
-            "prompt_input"
-          ],
-          "references": [
-            "BufRead",
-            "TcpListener"
-          ]
-        }
-      },
-      "id": "node_src_auth_google_rs",
-      "position": {
-        "x": -1559.3646361910503,
-        "y": 539.9888475929313
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/auth/mod.rs",
-        "label": "mod.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_src_auth_mod_rs",
-      "position": {
-        "x": -1359.3646361910494,
-        "y": 589.9888475929315
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "config.rs (Auto-detected)",
-        "file": "src/config.rs",
-        "label": "config.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "VegaConfig",
-            "AiConfig",
-            "VertexAiConfig",
-            "SystemConfig",
-            "DependenciesConfig",
-            "ExecutionConfig",
-            "OptimizationConfig"
-          ],
-          "functions": [
-            "load",
-            "validate"
-          ],
-          "references": [
-            "Deserialize",
-            "fs"
-          ]
-        }
-      },
-      "id": "node_src_config_rs",
-      "position": {
-        "x": -1128.8486090667197,
-        "y": -358.1414249356265
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "context.rs (Auto-detected)",
-        "file": "src/context.rs",
-        "label": "context.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "Partition",
-            "PartitionType",
-            "SystemContext"
-          ],
-          "functions": [
-            "new",
-            "collect",
-            "get_os_info",
-            "get_kernel_version",
-            "get_load_avg",
-            "get_mem_info",
-            "get_block_devices",
-            "detect_pkg_manager",
-            "detect_vm",
-            "detect_git_user",
-            "detect_plugin_manager",
-            "detect_current_project"
-          ],
-          "references": [
-            "VirtualMachine",
-            "Deserialize",
-            "Value",
-            "HashMap",
-            "fs",
-            "Command"
-          ]
-        }
-      },
-      "id": "node_src_context_rs",
-      "position": {
-        "x": -928.848609066721,
-        "y": -308.1414249356267
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "init.rs (Auto-detected)",
-        "file": "src/init.rs",
-        "label": "init.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [
-            "bootstrap",
-            "get_config_path"
-          ],
-          "references": [
-            "PathBuf",
-            "fs",
-            "VegaConfig",
-            "SystemContext",
-            "dirs"
-          ]
-        }
-      },
-      "id": "node_src_init_rs",
-      "position": {
-        "x": -728.848609066721,
-        "y": -258.1414249356267
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "interactor.rs (Auto-detected)",
-        "file": "src/interactor.rs",
-        "label": "interactor.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "Interactor"
-          ],
-          "functions": [
-            "select_with_fzf",
-            "confirm"
-          ],
-          "references": [
-            "Command",
-            "Write",
-            "self"
-          ]
-        }
-      },
-      "id": "node_src_interactor_rs",
-      "position": {
-        "x": -1128.8486090667197,
-        "y": -208.14142493562676
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "knowledge.rs (Auto-detected)",
-        "file": "src/knowledge.rs",
-        "label": "knowledge.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "KnowledgeEntry",
-            "KnowledgeBase"
-          ],
-          "functions": [
-            "load",
-            "save",
-            "add",
-            "get",
-            "get_path"
-          ],
-          "references": [
-            "Deserialize",
-            "HashMap",
-            "fs",
-            "PathBuf",
-            "md5"
-          ]
-        }
-      },
-      "id": "node_src_knowledge_rs",
-      "position": {
-        "x": -928.848609066721,
-        "y": -158.141424935627
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "lib.rs (Auto-detected)",
-        "file": "src/lib.rs",
-        "label": "lib.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_src_lib_rs",
-      "position": {
-        "x": -728.848609066721,
-        "y": -108.14142493562694
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "logger.rs (Auto-detected)",
-        "file": "src/logger.rs",
-        "label": "logger.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "LogEntry",
-            "ExecutionLogger"
-          ],
-          "functions": [
-            "new",
-            "log"
-          ],
-          "references": [
-            "OpenOptions",
-            "Write",
-            "Local",
-            "Serialize",
-            "OpenOptionsExt"
-          ]
-        }
-      },
-      "id": "node_src_logger_rs",
-      "position": {
-        "x": -1128.8486090667197,
-        "y": -58.14142493562711
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_20",
+        "cluster_id": "cluster_19",
         "color": "#b8bb26",
         "description": "main.rs (Auto-detected)",
         "file": "src/main.rs",
@@ -2144,19 +1128,16 @@
       },
       "id": "node_src_main_rs",
       "position": {
-        "x": 2471.066801724604,
-        "y": 651.487034283828
+        "x": -682.9676366617798,
+        "y": 1200.8418423301493
       },
-      "status": "proposed",
+      "status": "active",
       "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
-        "cluster_id": "cluster_20",
+        "cluster_id": "cluster_19",
         "color": "#b8bb26",
         "description": "setup.rs (Auto-detected)",
         "file": "src/setup.rs",
@@ -2179,279 +1160,22 @@
             "SystemContext",
             "env",
             "fs",
-            "self",
-            "scan"
+            "self"
           ]
         }
       },
       "id": "node_src_setup_rs",
       "position": {
-        "x": 2680.9805740571314,
-        "y": 640.8545234926621
+        "x": -534.1443705666208,
+        "y": 1208.424782215388
       },
-      "status": "proposed",
+      "status": "active",
       "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "shell.rs (Auto-detected)",
-        "file": "src/shell.rs",
-        "label": "shell.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "ShellSnapshot"
-          ],
-          "functions": [
-            "new",
-            "save",
-            "load",
-            "dump_aliases",
-            "dump_zoxide"
-          ],
-          "references": [
-            "Command",
-            "fs",
-            "Deserialize",
-            "HashMap"
-          ]
-        }
-      },
-      "id": "node_src_shell_rs",
-      "position": {
-        "x": -728.848609066721,
-        "y": 41.85857506437302
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "token_saver.rs (Auto-detected)",
-        "file": "src/token_saver.rs",
-        "label": "token_saver.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "Action",
-            "TokenSaver"
-          ],
-          "functions": [
-            "new",
-            "load_cache",
-            "load_history",
-            "match_local_intent",
-            "check_cache",
-            "search_history"
-          ],
-          "references": [
-            "HashMap",
-            "fs",
-            "Deserialize",
-            "Regex",
-            "Value"
-          ]
-        }
-      },
-      "id": "node_src_token_saver_rs",
-      "position": {
-        "x": -1128.8486090667197,
-        "y": 91.85857506437279
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/connection/mod.rs",
-        "label": "mod.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_src_connection_mod_rs",
-      "position": {
-        "x": -260.63618330505824,
-        "y": 17.026916753517547
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "ssh.rs (Auto-detected)",
-        "file": "src/connection/ssh.rs",
-        "label": "ssh.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "SshConnection",
-            "DiagnosticResult",
-            "std"
-          ],
-          "functions": [
-            "fmt",
-            "check_connection",
-            "connect",
-            "detect_os",
-            "diagnose",
-            "execute_remote_async"
-          ],
-          "references": [
-            "Command"
-          ]
-        }
-      },
-      "id": "node_src_connection_ssh_rs",
-      "position": {
-        "x": -60.63618330505819,
-        "y": 67.02691675351767
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "healer.rs (Auto-detected)",
-        "file": "src/executor/healer.rs",
-        "label": "healer.rs",
-        "layer": 2,
-        "priority": 80,
-        "summary": {
-          "classes": [
-            "Healer"
-          ],
-          "functions": [
-            "diagnose",
-            "suggest_install"
-          ],
-          "references": [
-            "ExecuteResult",
-            "OsInfo"
-          ]
-        }
-      },
-      "id": "node_src_executor_healer_rs",
-      "position": {
-        "x": 539.3638166949414,
-        "y": 17.026916753517547
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/executor/mod.rs",
-        "label": "mod.rs",
-        "layer": 2,
-        "priority": 80,
-        "summary": {
-          "classes": [
-            "ExecuteResult"
-          ],
-          "functions": [],
-          "references": [
-            "Deserialize"
-          ]
-        }
-      },
-      "id": "node_src_executor_mod_rs",
-      "position": {
-        "x": 739.3638166949414,
-        "y": 67.02691675351767
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "orchestrator.rs (Auto-detected)",
-        "file": "src/executor/orchestrator.rs",
-        "label": "orchestrator.rs",
-        "layer": 2,
-        "priority": 80,
-        "summary": {
-          "classes": [],
-          "functions": [
-            "update_all"
-          ],
-          "references": [
-            "SshConnection",
-            "KnowledgeBase",
-            "join_all",
-            "Arc",
-            "signal",
-            "Semaphore"
-          ]
-        }
-      },
-      "id": "node_src_executor_orchestrator_rs",
-      "position": {
-        "x": 939.3638166949414,
-        "y": 117.02691675351767
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "cluster_id": null,
-      "data": {
-        "cluster_id": null,
+        "cluster_id": "cluster_21",
         "color": "#b8bb26",
         "description": "pkg.rs (Auto-detected)",
         "file": "src/executor/pkg.rs",
@@ -2485,8 +1209,8 @@
       },
       "id": "node_src_executor_pkg_rs",
       "position": {
-        "x": 2578.5744363549607,
-        "y": 357.43879173880777
+        "x": -929.2317088514757,
+        "y": 1201.5172691392593
       },
       "status": "active",
       "type": "source",
@@ -2494,332 +1218,7 @@
     },
     {
       "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "status.rs (Auto-detected)",
-        "file": "src/executor/status.rs",
-        "label": "status.rs",
-        "layer": 2,
-        "priority": 80,
-        "summary": {
-          "classes": [],
-          "functions": [
-            "show_status"
-          ],
-          "references": [
-            "KnowledgeBase"
-          ]
-        }
-      },
-      "id": "node_src_executor_status_rs",
-      "position": {
-        "x": 739.3638166949414,
-        "y": 217.02691675351744
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/remote/mod.rs",
-        "label": "mod.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "RemoteManager"
-          ],
-          "functions": [
-            "new",
-            "connect",
-            "exec_command"
-          ],
-          "references": [
-            "Session",
-            "TcpStream",
-            "Read",
-            "info"
-          ]
-        }
-      },
-      "id": "node_src_remote_mod_rs",
-      "position": {
-        "x": -962.5059107765024,
-        "y": 483.7433398156449
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/reporting/mod.rs",
-        "label": "mod.rs",
-        "layer": 2,
-        "priority": 80,
-        "summary": {
-          "classes": [
-            "ReportGenerator"
-          ],
-          "functions": [
-            "generate_markdown",
-            "generate_pdf"
-          ],
-          "references": [
-            "elements",
-            "fonts",
-            "Local",
-            "info"
-          ]
-        }
-      },
-      "id": "node_src_reporting_mod_rs",
-      "position": {
-        "x": -162.50591077650094,
-        "y": 483.7433398156449
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "checker.rs (Auto-detected)",
-        "file": "src/safety/checker.rs",
-        "label": "checker.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "RiskLevel"
-          ],
-          "functions": [
-            "check_risk_level"
-          ],
-          "references": []
-        }
-      },
-      "id": "node_src_safety_checker_rs",
-      "position": {
-        "x": 637.4940892234994,
-        "y": 483.7433398156449
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/safety/mod.rs",
-        "label": "mod.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_src_safety_mod_rs",
-      "position": {
-        "x": 837.4940892234995,
-        "y": 533.7433398156447
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "sanitizer.rs (Auto-detected)",
-        "file": "src/safety/sanitizer.rs",
-        "label": "sanitizer.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [
-            "sanitize_input"
-          ],
-          "references": [
-            "Regex",
-            "OnceLock"
-          ]
-        }
-      },
-      "id": "node_src_safety_sanitizer_rs",
-      "position": {
-        "x": 1037.4940892234997,
-        "y": 583.7433398156445
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "ui.rs (Auto-detected)",
-        "file": "src/safety/ui.rs",
-        "label": "ui.rs",
-        "layer": 2,
-        "priority": 80,
-        "summary": {
-          "classes": [],
-          "functions": [
-            "confirm_action"
-          ],
-          "references": [
-            "self",
-            "Colorize",
-            "RiskLevel"
-          ]
-        }
-      },
-      "id": "node_src_safety_ui_rs",
-      "position": {
-        "x": 637.4940892234994,
-        "y": 483.7433398156449
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_26",
-        "color": "#b8bb26",
-        "description": "env.rs (Auto-detected)",
-        "file": "src/scan/env.rs",
-        "label": "env.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [
-            "find_key"
-          ],
-          "references": [
-            "Regex",
-            "fs",
-            "env"
-          ]
-        }
-      },
-      "id": "node_src_scan_env_rs",
-      "position": {
-        "x": 2638.763956679813,
-        "y": 940.8548349489605
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/scan/mod.rs",
-        "label": "mod.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_src_scan_mod_rs",
-      "position": {
-        "x": -1716.2835107249105,
-        "y": 840.699255743127
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "vm.rs (Auto-detected)",
-        "file": "src/scan/vm.rs",
-        "label": "vm.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "VmInfo",
-            "VmScanner"
-          ],
-          "functions": [
-            "scan",
-            "get_ip"
-          ],
-          "references": [
-            "Deserialize",
-            "Command"
-          ]
-        }
-      },
-      "id": "node_src_scan_vm_rs",
-      "position": {
-        "x": -1516.2835107249105,
-        "y": 890.6992557431265
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_27",
+        "cluster_id": "cluster_25",
         "color": "#b8bb26",
         "description": "keyring.rs (Auto-detected)",
         "file": "src/security/keyring.rs",
@@ -2843,177 +1242,16 @@
       },
       "id": "node_src_security_keyring_rs",
       "position": {
-        "x": 1579.3334494282703,
-        "y": 904.650099189532
+        "x": -530.2686399583837,
+        "y": 1401.0106901163836
       },
-      "status": "proposed",
+      "status": "active",
       "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/security/mod.rs",
-        "label": "mod.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_src_security_mod_rs",
-      "position": {
-        "x": -1149.0429900925901,
-        "y": 926.5629683026377
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "db.rs (Auto-detected)",
-        "file": "src/storage/db.rs",
-        "label": "db.rs",
-        "layer": 2,
-        "priority": 70,
-        "summary": {
-          "classes": [
-            "Database",
-            "TaskEntry"
-          ],
-          "functions": [
-            "get_current_session_id",
-            "new",
-            "migrate",
-            "start_session",
-            "log_command",
-            "save_chat_message",
-            "add_execution_log",
-            "get_recent_history",
-            "get_failure_count",
-            "log_task",
-            "learn_solution",
-            "get_solution",
-            "record_task",
-            "get_session_tasks",
-            "set_metadata",
-            "get_metadata",
-            "search_relevant_context",
-            "get_all_commands",
-            "calculate_weight"
-          ],
-          "references": [
-            "params",
-            "SystemTime",
-            "PermissionsExt",
-            "fs"
-          ]
-        }
-      },
-      "id": "node_src_storage_db_rs",
-      "position": {
-        "x": -549.0429900925898,
-        "y": 876.562968302638
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/storage/mod.rs",
-        "label": "mod.rs",
-        "layer": 2,
-        "priority": 80,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_src_storage_mod_rs",
-      "position": {
-        "x": -349.04299009259034,
-        "y": 926.5629683026377
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "archivist.rs (Auto-detected)",
-        "file": "src/system/archivist.rs",
-        "label": "archivist.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "ArchiveEntry",
-            "Archivist"
-          ],
-          "functions": [
-            "log_execution",
-            "get_history_dir",
-            "append_to_json_history",
-            "append_to_daily_report",
-            "sanitize_command",
-            "archive_session"
-          ],
-          "references": [
-            "Database",
-            "ExecuteResult",
-            "AppConfig",
-            "self",
-            "Write",
-            "PathBuf",
-            "Local",
-            "Serialize",
-            "Regex",
-            "json",
-            "sanitize_string"
-          ]
-        }
-      },
-      "id": "node_src_system_archivist_rs",
-      "position": {
-        "x": 250.95700990741133,
-        "y": 876.562968302638
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_29",
+        "cluster_id": "cluster_27",
         "color": "#b8bb26",
         "description": "config.rs (Auto-detected)",
         "file": "src/system/config.rs",
@@ -3035,97 +1273,24 @@
           ],
           "references": [
             "Deserialize",
-            "fs",
-            "Path",
             "env",
-            "OsInfo"
+            "fs",
+            "Path"
           ]
         }
       },
       "id": "node_src_system_config_rs",
       "position": {
-        "x": 1992.7882769532057,
-        "y": 1100.0907598669378
+        "x": -739.5047674778501,
+        "y": 1605.8975189939276
       },
-      "status": "proposed",
+      "status": "active",
       "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
+      "visual": {}
     },
     {
       "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "discovery.rs (Auto-detected)",
-        "file": "src/system/discovery.rs",
-        "label": "discovery.rs",
-        "layer": 0,
-        "priority": 8,
-        "summary": {
-          "classes": [
-            "Discovery"
-          ],
-          "functions": [
-            "run",
-            "detect_plugin_manager"
-          ],
-          "references": [
-            "Command"
-          ]
-        }
-      },
-      "id": "node_src_system_discovery_rs",
-      "position": {
-        "x": 250.95700990741133,
-        "y": 876.562968302638
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "docker.rs (Auto-detected)",
-        "file": "src/system/docker.rs",
-        "label": "docker.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "Container",
-            "DockerManager"
-          ],
-          "functions": [
-            "list_containers"
-          ],
-          "references": [
-            "Command",
-            "Deserialize"
-          ]
-        }
-      },
-      "id": "node_src_system_docker_rs",
-      "position": {
-        "x": 650.9570099074114,
-        "y": 976.5629683026383
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_29",
+        "cluster_id": "cluster_27",
         "color": "#b8bb26",
         "description": "env_scanner.rs (Auto-detected)",
         "file": "src/system/env_scanner.rs",
@@ -3140,302 +1305,28 @@
           "functions": [
             "scan_shell_configs",
             "get_locale",
-            "validate_url"
+            "validate_url",
+            "find_key"
           ],
           "references": [
+            "debug",
+            "Regex",
+            "HashMap",
             "env",
             "File",
             "self",
-            "PathBuf",
-            "Regex",
-            "HashMap",
-            "debug"
+            "PathBuf"
           ]
         }
       },
       "id": "node_src_system_env_scanner_rs",
       "position": {
-        "x": 1813.0879685024624,
-        "y": 1092.232025109313
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_29",
-        "color": "#b8bb26",
-        "description": "global.rs (Auto-detected)",
-        "file": "src/system/global.rs",
-        "label": "global.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [
-            "initialize",
-            "get_context"
-          ],
-          "references": [
-            "scanner",
-            "SystemContext",
-            "OnceLock"
-          ]
-        }
-      },
-      "id": "node_src_system_global_rs",
-      "position": {
-        "x": 2350.6470117108297,
-        "y": 1098.0602479070412
+        "x": -945.2680923809972,
+        "y": 1600.217832441699
       },
       "status": "active",
       "type": "source",
       "visual": {}
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "healer.rs (Auto-detected)",
-        "file": "src/system/healer.rs",
-        "label": "healer.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "Healer"
-          ],
-          "functions": [
-            "analyze_journal",
-            "diagnose",
-            "rotate_logs"
-          ],
-          "references": [
-            "Command"
-          ]
-        }
-      },
-      "id": "node_src_system_healer_rs",
-      "position": {
-        "x": 450.9570099074112,
-        "y": 1076.5629683026382
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "mod.rs (Auto-detected)",
-        "file": "src/system/mod.rs",
-        "label": "mod.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [],
-          "functions": [],
-          "references": []
-        }
-      },
-      "id": "node_src_system_mod_rs",
-      "position": {
-        "x": 650.9570099074114,
-        "y": 1126.5629683026384
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "os.rs (Auto-detected)",
-        "file": "src/system/os.rs",
-        "label": "os.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "PackageManager",
-            "OsInfo"
-          ],
-          "functions": [
-            "detect",
-            "detect_package_manager"
-          ],
-          "references": [
-            "fs",
-            "Command"
-          ]
-        }
-      },
-      "id": "node_src_system_os_rs",
-      "position": {
-        "x": 250.95700990741133,
-        "y": 1176.5629683026384
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "sanitizer.rs (Auto-detected)",
-        "file": "src/system/sanitizer.rs",
-        "label": "sanitizer.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "Sanitizer"
-          ],
-          "functions": [
-            "new",
-            "clean",
-            "sanitize_string"
-          ],
-          "references": [
-            "Regex"
-          ]
-        }
-      },
-      "id": "node_src_system_sanitizer_rs",
-      "position": {
-        "x": 450.9570099074112,
-        "y": 1226.5629683026375
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "cluster_29",
-        "color": "#b8bb26",
-        "description": "scanner.rs (Auto-detected)",
-        "file": "src/system/scanner.rs",
-        "label": "scanner.rs",
-        "layer": 0,
-        "priority": 8,
-        "summary": {
-          "classes": [],
-          "functions": [
-            "scan_system",
-            "detect_plugin_manager",
-            "scan_os_info",
-            "scan_partitions"
-          ],
-          "references": [
-            "Partition",
-            "VirtManager",
-            "HashMap",
-            "env",
-            "fs",
-            "Command"
-          ]
-        }
-      },
-      "id": "node_src_system_scanner_rs",
-      "position": {
-        "x": 2163.0879685024624,
-        "y": 1092.232025109313
-      },
-      "status": "active",
-      "type": "source",
-      "visual": {}
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "storage.rs (Auto-detected)",
-        "file": "src/system/storage.rs",
-        "label": "storage.rs",
-        "layer": 2,
-        "priority": 80,
-        "summary": {
-          "classes": [
-            "SmartStorage"
-          ],
-          "functions": [
-            "new",
-            "backup_cmd",
-            "list_remotes"
-          ],
-          "references": [
-            "Command",
-            "HashMap"
-          ]
-        }
-      },
-      "id": "node_src_system_storage_rs",
-      "position": {
-        "x": 250.95700990741133,
-        "y": 876.562968302638
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
-    },
-    {
-      "data": {
-        "cluster_id": "storage_cluster",
-        "color": "#b8bb26",
-        "description": "virt.rs (Auto-detected)",
-        "file": "src/system/virt.rs",
-        "label": "virt.rs",
-        "layer": 1,
-        "priority": 50,
-        "summary": {
-          "classes": [
-            "VmController",
-            "VmScanner"
-          ],
-          "functions": [
-            "list_vms",
-            "start",
-            "get_ip"
-          ],
-          "references": [
-            "Command"
-          ]
-        }
-      },
-      "id": "node_src_system_virt_rs",
-      "position": {
-        "x": 650.9570099074114,
-        "y": 1276.5629683026382
-      },
-      "status": "proposed",
-      "type": "source",
-      "visual": {
-        "dashArray": "5,5",
-        "opacity": 0.5
-      }
     }
   ],
   "project_name": "vega"

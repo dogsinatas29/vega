@@ -11,7 +11,6 @@ pub mod logger;
 pub mod remote;
 pub mod reporting;
 pub mod safety;
-pub mod scan;
 pub mod security;
 pub mod setup;
 pub mod shell;

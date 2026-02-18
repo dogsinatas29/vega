@@ -1,4 +1,4 @@
-use crate::system::virt::VirtualMachine;
+use crate::system::virt::{VirtManager, VirtualMachine};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
@@ -70,12 +70,87 @@ impl SystemContext {
             pkg_manager: Self::detect_pkg_manager(),
             is_vm: Self::detect_vm(),
             git_user: Self::detect_git_user(),
-            partitions: Vec::new(), // Will be populated by scanner if needed, or we can move scanner logic here
-            vms: Vec::new(),
+            partitions: Self::scan_partitions(),
+            vms: VirtManager::list_vms(),
             env_vars: HashMap::new(),
             plugin_manager: Self::detect_plugin_manager(),
             ssh_auth_sock: std::env::var("SSH_AUTH_SOCK").ok(),
         }
+    }
+
+    fn scan_partitions() -> Vec<Partition> {
+        let mut partitions = Vec::new();
+        // Execute df -h
+        // Expected output format: Filesystem Size Used Avail Use% Mounted on
+        let output = Command::new("df").arg("-h").output();
+
+        if let Ok(output) = output {
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            let lines: Vec<&str> = stdout.lines().collect();
+
+            for line in lines.iter().skip(1) {
+                let parts: Vec<&str> = line.split_whitespace().collect();
+                if parts.len() < 6 {
+                    continue;
+                }
+
+                // Basic parsing
+                let filesystem = parts[0].to_string();
+                let total_size = parts[1].to_string();
+                let used = parts[2].to_string();
+                let available = parts[3].to_string();
+                let usage_percent = parts[4].to_string();
+                // Handle spaces in mount points by joining the rest
+                let mount_point = parts[5..].join(" ");
+
+                // Filter out pseudo-filesystems aggressively
+                if filesystem == "tmpfs"
+                    || filesystem == "devtmpfs"
+                    || filesystem == "overlay"
+                    || filesystem == "none"
+                {
+                    continue;
+                }
+                if mount_point.starts_with("/sys")
+                    || mount_point.starts_with("/proc")
+                    || mount_point.starts_with("/dev")
+                {
+                    continue;
+                }
+                // Helper: check for "loop" devices (Snap packages usually)
+                if filesystem.contains("/dev/loop") {
+                    continue;
+                }
+
+                // Advanced Partition Classification
+                let partition_type = if mount_point == "/" {
+                    PartitionType::Root
+                } else if mount_point == "/home" {
+                    PartitionType::User
+                } else if mount_point.starts_with("/media")
+                    || mount_point.starts_with("/run/media")
+                    || mount_point.starts_with("/mnt")
+                {
+                    PartitionType::Media
+                } else if mount_point.contains("User") || mount_point.contains("Home") {
+                    // Case insensitive name check could be added here, but keeping it simple for now
+                    PartitionType::User
+                } else {
+                    PartitionType::Other
+                };
+
+                partitions.push(Partition {
+                    mount_point,
+                    filesystem,
+                    total_size,
+                    used,
+                    available,
+                    usage_percent,
+                    partition_type,
+                });
+            }
+        }
+        partitions
     }
 
     fn get_os_info() -> String {

@@ -6,10 +6,10 @@ use std::io::Write;
 use std::path::PathBuf;
 use chrono::Local;
 use serde::{Serialize, Deserialize};
-use regex::Regex;
+
 use serde_json::json;
 
-use crate::system::sanitizer::sanitize_string;
+use crate::safety::sanitizer::sanitize_input as sanitize_string;
 
 #[derive(Serialize, Deserialize)]
 pub struct ArchiveEntry {
@@ -34,7 +34,7 @@ impl Archivist {
         token_usage: Option<i32>
     ) {
         let timestamp = Local::now().to_rfc3339();
-        let sanitized_cmd = Self::sanitize_command(command);
+        let sanitized_cmd = sanitize_string(command);
 
         // 1. Hot Data: SQLite
         if let (Some(database), Some(sid)) = (db, session_id) {
@@ -136,26 +136,8 @@ impl Archivist {
         }
     }
 
-    fn sanitize_command(command: &str) -> String {
-        let mut sanitized = command.to_string();
-        
-        // Pattern 1: Key-Value (e.g. password=123, --token=abc)
-        if let Ok(re) = Regex::new(r"(?i)(password|pass|token|key|secret)(\s*=\s*|\s+)(\S+)") {
-             sanitized = re.replace_all(&sanitized, "$1$2[REDACTED]").to_string();
-        }
+    // internal sanitize_command removed in favor of crate::safety::sanitizer
 
-        // Pattern 2: Flags (e.g. -p 1234)
-        if let Ok(re) = Regex::new(r"(-p|--password)(\s+)(\S+)") {
-             sanitized = re.replace_all(&sanitized, "$1$2[REDACTED]").to_string();
-        }
-        
-        // Pattern 3: API Keys (sk-...)
-        if let Ok(re) = Regex::new(r"(sk-[a-zA-Z0-9_\-]{20,})") {
-             sanitized = re.replace_all(&sanitized, "[REDACTED_KEY]").to_string();
-        }
-
-        sanitized
-    }
 
     /// JSON & Markdown Report Generator (End of Session)
     pub fn archive_session(db: &Database, session_id: i64) {
