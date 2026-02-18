@@ -423,22 +423,37 @@ async fn main() {
 
                                         let mut final_cmd = ai_res.command.clone();
 
-                                        // Internal Pruning Logic: Auto-inject blacklist for find/grep
+                                        // Internal Pruning Logic: Auto-inject blacklist for find
                                         if final_cmd.trim().starts_with("find ")
                                             && !final_cmd.contains("-prune")
                                         {
-                                            let mut prune_rules = Vec::new();
-                                            for path in crate::system::SRE_BLACKLIST {
-                                                prune_rules
-                                                    .push(format!("-path '{}' -prune", path));
+                                            let enriched = {
+                                                let parts: Vec<&str> =
+                                                    final_cmd.split_whitespace().collect();
+                                                if parts.len() > 2 {
+                                                    let path = parts[1];
+                                                    let mut prune_rules = Vec::new();
+                                                    for b_path in crate::system::SRE_BLACKLIST {
+                                                        prune_rules.push(format!(
+                                                            "-path '{}' -prune",
+                                                            b_path
+                                                        ));
+                                                    }
+                                                    let prune_str = prune_rules.join(" -o ");
+                                                    let original_expr = parts[2..].join(" ");
+                                                    Some(format!(
+                                                        "find {} \\( {} \\) -prune -o \\( {} -print \\)",
+                                                        path, prune_str, original_expr
+                                                    ))
+                                                } else {
+                                                    None
+                                                }
+                                            };
+
+                                            if let Some(new_cmd) = enriched {
+                                                final_cmd = new_cmd;
+                                                println!("   🛡️  [SRE Protection] Applied internal pruning rules.");
                                             }
-                                            let prune_str = prune_rules.join(" -o ");
-                                            final_cmd = final_cmd.replacen(
-                                                "find ",
-                                                &format!("find {} -o ", prune_str),
-                                                1,
-                                            );
-                                            println!("   🛡️  [SRE Protection] Applied internal pruning rules.");
                                         }
 
                                         let status = Command::new("sh")
@@ -451,6 +466,10 @@ async fn main() {
                                             Ok(s) => {
                                                 if s.success() {
                                                     println!("✅ Execution Successful.");
+                                                } else if s.code() == Some(1)
+                                                    && final_cmd.contains("find ")
+                                                {
+                                                    println!("✅ Search completed (system/protected paths skipped).");
                                                 } else {
                                                     println!(
                                                         "❌ Execution Failed (Exit Code: {:?})",
