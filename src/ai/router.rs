@@ -84,9 +84,29 @@ impl SmartRouter {
                 match GeminiProvider::new() {
                     Ok(p) => Ok(Box::new(p)),
                     Err(e) => {
-                        warn!("⚠️ Gemini Init Failed: {}. Falling back to Offline.", e);
-                        // Automatic Fallback Strategy
-                        Ok(Box::new(OfflineEngine::new()))
+                        warn!(
+                            "⚠️ Gemini Init Failed: {}. Checking for Web Session fallback...",
+                            e
+                        );
+                        // Automatic Fallback Strategy: Cookie -> Offline
+                        if crate::security::keyring::get_token("google_1psid").is_some() {
+                            info!("♻️  Found '__Secure-1PSID' cookie. Routing to Web Session fallback.");
+                            match crate::ai::providers::web_session::WebSessionProvider::new() {
+                                Ok(p) => Ok(Box::new(p)),
+                                Err(e2) => {
+                                    warn!(
+                                        "⚠️ Web Session fallback failed: {}. Using Offline engine.",
+                                        e2
+                                    );
+                                    Ok(Box::new(OfflineEngine::new()))
+                                }
+                            }
+                        } else {
+                            warn!(
+                                "ℹ️  No Web Session cookie found. Falling back to Offline engine."
+                            );
+                            Ok(Box::new(OfflineEngine::new()))
+                        }
                     }
                 }
             }

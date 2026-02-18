@@ -106,22 +106,50 @@ impl SetupWizard {
     }
 
     pub fn setup_cookie() {
-        println!("🍪 Gemini Web Session Setup");
+        println!("🍪 Gemini Web Session Setup (Hardened)");
         println!("---------------------------");
         println!("To bypass API quotas, VEGA can use your browser session.");
-        println!("1. Open https://gemini.google.com in Chrome/Firefox.");
+        println!("⚠️  Note: Ensure your terminal IP matches your browser's IP.");
+        println!("\n1. Open https://gemini.google.com in Chrome/Firefox.");
         println!("2. F12 -> Application/Storage -> Cookies.");
-        println!("3. Copy the value of '__Secure-1PSID'.");
+        println!("3. Copy the values for the following keys:");
 
-        let cookie = Self::prompt("\n🔑 Enter __Secure-1PSID: ", None);
-        if cookie.is_empty() || cookie.len() < 20 {
+        // 1. __Secure-1PSID
+        let psid = Self::prompt("\n🔑 [Required] Enter __Secure-1PSID: ", None);
+        if psid.is_empty() || psid.len() < 20 {
             println!("❌ Invalid cookie format.");
             return;
         }
 
-        match crate::security::keyring::set_token("google_1psid", &cookie) {
-            Ok(_) => println!("✅ Cookie saved securely to keyring."),
-            Err(e) => println!("❌ Failed to save cookie: {}", e),
+        // 2. __Secure-1PAPISID
+        let papisid = Self::prompt(
+            "🔑 [Recommended] Enter __Secure-1PAPISID (Enter to skip): ",
+            None,
+        );
+
+        // 3. User-Agent
+        println!("\n🌐 To avoid session hijacking protection, we need your Browser's User-Agent.");
+        println!("   Tip: Type 'my user agent' in Google or check DevTools -> Console -> navigator.userAgent");
+        let ua = Self::prompt("🖥️  Enter User-Agent: ", Some("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"));
+
+        // Save tokens
+        let mut results = vec![];
+        results.push(crate::security::keyring::set_token("google_1psid", &psid));
+
+        if !papisid.is_empty() {
+            results.push(crate::security::keyring::set_token(
+                "google_1papisid",
+                &papisid,
+            ));
+        }
+
+        results.push(crate::security::keyring::set_token("google_ua", &ua));
+
+        if results.iter().all(|r| r.is_ok()) {
+            println!("\n✅ All session tokens saved securely to keyring.");
+            println!("   VEGA will now use these for fallback routing.");
+        } else {
+            println!("\n❌ Some tokens failed to save. Check system keyring state.");
         }
     }
 

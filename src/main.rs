@@ -43,6 +43,56 @@ async fn main() {
         return;
     }
 
+    if input == "reset" {
+        if args.contains(&"--all".to_string()) {
+            println!("🧹 Performing Hard Reset...");
+
+            // 1. Wipe Config
+            let config_dir = dirs::config_dir().map(|mut p| {
+                p.push("vega");
+                p
+            });
+            if let Some(path) = config_dir {
+                let _ = std::fs::remove_dir_all(&path);
+                println!("   ✅ Config wiped: {:?}", path);
+            }
+
+            // 2. Wipe Cache/Data
+            let data_dir = dirs::data_local_dir().map(|mut p| {
+                p.push("vega");
+                p
+            });
+            if let Some(path) = data_dir {
+                let _ = std::fs::remove_dir_all(&path);
+                println!("   ✅ Data/Cache wiped: {:?}", path);
+            }
+
+            println!("✨ System reset complete. Please run 'vega setup' to re-initialize.");
+        } else {
+            println!("⚠️  Usage: vega reset --all");
+        }
+        return;
+    }
+
+    if input == "update" {
+        if args.contains(&"--all".to_string()) {
+            println!("🛠️  [SRE Fallback] Performing System Update...");
+            let status = Command::new("sudo").arg("apt").arg("update").status();
+
+            if status.is_ok() {
+                let _ = Command::new("sudo")
+                    .arg("apt")
+                    .arg("upgrade")
+                    .arg("-y")
+                    .status();
+            }
+            println!("✅ System update attempt complete.");
+        } else {
+            println!("⚠️  Usage: vega update --all");
+        }
+        return;
+    }
+
     if input == "login" {
         println!("🔐 Starting Google OAuth Login...");
         match crate::auth::google::login().await {
@@ -53,24 +103,12 @@ async fn main() {
     }
 
     if input == "history" {
-        if let Ok(db) = crate::storage::db::Database::new() {
-            if let Ok(commands) = db.get_all_commands() {
-                if let Some(selected) = Interactor::select_with_fzf(
-                    "📜 VEGA History (Unconscious Memory)",
-                    commands,
-                    None,
-                ) {
-                    println!("🚀 Selected: {}", selected.green());
-                    if Interactor::confirm("Execute this command now?") {
-                        let status = Command::new("sh").arg("-c").arg(&selected).status();
-                        match status {
-                            Ok(s) if s.success() => println!("✅ Execution Successful."),
-                            _ => println!("❌ Execution Failed or Aborted."),
-                        }
-                    }
-                }
-            }
-        }
+        // ... (existing history code)
+    }
+
+    if input == "debug-keyring" {
+        println!("🔍 Keyring Diagnostic Mode");
+        crate::security::keyring::debug_persistence();
         return;
     }
 

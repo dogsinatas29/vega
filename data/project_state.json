@@ -498,7 +498,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_README_md",
-      "id": "edge_auto_1771414022074_473",
+      "id": "edge_auto_1771419100895_782",
       "label": "ref",
       "to": "node_README_KR_md",
       "type": "dependency",
@@ -510,8 +510,125 @@
     },
     {
       "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_README_md",
+      "id": "edge_auto_1771419100895_337",
+      "label": "ref",
+      "to": "node_src_main_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_README_md",
+      "id": "edge_auto_1771419100895_48",
+      "label": "ref",
+      "to": "node_src_system_config_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_README_md",
+      "id": "edge_auto_1771419100895_70",
+      "label": "ref",
+      "to": "node_src_executor_pkg_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_README_md",
+      "id": "edge_auto_1771419100895_642",
+      "label": "ref",
+      "to": "node_src_system_env_scanner_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Circular dependency detected",
+      "from": "node_README_KR_md",
+      "id": "edge_auto_1771419100895_379",
+      "label": "ref",
+      "to": "node_README_md",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_README_KR_md",
+      "id": "edge_auto_1771419100895_500",
+      "label": "ref",
+      "to": "node_src_main_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_README_KR_md",
+      "id": "edge_auto_1771419100895_165",
+      "label": "ref",
+      "to": "node_src_system_config_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_README_KR_md",
+      "id": "edge_auto_1771419100895_748",
+      "label": "ref",
+      "to": "node_src_executor_pkg_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
+      "from": "node_README_KR_md",
+      "id": "edge_auto_1771419100895_432",
+      "label": "ref",
+      "to": "node_src_system_env_scanner_rs",
+      "type": "dependency",
+      "validation": {
+        "confidence": 0.95,
+        "reason": "Appropriate architectural relationship.",
+        "valid": true
+      }
+    },
+    {
+      "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_auth_manager_rs",
-      "id": "edge_auto_1771414022074_239",
+      "id": "edge_auto_1771419100895_393",
       "label": "ref",
       "to": "node_src_security_keyring_rs",
       "type": "dependency",
@@ -524,7 +641,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_providers_gemini_rs",
-      "id": "edge_auto_1771414022074_133",
+      "id": "edge_auto_1771419100895_33",
       "label": "ref",
       "to": "node_src_security_keyring_rs",
       "type": "dependency",
@@ -537,7 +654,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_providers_vertex_ai_rs",
-      "id": "edge_auto_1771414022074_40",
+      "id": "edge_auto_1771419100895_392",
       "label": "ref",
       "to": "node_src_security_keyring_rs",
       "type": "dependency",
@@ -550,7 +667,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_ai_providers_web_session_rs",
-      "id": "edge_auto_1771414022074_619",
+      "id": "edge_auto_1771419100895_720",
       "label": "ref",
       "to": "node_src_security_keyring_rs",
       "type": "dependency",
@@ -563,7 +680,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_main_rs",
-      "id": "edge_auto_1771414022074_557",
+      "id": "edge_auto_1771419100895_955",
       "label": "ref",
       "to": "node_env_rs",
       "type": "dependency",
@@ -576,7 +693,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_main_rs",
-      "id": "edge_auto_1771414022074_447",
+      "id": "edge_auto_1771419100895_272",
       "label": "ref",
       "to": "node_src_executor_pkg_rs",
       "type": "dependency",
@@ -589,7 +706,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_setup_rs",
-      "id": "edge_auto_1771414022074_924",
+      "id": "edge_auto_1771419100895_141",
       "label": "ref",
       "to": "node_env_rs",
       "type": "dependency",
@@ -602,20 +719,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_security_keyring_rs",
-      "id": "edge_auto_1771414022074_528",
-      "label": "ref",
-      "to": "node_env_rs",
-      "type": "dependency",
-      "validation": {
-        "confidence": 0.95,
-        "reason": "Appropriate architectural relationship.",
-        "valid": true
-      }
-    },
-    {
-      "_validationReason": "Appropriate architectural relationship.",
-      "from": "node_src_system_config_rs",
-      "id": "edge_auto_1771414022074_326",
+      "id": "edge_auto_1771419100895_382",
       "label": "ref",
       "to": "node_env_rs",
       "type": "dependency",
@@ -628,7 +732,7 @@
     {
       "_validationReason": "Appropriate architectural relationship.",
       "from": "node_src_system_env_scanner_rs",
-      "id": "edge_auto_1771414022074_59",
+      "id": "edge_auto_1771419100895_992",
       "label": "ref",
       "to": "node_env_rs",
       "type": "dependency",
@@ -704,6 +808,7 @@
           "classes": [
             "🌌 Vega: The Sovereign SRE Agent",
             "🛡️ Core Logic Update: \"Discovery First\"",
+            "📜 SRE Operating Principles",
             "🧠 Core Architecture",
             "📦 Build Prerequisites",
             "Fedora / RHEL / CentOS",
@@ -731,12 +836,33 @@
             "English",
             "📋 Internal Commands",
             "🛡️ Safety Features",
+            "📂 Project Structure & File Roles",
+            "🛠️ Core Infrastructure",
+            "🧠 AI & Reasoning (`src/ai`)",
+            "🚀 Execution Layer (`src/executor`)",
+            "🔍 System Intelligence (`src/system`)",
+            "🛡️ Safety & Security",
+            "💾 Storage & Knowledge",
             "📄 License"
           ],
           "functions": [],
           "references": [
             "README_KR",
-            "logic_flow"
+            "ROADMAP",
+            "main",
+            "context",
+            "init",
+            "config",
+            "router",
+            "providers",
+            "prompts",
+            "orchestrator",
+            "pkg",
+            "healer",
+            "discovery",
+            "archivist",
+            "env_scanner",
+            "knowledge"
           ]
         }
       },
@@ -762,6 +888,7 @@
           "classes": [
             "🌌 Vega: The Sovereign SRE Agent",
             "🛡️ 핵심 로직 업데이트: \"탐색 우선 (Discovery First)\"",
+            "📜 SRE 운영 3대 원칙",
             "🧠 핵심 아키텍처",
             "📦 빌드 사전 요구사항",
             "Fedora / RHEL / CentOS",
@@ -780,10 +907,34 @@
             "4. 자연어 명령 (Natural Language)",
             "📋 내부 명령어",
             "🛡️ 보안 기능",
+            "📂 프로젝트 구조 및 파일 역할",
+            "🛠️ 핵심 인프라 (Core Infrastructure)",
+            "🧠 AI 및 추론 (AI & Reasoning) (`src/ai`)",
+            "🚀 실행 레이어 (Execution Layer) (`src/executor`)",
+            "🔍 시스템 인텔리전스 (System Intelligence) (`src/system`)",
+            "🛡️ 안전 및 보안 (Safety & Security)",
+            "💾 저장소 및 지식 (Storage & Knowledge)",
             "📄 라이선스"
           ],
           "functions": [],
-          "references": []
+          "references": [
+            "README",
+            "ROADMAP_KR",
+            "main",
+            "context",
+            "init",
+            "config",
+            "router",
+            "providers",
+            "prompts",
+            "orchestrator",
+            "pkg",
+            "healer",
+            "discovery",
+            "archivist",
+            "env_scanner",
+            "knowledge"
+          ]
         }
       },
       "id": "node_README_KR_md",
@@ -1150,6 +1301,7 @@
           ],
           "functions": [
             "run",
+            "setup_cookie",
             "select_provider",
             "discover_and_confirm_key",
             "prompt",
@@ -1259,24 +1411,9 @@
         "layer": 1,
         "priority": 50,
         "summary": {
-          "classes": [
-            "ProviderConfig",
-            "Project",
-            "AppConfig"
-          ],
-          "functions": [
-            "default",
-            "get_config_path",
-            "load",
-            "load_from_path",
-            "save"
-          ],
-          "references": [
-            "Deserialize",
-            "env",
-            "fs",
-            "Path"
-          ]
+          "classes": [],
+          "functions": [],
+          "references": []
         }
       },
       "id": "node_src_system_config_rs",
