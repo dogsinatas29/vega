@@ -167,6 +167,33 @@ vega "Find all files larger than 1GB in /home"
 
 ---
 
+## ☁️ Cloud Integration (rclone)
+
+VEGA uses `rclone` for seamless cloud project backup and state synchronization.
+
+### 1. Pre-requisites
+- Install `rclone` on your system: `sudo dnf install rclone` (Fedora) or `sudo apt install rclone` (Ubuntu).
+- Configure your remotes: `rclone config`.
+
+### 2. Autonomous Discovery
+VEGA's discovery engine automatically identifies active `rclone` remotes and masks sensitive names (e.g., `gdrive:` becomes `REMOTE_01`) when communicating with the AI.
+
+### 3. Natural Language Cloud Ops
+You can use natural language to interact with your cloud storage. VEGA will automatically resolve the masked names back to your real remotes before execution.
+```bash
+# Example: Copy a folder from Google Drive
+vega "Copy the 'input' folder from my Google Drive to here"
+
+# Example: Sync the current project to cloud
+vega sync
+```
+
+### 4. Safety Guardrails
+- **Size Limit**: Sync operations are automatically blocked if the transfer size exceeds **1GB** to prevent accidental data costs or overhead.
+- **Confirmation**: All cloud operations require explicit user confirmation.
+
+---
+
 ## 📋 Internal Commands
 
 Vega provides several built-in commands for direct control.

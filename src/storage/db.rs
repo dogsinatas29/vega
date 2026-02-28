@@ -400,6 +400,29 @@ impl Database {
         }
     }
 
+    pub fn set_secure_metadata(&self, key: &str, value: &str) -> Result<()> {
+        // Simple XOR Masking for "Encrypted Persistency" (KISS)
+        let mask = "VEGA_SRE_SECURE_MASK"; // In production, this would be from Keyring
+        let masked: String = value.chars()
+            .zip(mask.chars().cycle())
+            .map(|(v, m)| ((v as u8) ^ (m as u8)) as char)
+            .collect();
+        self.set_metadata(key, &masked)
+    }
+
+    pub fn get_secure_metadata(&self, key: &str) -> Result<Option<String>> {
+        if let Some(masked) = self.get_metadata(key)? {
+            let mask = "VEGA_SRE_SECURE_MASK";
+            let unmasked: String = masked.chars()
+                .zip(mask.chars().cycle())
+                .map(|(v, m)| ((v as u8) ^ (m as u8)) as char)
+                .collect();
+            Ok(Some(unmasked))
+        } else {
+            Ok(None)
+        }
+    }
+
     // --- Phase 3: Local RAG (Pseudo-Semantic Search) ---
     pub fn search_relevant_context(&self, query: &str, limit: usize) -> Result<Vec<String>> {
         // Clean query for FTS5 (remove special Chars that break syntax)
@@ -428,6 +451,20 @@ impl Database {
             if let Ok(content) = res {
                 results.push(content);
             }
+        }
+        Ok(results)
+    }
+
+    pub fn get_recent_sessions(&self, limit: usize) -> Result<Vec<(i64, i32)>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT id, total_weight FROM sessions ORDER BY id DESC LIMIT ?"
+        )?;
+        let rows = stmt.query_map(params![limit], |row| {
+            Ok((row.get(0)?, row.get(1)?))
+        })?;
+        let mut results = Vec::new();
+        for r in rows {
+            results.push(r?);
         }
         Ok(results)
     }

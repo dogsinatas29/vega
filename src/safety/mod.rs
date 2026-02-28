@@ -79,3 +79,29 @@ pub fn confirm_action(risk: RiskLevel, command: &str) -> bool {
         }
     }
 }
+pub struct SafetyRegistry;
+
+impl SafetyRegistry {
+    pub fn check_transfer_size(size_bytes: u64) -> Result<(), String> {
+        // Limit: 1GB (1024 * 1024 * 1024 bytes)
+        const MAX_TRANSFER_SIZE: u64 = 1073741824;
+
+        if size_bytes > MAX_TRANSFER_SIZE {
+            return Err(format!(
+                "🚨 Transfer rejected: Size ({} bytes) exceeds safety limit ({} bytes).",
+                size_bytes, MAX_TRANSFER_SIZE
+            ));
+        }
+        Ok(())
+    }
+
+    pub fn validate_rclone_command(args: &[&str]) -> RiskLevel {
+        if args.contains(&"sync") || args.contains(&"copy") {
+            return RiskLevel::Warning;
+        }
+        if args.contains(&"delete") || args.contains(&"purge") {
+            return RiskLevel::Critical;
+        }
+        RiskLevel::Info
+    }
+}

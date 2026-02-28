@@ -1,3 +1,5 @@
+use crate::storage::db::Database;
+use crate::system::discovery::Discovery;
 use crate::system::virt::{VirtManager, VirtualMachine};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -40,6 +42,22 @@ pub struct SystemContext {
     pub plugin_manager: Option<String>,
     pub ssh_auth_sock: Option<String>,
     pub locale: String,
+    pub cloud_nodes: Vec<CloudStorageNode>,
+    pub sync_edges: Vec<SyncEdge>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CloudStorageNode {
+    pub name: String,
+    pub provider: String,
+    pub status: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SyncEdge {
+    pub source: String,
+    pub destination: String,
+    pub last_sync: String,
 }
 
 impl SystemContext {
@@ -59,10 +77,41 @@ impl SystemContext {
             plugin_manager: None,
             ssh_auth_sock: None,
             locale: "en_US.UTF-8".to_string(),
+            cloud_nodes: Vec::new(),
+            sync_edges: Vec::new(),
         }
     }
 
     pub fn collect() -> Self {
+        let mut cloud_nodes = Vec::new();
+        let sync_edges = Vec::new();
+
+        // Persistent Discovery & Loading
+        if let Ok(db) = Database::new() {
+            // 1. Run Discovery
+            if let Ok(discovery) = Discovery::run() {
+                // Persist found remotes and populate context
+                let mut masker = crate::remote::RemoteMasker::new();
+                for remote in discovery.cloud_remotes {
+                    let _ = db.set_metadata(&format!("cloud_remote:{}", remote), "discovered");
+                    cloud_nodes.push(CloudStorageNode {
+                        name: masker.mask(&remote),
+                        provider: "rclone".to_string(),
+                        status: "Available".to_string(),
+                    });
+                }
+                for host in discovery.ssh_hosts {
+                    let _ = db.set_metadata(&format!("ssh_host:{}", host), "discovered");
+                }
+            }
+
+            // 2. Load from Metadata
+            // This is a bit inefficient to iterate all, but for now it works
+            // In a real scenario, we'd query the metadata table for specific keys
+            // But since we don't have a 'get_all_with_prefix' yet, we'll just use the discovery results we have
+            // and maybe some hardcoded lookups if we added manual ones.
+        }
+
         SystemContext {
             os_name: Self::get_os_info(),
             kernel_version: Self::get_kernel_version(),
@@ -78,6 +127,8 @@ impl SystemContext {
             plugin_manager: Self::detect_plugin_manager(),
             ssh_auth_sock: std::env::var("SSH_AUTH_SOCK").ok(),
             locale: Self::get_locale(),
+            cloud_nodes,
+            sync_edges,
         }
     }
 

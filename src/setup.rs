@@ -86,6 +86,7 @@ impl SetupWizard {
             system_prompt_version: Some("1.0".to_string()),
             local_keywords: Some(vec!["update".to_string(), "ssh".to_string()]),
             shell_snapshot_path: None, // Use default logic in main.rs
+            auto_sync: Some(true),
         });
 
         // Save

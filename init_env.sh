@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 # Definition of colors for output
 GREEN='\033[0;32m'

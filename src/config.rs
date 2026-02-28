@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
 
-
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct VegaConfig {
     pub system: SystemConfig,
@@ -12,8 +11,8 @@ pub struct VegaConfig {
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct AiConfig {
-    pub provider: String,        // gemini, chatgpt, claude, vertex_ai
-    pub api_key_source: String,  // env_var, manual
+    pub provider: String,       // gemini, chatgpt, claude, vertex_ai
+    pub api_key_source: String, // env_var, manual
     pub model: Option<String>,
     pub vertex_ai: Option<VertexAiConfig>,
 }
@@ -21,7 +20,7 @@ pub struct AiConfig {
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct VertexAiConfig {
     pub project_id: String,
-    pub region: String,  // e.g., us-central1
+    pub region: String, // e.g., us-central1
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -49,6 +48,7 @@ pub struct OptimizationConfig {
     pub system_prompt_version: Option<String>,
     pub local_keywords: Option<Vec<String>>,
     pub shell_snapshot_path: Option<String>,
+    pub auto_sync: Option<bool>,
 }
 
 impl VegaConfig {
@@ -64,7 +64,7 @@ impl VegaConfig {
         // For now, checks structural integrity
         if let Some(opt) = &self.optimization {
             if opt.cache_enabled.unwrap_or(false) && opt.system_prompt_version.is_none() {
-               return Err("Optimization enabled but system_prompt_version missing".to_string());
+                return Err("Optimization enabled but system_prompt_version missing".to_string());
             }
         }
         Ok(())

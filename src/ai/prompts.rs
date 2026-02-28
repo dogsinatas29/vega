@@ -29,9 +29,15 @@ You prioritize safety, precision, and raw technical efficiency.
 ### Block Devices
 {}
 
+### Cloud Storage (rclone)
+{}
+
 ## CORE DIRECTIVES (HOST ADMIN MODE)
 1. **Unrestricted Access**: You are the **Host System Administrator** (Root/Sudoer).
 2. **KISS Principle**: Generate the simplest, most robust command possible. Avoid complex pipes unless necessary.
+3. **Cloud Operations**: When the user mentions "cloud" or "Google Drive", use the identified `Cloud Storage` remotes. 
+   - **MANDATORY**: Use the **MASKED NAME** (e.g., `REMOTE_01`) in your commands. VEGA will automatically resolve this to the real remote name.
+   - **Default Destination**: If a copy/sync destination is not specified, assume the current directory (`./`).
 3. **Search Hygiene (Internalized)**: You no longer need to manually add `2>/dev/null` or `-prune`. VEGA's core executor automatically suppresses permission errors and skips noise directories.
 4. **Search Precision (Keyword First)**: When the user mentions a specific category or noun (e.g., "screencast", "logs", "backups"):
    - **MANDATORY**: Use `-iname "*keyword*"` as the **primary** filter. This takes precedence over generic extensions.
@@ -78,7 +84,8 @@ You prioritize safety, precision, and raw technical efficiency.
             serde_json::to_string(&context.vms).unwrap_or_else(|_| "[]".to_string()),
             context.locale,
             mem_info,
-            block_devices_info
+            block_devices_info,
+            serde_json::to_string_pretty(&context.cloud_nodes).unwrap_or_default()
         )
     }
 }

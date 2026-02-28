@@ -183,6 +183,18 @@ async fn main() {
         return;
     }
 
+    // Sync: vega sync
+    if input == "sync" {
+        println!("🔄 Initiating Global Cloud Sync...");
+        let ctx = SystemContext::collect();
+        if let Err(e) = executor::orchestrator::sync_all_cloud(&ctx).await {
+            eprintln!("❌ Sync Failed: {}", e);
+        } else {
+            println!("✅ Global Sync Completed.");
+        }
+        return;
+    }
+
     // Virt: vega start <vm_name>
     if input == "start" && args.len() >= 3 {
         let vm_name = &args[2];
@@ -190,6 +202,42 @@ async fn main() {
         match VmController::start(vm_name) {
             Ok(msg) => println!("{}", msg),
             Err(e) => eprintln!("❌ VM Error: {}", e),
+        }
+        return;
+    }
+
+    // Reporting: vega report [--session <id>]
+    if input == "report" {
+        let session_id = args
+            .iter()
+            .position(|r| r == "--session")
+            .and_then(|p| args.get(p + 1))
+            .and_then(|s| s.parse::<i64>().ok());
+
+        let sid = session_id.unwrap_or_else(|| {
+            // Default to current or latest session
+            if let Ok(db) = crate::storage::db::Database::new() {
+                db.get_current_session_id().unwrap_or(0)
+            } else {
+                0
+            }
+        });
+
+        let use_markdown =
+            args.contains(&"--markdown".to_string()) || args.contains(&"-m".to_string());
+
+        if use_markdown {
+            println!("📝 Generating Markdown Report for Session {}...", sid);
+            match crate::reporting::pdf::PdfEngine::generate_markdown_report(sid).await {
+                Ok(path) => println!("✅ Markdown Report saved: {}", path),
+                Err(e) => eprintln!("❌ Report Failed: {}", e),
+            }
+        } else {
+            println!("📊 Generating PDF Report for Session {}...", sid);
+            match crate::reporting::pdf::PdfEngine::generate_report(sid).await {
+                Ok(path) => println!("✅ PDF Report saved: {}", path),
+                Err(e) => eprintln!("❌ Report Failed: {}", e),
+            }
         }
         return;
     }
@@ -463,7 +511,22 @@ async fn main() {
                                     if Interactor::confirm("Execute this command?") {
                                         println!("⚡ Executing...");
 
-                                        let mut final_cmd = ai_res.command.clone();
+                                        // RE-RESOLVE REMOTE NAMES (Unmasking)
+                                        let ctx = SystemContext::collect();
+                                        let mut masker = crate::remote::RemoteMasker::new();
+                                        // Discovery::run() returns real names. We need to mask them to get the same REMOTE_XX mapping.
+                                        if let Ok(discovery) =
+                                            crate::system::discovery::Discovery::run()
+                                        {
+                                            for remote in discovery.cloud_remotes {
+                                                let _ = masker.mask(&remote);
+                                            }
+                                        }
+                                        let mut final_cmd = masker.resolve_command(&ai_res.command);
+
+                                        if final_cmd != ai_res.command {
+                                            println!("   🔗 [Resolved] {}", final_cmd.cyan());
+                                        }
 
                                         // Internal Pruning Logic: Auto-inject blacklist for find
                                         if final_cmd.trim().starts_with("find ")
@@ -546,4 +609,18 @@ async fn main() {
 
     // 5. Log Execution
     logger.log(full_input, &format!("{:?}", action), success);
+
+    // 6. Session Completion Auto-Sync Hook
+    if config
+        .optimization
+        .as_ref()
+        .and_then(|o| o.auto_sync)
+        .unwrap_or(false)
+    {
+        let ctx = SystemContext::collect();
+        if !ctx.cloud_nodes.is_empty() {
+            println!("🔄 Auto-Syncing session state to cloud...");
+            let _ = executor::orchestrator::sync_all_cloud(&ctx).await;
+        }
+    }
 }
