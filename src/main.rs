@@ -187,7 +187,11 @@ async fn main() {
     if input == "sync" {
         println!("🔄 Initiating Global Cloud Sync...");
         let ctx = SystemContext::collect();
-        if let Err(e) = executor::orchestrator::sync_all_cloud(&ctx).await {
+        let primary = config
+            .optimization
+            .as_ref()
+            .and_then(|o| o.primary_remote.clone());
+        if let Err(e) = executor::orchestrator::sync_all_cloud(&ctx, primary).await {
             eprintln!("❌ Sync Failed: {}", e);
         } else {
             println!("✅ Global Sync Completed.");
@@ -620,7 +624,11 @@ async fn main() {
         let ctx = SystemContext::collect();
         if !ctx.cloud_nodes.is_empty() {
             println!("🔄 Auto-Syncing session state to cloud...");
-            let _ = executor::orchestrator::sync_all_cloud(&ctx).await;
+            let primary = config
+                .optimization
+                .as_ref()
+                .and_then(|o| o.primary_remote.clone());
+            let _ = executor::orchestrator::sync_all_cloud(&ctx, primary).await;
         }
     }
 }

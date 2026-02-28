@@ -49,6 +49,7 @@ pub struct OptimizationConfig {
     pub local_keywords: Option<Vec<String>>,
     pub shell_snapshot_path: Option<String>,
     pub auto_sync: Option<bool>,
+    pub primary_remote: Option<String>,
 }
 
 impl VegaConfig {

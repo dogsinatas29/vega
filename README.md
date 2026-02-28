@@ -178,6 +178,12 @@ VEGA uses `rclone` for seamless cloud project backup and state synchronization.
 ### 2. Autonomous Discovery
 VEGA's discovery engine automatically identifies active `rclone` remotes and masks sensitive names (e.g., `gdrive:` becomes `REMOTE_01`) when communicating with the AI.
 
+### 3. Primary Remote Setup
+You can "pin" a specific remote as your default sync target. VEGA will remember this address and prioritize it for project-wide synchronization.
+- Run `vega setup`.
+- Select your preferred cloud remote in the **[2] Cloud Integration** step.
+- The choice is saved in `config.toml` as `primary_remote`.
+
 ### 3. Natural Language Cloud Ops
 You can use natural language to interact with your cloud storage. VEGA will automatically resolve the masked names back to your real remotes before execution.
 ```bash

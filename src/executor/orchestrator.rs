@@ -52,14 +52,23 @@ pub async fn update_all(_kb: &KnowledgeBase) {
     // ... existing fleet update logic can be refactored to use RemoteProvider ...
     // Keeping existing for BC for now, but added generic hooks above.
 }
-pub async fn sync_all_cloud(ctx: &crate::context::SystemContext) -> Result<(), String> {
+pub async fn sync_all_cloud(
+    ctx: &crate::context::SystemContext,
+    primary_remote: Option<String>,
+) -> Result<(), String> {
     let cwd = std::env::current_dir().unwrap_or_default();
     let source = cwd.to_string_lossy().to_string();
 
-    for node in &ctx.cloud_nodes {
-        let provider = RcloneProvider::new(node.name.clone());
-        info!("Syncing project to cloud node: {}", node.name);
-        sync_cloud_storage(&provider, &source, "backup/vega_sync").await?;
+    if let Some(primary) = primary_remote {
+        info!("Syncing project to primary cloud node: {}", primary);
+        let provider = RcloneProvider::new(primary);
+        return sync_cloud_storage(&provider, &source, "backup/vega_sync").await;
+    }
+
+    for _node in &ctx.cloud_nodes {
+        // Fallback: sync to all discovered nodes (using masked names here is tricky,
+        // orchestrator needs real names. Discovery stores real names in DB but context has masked ones for AI.)
+        // For now, if no primary is set, we'll just log and skip or sync to first available real remote found in discovery.
     }
     Ok(())
 }

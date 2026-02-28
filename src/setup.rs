@@ -70,6 +70,36 @@ impl SetupWizard {
             println!("   - API Key Source: {}", source);
         }
 
+        // 2.5 Cloud Integration Setup
+        let mut primary_remote = None;
+        if !silent_mode {
+            println!("\n[2] Setup Cloud Integration (rclone)");
+            let discovery = crate::system::discovery::Discovery::run().unwrap_or_default();
+            if !discovery.cloud_remotes.is_empty() {
+                println!(
+                    "   🔍 Found {} cloud remotes:",
+                    discovery.cloud_remotes.len()
+                );
+                for (i, remote) in discovery.cloud_remotes.iter().enumerate() {
+                    println!("   {}) {}", i + 1, remote);
+                }
+                let choice = Self::prompt("   Select Primary Remote (1-N, Enter to skip): ", None);
+                if !choice.is_empty() {
+                    if let Ok(idx) = choice.parse::<usize>() {
+                        if idx > 0 && idx <= discovery.cloud_remotes.len() {
+                            primary_remote = Some(discovery.cloud_remotes[idx - 1].clone());
+                            println!(
+                                "   ✅ Primary Remote set to: {}",
+                                primary_remote.as_ref().unwrap()
+                            );
+                        }
+                    }
+                }
+            } else {
+                println!("   ⚠️  No rclone remotes found. Please configure them via 'rclone config' later.");
+            }
+        }
+
         // 3. Generate Config
         let mut config = VegaConfig::default();
         config.system.log_level = Some("INFO".to_string());
@@ -87,6 +117,7 @@ impl SetupWizard {
             local_keywords: Some(vec!["update".to_string(), "ssh".to_string()]),
             shell_snapshot_path: None, // Use default logic in main.rs
             auto_sync: Some(true),
+            primary_remote,
         });
 
         // Save

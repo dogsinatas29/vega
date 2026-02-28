@@ -5,6 +5,7 @@ use std::path::PathBuf;
 
 pub struct Discovery;
 
+#[derive(Default)]
 pub struct DiscoveryResult {
     pub cloud_remotes: Vec<String>,
     pub ssh_hosts: Vec<String>,
