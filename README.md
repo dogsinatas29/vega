@@ -194,9 +194,22 @@ VEGA generates high-density technical reports based on the **Decision Lineage** 
 
 ---
 
-## 📈 Impact Analysis
-Risk Distribution: [CRITICAL: 50%] [INFO: 50%]
-Total Toil Reduction: ~15 mins
+## 📈 Impact Analysis (ASCII-Viz)
+Risk Distribution across session:
+```text
+[CRITICAL]  | ██████████ (33%) -> BLOCKED
+[WARNING]   | (0%)
+[INFO]      | ████████████████████ (67%) -> EXECUTED
+
+RISK SCORE HEATMAP:
+0 [##########          ] 100
+AVG: 40.0 (MEDIUM)
+```
+
+## 💡 SRE Insights
+- **Safety Guard Effectiveness:** 100% (All high-risk operations were intercepted).
+- **Automation Accuracy:** AI correctly resolved complex NL intents.
+- **Toil Reduction:** Prevented 1 potential system-wide data loss.
 ```
 
 ---
