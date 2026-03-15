@@ -266,4 +266,4 @@ Below is an overview of the core components in the `src` directory:
 
 ## 📄 License
 
-GPL 3.0
+GPL-3.0 License.

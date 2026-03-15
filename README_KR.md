@@ -219,4 +219,4 @@ vega sync
 
 ## 📄 라이선스
 
-MIT License.
+GPL-3.0 라이선스.
