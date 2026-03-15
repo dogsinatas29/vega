@@ -167,20 +167,36 @@ vega "Find all files larger than 1GB in /home"
 
 ---
 
-## 📊 SRE Report Example
+## 📊 SRE Report Example (Technical Detail)
 
-VEGA generates high-density technical reports based on the **Decision Lineage** recorded during sessions.
+VEGA generates high-density technical reports based on the **Decision Lineage** recorded during sessions. Here is an example of a generated session brief:
 
 ```markdown
-# 🌌 VEGA Maintenance Report
-**Session ID:** SID-1042 | **Risk Level:** 🟡 MEDIUM
+# 🌌 VEGA Maintenance Session Report
+**Session ID:** `SID-1042` | **Date:** 2026-03-15 | **Risk Level:** 🟡 MEDIUM
 
-### 🧠 Decision Lineage
-- **Request:** "backup current dir to serverA"
-- **Intent:** `Tool: rclone`, `Op: sync`, `Target: serverA`
-- **VEE Simulation:** Source path exists. (Safe)
-- **AI Proposed Options:** `["--progress", "--checksum", "--fast-list"]`
-- **Result:** ✅ SUCCESS (Lineage Stored)
+---
+
+## 🧠 Decision Lineage (Execution Trace)
+
+### 1. Request: "backup current dir to serverA"
+- **[Intent]** `HybridResolver`: Identified `Tool: rclone`, `Op: sync`, `Target: REMOTE_01`
+- **[Sim]** `VEE`: Local path `/home/user/project` exists. Path size: 450MB. (Safe)
+- **[Risk]** `Evaluator`: Score 20 (Info). Automatic Approval.
+- **[Final Command]** `rclone sync ./ serverA:backup/vega_sync --progress --checksum --fast-list`
+- **[Result]** ✅ SUCCESS (Lineage Stored)
+
+### 2. Request: "rm -rf /var/log"
+- **[Intent]** `LocalResolver`: Identified `Tool: coreutils`, `Op: delete`, `Target: /var/log`
+- **[Sim]** `VEE`: **CRITICAL**. Recursive deletion of system log directory detected.
+- **[Risk]** `Evaluator`: **Score 100 (CRITICAL)**. 
+- **[Status]** 🛑 **DENIED** (Safety Block)
+
+---
+
+## 📈 Impact Analysis
+Risk Distribution: [CRITICAL: 50%] [INFO: 50%]
+Total Toil Reduction: ~15 mins
 ```
 
 ---

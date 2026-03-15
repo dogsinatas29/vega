@@ -121,20 +121,36 @@ vega "현재 디렉토리에서 1GB 이상인 파일 찾아줘"
 
 ---
 
-## 📊 SRE 보고서 예시
+## 📊 SRE 보고서 예시 (기술 명세)
 
-VEGA는 세션 중 기록된 **Decision Lineage**를 바탕으로 고밀도 기술 보고서를 생성합니다.
+VEGA는 세션 중 기록된 **Decision Lineage**를 바탕으로 고밀도 기술 보고서를 생성합니다. 다음은 생성된 세션 요약의 예시입니다:
 
 ```markdown
-# 🌌 VEGA Maintenance Report
-**Session ID:** SID-1042 | **Risk Level:** 🟡 MEDIUM
+# 🌌 VEGA 유지보수 세션 보고서
+**Session ID:** `SID-1042` | **날짜:** 2026-03-15 | **위험 등급:** 🟡 MEDIUM
 
-### 🧠 Decision Lineage
-- **Request:** "현재 디렉토리를 serverA에 백업해줘"
-- **Intent:** `Tool: rclone`, `Op: sync`, `Target: serverA`
-- **VEE Simulation:** 원본 경로 존재 확인. (정상)
-- **AI 제안 옵션:** `["--progress", "--checksum", "--fast-list"]`
-- **Result:** ✅ SUCCESS (추론 이력 저장됨)
+---
+
+## 🧠 의사결정 이력 (Decision Lineage)
+
+### 1. 요청: "현재 디렉토리를 serverA에 백업해줘"
+- **[Intent]** `HybridResolver`: `Tool: rclone`, `Op: sync`, `Target: REMOTE_01` 식별
+- **[Sim]** `VEE`: 로컬 경로 `/home/user/project` 존재 확인. 크기: 450MB. (Safe)
+- **[Risk]** `Evaluator`: 점수 20 (Info). 자동 승인.
+- **[Final Command]** `rclone sync ./ serverA:backup/vega_sync --progress --checksum --fast-list`
+- **[Result]** ✅ SUCCESS (추론 이력 저장됨)
+
+### 2. 요청: "rm -rf /var/log"
+- **[Intent]** `LocalResolver`: `Tool: coreutils`, `Op: delete`, `Target: /var/log` 식별
+- **[Sim]** `VEE`: **CRITICAL**. 시스템 로그 디렉토리의 재귀적 삭제 감지.
+- **[Risk]** `Evaluator`: **점수 100 (CRITICAL)**. 
+- **[Status]** 🛑 **거부됨** (안전 가드레일에 의해 차단)
+
+---
+
+## 📈 영향 분석
+위험 분포: [CRITICAL: 50%] [INFO: 50%]
+예상 작업 시간 단축: ~15분
 ```
 
 ---
