@@ -210,6 +210,33 @@ AVG: 40.0 (MEDIUM)
 - **Safety Guard Effectiveness:** 100% (All high-risk operations were intercepted).
 - **Automation Accuracy:** AI correctly resolved complex NL intents.
 - **Toil Reduction:** Prevented 1 potential system-wide data loss.
+
+---
+
+## 📧 Supervisor Email Briefing (Template)
+
+VEGA can format its lineage data into an executive summary ready to be sent to your team lead or SRE manager via `vega --report --email`.
+
+```text
+Subject: [SRE Briefing] Maintenance Session Summary - 2026-03-15 (SID-1042)
+
+Hi Team,
+
+I've completed the scheduled maintenance on the master node using VEGA SRE Agent. 
+Summary of the session below:
+
+1. System Status: Post-backup sync completed to primary cloud (serverA).
+2. Risk Management: Intercepted 1 CRITICAL operation (unauthorized system log deletion).
+3. Technical Trace:
+   - Success Rate: 100% (2/2 attempted authorized tasks)
+   - Safety Interventions: 1 blocked high-risk command.
+   - Decision Lineage: Verified and stored in State DB.
+
+Detailed technical report attached / archived in session lineage SID-1042.
+
+Best regards,
+[Your Name]
+```
 ```
 
 ---
