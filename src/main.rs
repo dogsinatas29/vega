@@ -148,6 +148,45 @@ async fn main() {
     let token_saver = TokenSaver::new(&cache_path, &history_path, keywords);
     let logger = ExecutionLogger::new(&history_path);
 
+    // v0.0.10 Pipeline Proof of Concept
+    if input == "run-v10" && args.len() >= 3 {
+        let nli = args[2..].join(" ");
+        println!("🚀 Running v0.0.10 Pipeline for: \"{}\"", nli);
+
+        use crate::executor::pipeline::*;
+        use crate::ai::intent::*;
+        use crate::executor::template::BasicTemplateBuilder;
+        use crate::ai::generator::AiOptionGenerator;
+        use crate::executor::virt::BasicVee;
+        use crate::safety::risk::DefaultRiskEvaluator;
+
+        let orchestrator = PipelineOrchestrator {
+            intent_resolver: Box::new(HybridIntentResolver {
+                local: LocalIntentResolver,
+                ai: AiIntentResolver,
+            }),
+            template_builder: Box::new(BasicTemplateBuilder),
+            option_generator: Box::new(AiOptionGenerator),
+            vee: Box::new(BasicVee),
+            risk_evaluator: Box::new(DefaultRiskEvaluator),
+            execution_provider: Box::new(LocalExecutionProvider),
+        };
+
+        match orchestrator.run_pipeline(&nli).await {
+            Ok(res) => {
+                if res.success {
+                    println!("✅ Pipeline Success!");
+                    if !res.stdout.is_empty() { println!("STDOUT: {}", res.stdout); }
+                } else {
+                    println!("❌ Pipeline Execution Failed (Code: {:?})", res.exit_code);
+                    eprintln!("STDERR: {}", res.stderr);
+                }
+            },
+            Err(e) => eprintln!("❌ Pipeline Error: {}", e),
+        }
+        return;
+    }
+
     // 4. Command Routing (Continued)
 
     // v2.0 Abstraction Commands
@@ -516,7 +555,6 @@ async fn main() {
                                         println!("⚡ Executing...");
 
                                         // RE-RESOLVE REMOTE NAMES (Unmasking)
-                                        let ctx = SystemContext::collect();
                                         let mut masker = crate::remote::RemoteMasker::new();
                                         // Discovery::run() returns real names. We need to mask them to get the same REMOTE_XX mapping.
                                         if let Ok(discovery) =

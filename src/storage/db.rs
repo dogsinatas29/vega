@@ -136,6 +136,22 @@ impl Database {
         )?;
 
         self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS decision_lineage (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                session_id INTEGER,
+                user_request TEXT NOT NULL,
+                intent TEXT,
+                generated_command TEXT,
+                simulation_log TEXT,
+                risk_score INTEGER,
+                execution_result TEXT,
+                timestamp INTEGER,
+                FOREIGN KEY(session_id) REFERENCES sessions(id)
+            )",
+            [],
+        )?;
+
+        self.conn.execute(
             "CREATE TABLE IF NOT EXISTS error_solutions (
                 error_pattern TEXT PRIMARY KEY,
                 solution_cmd TEXT,
@@ -482,6 +498,35 @@ impl Database {
             }
         }
         Ok(commands)
+    }
+
+    pub fn log_decision_lineage(
+        &self,
+        user_request: &str,
+        intent: &str,
+        generated_command: &str,
+        simulation_log: &str,
+        risk_score: i32,
+        execution_result: &str,
+    ) -> Result<()> {
+        if let Some(session_id) = self.current_session_id {
+            let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as i64;
+            self.conn.execute(
+                "INSERT INTO decision_lineage (session_id, user_request, intent, generated_command, simulation_log, risk_score, execution_result, timestamp)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                params![
+                    session_id,
+                    user_request,
+                    intent,
+                    generated_command,
+                    simulation_log,
+                    risk_score,
+                    execution_result,
+                    timestamp
+                ],
+            )?;
+        }
+        Ok(())
     }
 }
 

@@ -3,6 +3,10 @@ use serde::{Deserialize, Serialize};
 pub mod orchestrator;
 pub mod pkg;
 pub mod status;
+pub mod ast;
+pub mod pipeline;
+pub mod template;
+pub mod virt;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[allow(dead_code)]

@@ -1,4 +1,5 @@
 pub mod sanitizer;
+pub mod risk;
 
 use colored::Colorize;
 use std::io::{self, Write};

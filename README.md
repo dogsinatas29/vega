@@ -19,8 +19,9 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 -   **Silent Discovery:** Background scanning triggered upon incomplete information (e.g., missing IP).
 - **Resolve & Persist:** Found system info is cached to prevent redundant queries.
 - **Cloud Sync Integration:** Non-disruptive project backup and state synchronization powered by `rclone`.
+- **Hybrid Execution Pipeline (v0.0.10):** A decoupled 7-stage engine (Intent -> AST -> AI Options -> Simulation -> Execution) for maximum safety.
+- **Decision Lineage:** Every reasoning step (why a command was proposed) is permanently recorded in the State DB.
 - **Persistent Metadata:** Dedicated SQLite storage for system-specific configurations and long-term state.
-- **Dynamic State DB:** Acts as a persistent vault for discovered system metadata and reasoning history.
 
 ### 📜 SRE Operating Principles
 1. **Error Budgets**: "No system is perfect. Automate as much as possible within acceptable failure margins."
@@ -29,19 +30,17 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 
 ---
 
-## 🧠 Core Architecture
+## 🧠 Core Architecture (Hybrid Pipeline v0.0.10)
 
-Vega operates on an evolved **3-stage Reasoning Engine** that synthesizes system context with LLM intelligence to ensure SRE-grade safety.
+Vega operates on a **Decoupled Execution Pipeline** that ensures absolute deterministic control with AI-assisted optimizations.
 
-1.  **Logical Scan & Context Synthesis**:
-    *   **Intent Analysis**: Uses **SmartRouter** to determine if the task requires CoT reasoning via LLMs or a local fallback.
-    *   **Context Gathering**: Gathers "Self-Awareness" metadata (OS, Kernel, Partitions) and scans shell environments (`.bashrc`, `.zshrc`) for aliases and environment variables.
-2.  **Physical Mapping & Discovery**:
-    *   **Resource Discovery**: Autonomously identifies system objects (IPs, project files like `lazy-lock.json`) through the **Discovery** module.
-    *   **Mapping**: Bridges the gap between your logical intent and physical system resources (SSH hosts, disk partitions).
-3.  **Privilege Enforcement & Execution**:
-    *   **Safety Guardrails**: Validates commands against the **Safety Registry** and redacts sensitive data via the **Deidentifier**.
-    *   **Orchestration & Learning**: Executes commands via the **Orchestrator**. Outcomes are stored in the **State DB** to enable **Local RAG** (Retrieval-Augmented Generation) for future learning.
+1.  **Intent Resolution**: Decodes natural language into structured operations (Backup, Install, etc.). Fallbacks to AI for complex inputs.
+2.  **Template Building**: Constructs a deterministic **Command AST** (Skeleton) to prevent AI-induced syntax errors.
+3.  **AI Option Generation**: AI provides optimal flags (e.g., `--checksum`, `--progress`) injected into the skeleton.
+4.  **VEE (Virtual Execution Engine)**: Performs **State-based Simulation**. Checks path existence and predicts system impact.
+5.  **Risk Evaluation**: Assigns a risk score (0-100). Critical ops require explicit manual authorization.
+6.  **Execution Provider**: Dispatches commands to local or remote (SSH) environments.
+7.  **Reporting & Lineage**: Persists the entire trace (Lineage) and generates technical SRE reports.
 
 ---
 
@@ -160,10 +159,29 @@ vega history
 vega "Find all files larger than 1GB in /home"
 ```
 
-> **AI Execution Flow:**
-> 1.  **Reasoning (CoT)**: Peek into the AI's logical process before the final suggestion.
-> 2.  **Proposal**: Presents a plan with a `Risk Level` (INFO/WARNING/CRITICAL).
-> 3.  **Confirmation**: Explicit prompt to execute (`[y/N]`).
+> **AI Execution Flow (Pipeline v0.0.10):**
+> 1.  **Intent**: Resolves structured "What" (e.g., `backup`).
+> 2.  **Simulation**: VEE checks path existence locally.
+> 3.  **Proposal**: AI suggests optimized `options` (flags).
+> 4.  **Audit**: Logs the decision lineage before execution.
+
+---
+
+## 📊 SRE Report Example
+
+VEGA generates high-density technical reports based on the **Decision Lineage** recorded during sessions.
+
+```markdown
+# 🌌 VEGA Maintenance Report
+**Session ID:** SID-1042 | **Risk Level:** 🟡 MEDIUM
+
+### 🧠 Decision Lineage
+- **Request:** "backup current dir to serverA"
+- **Intent:** `Tool: rclone`, `Op: sync`, `Target: serverA`
+- **VEE Simulation:** Source path exists. (Safe)
+- **AI Proposed Options:** `["--progress", "--checksum", "--fast-list"]`
+- **Result:** ✅ SUCCESS (Lineage Stored)
+```
 
 ---
 

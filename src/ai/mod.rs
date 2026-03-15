@@ -72,3 +72,5 @@ pub mod auth_manager;
 pub mod prompts;
 pub mod providers;
 pub mod router;
+pub mod intent;
+pub mod generator;
