@@ -810,13 +810,6 @@ async fn main() {
                                                 host_targets.push(masked);
                                             }
                                         }
-
-                                        let context = format!(
-                                            "STORAGE TARGETS:\n{}\n\nHOST TARGETS:\n{}\n\nDETAILED INVENTORY:\n{}",
-                                            storage_targets.join("\n"),
-                                            host_targets.join("\n"),
-                                            discovery_context
-                                        );
                                         
                                         // 🛡️ Safety Interceptor: Check if SSH is used on a Storage target
                                         let mut final_cmd = masker.resolve_command(&ai_res.command);
