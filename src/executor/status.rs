@@ -155,13 +155,23 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
         );
 
         // 2. Extra Service Discovery (Quick Probe for Dashboard)
-        let extra_ports = vec![11434, 8080, 80, 443, 3000];
+        let extra_ports = vec![22, 11434, 80, 443, 8080, 3000, 5432, 6379, 27017];
         for p in extra_ports {
             if p == mgmt_port { continue; } // Skip if already shown
             
             let addr_str = format!("{}:{}", entry.ip, p);
             if let Ok(addr) = addr_str.parse::<std::net::SocketAddr>() {
-                if std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(50)).is_ok() {
+                if std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(100)).is_ok() {
+                    let svc_label = match p {
+                        22 => "SSH",
+                        11434 => "AI/Ollama",
+                        80 | 443 | 8080 => "HTTP/Web",
+                        3000 => "Node/App",
+                        5432 => "PostgreSQL",
+                        6379 => "Redis",
+                        27017 => "MongoDB",
+                        _ => "Service",
+                    };
                     println!(
                         "{:<20} | {:<15} | {:<6} | {:<10} | {:<10} | {}",
                         masked_name.dimmed(), 
@@ -169,7 +179,7 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
                         p.to_string().cyan(),
                         "ONLINE".green(),
                         "-",
-                        "Service".italic().dimmed()
+                        svc_label.italic().dimmed()
                     );
                 }
             }
