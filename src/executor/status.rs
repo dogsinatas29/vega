@@ -26,9 +26,24 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
 
         println!("🔍 Deep Scanning Status for: {}", resolved_target.bold().cyan());
         if let Some(entry) = kb.get(&resolved_target) {
+             // 1. Layer 4: TCP Probe (Physical Life)
+             let addr = format!("{}:22", entry.ip);
+             let tcp_alive = if let Ok(s_addr) = addr.parse::<std::net::SocketAddr>() {
+                 std::net::TcpStream::connect_timeout(&s_addr, std::time::Duration::from_millis(500)).is_ok()
+             } else {
+                 false
+             };
+
+             if !tcp_alive {
+                 println!("📡 Connection: {}", "OFFLINE (Port 22 unreachable)".red());
+                 println!("   💡 Tip: Check if the target IP is correct and the server is powered on.");
+                 return;
+             }
+
+             // 2. Layer 7: SSH Handshake (Operational Life)
              match SshConnection::check_connection(&entry.ip, entry.user.as_deref()) {
                  Ok(_) => {
-                     println!("📡 Connection: {}", "ONLINE".green());
+                     println!("📡 Connection: {}", "ONLINE (SSH Verified)".green());
                      
                      // 1. OS Info
                      let os = SshConnection::detect_os(&entry.ip, entry.user.as_deref());
@@ -51,7 +66,12 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
                          Err(_) => println!("⚠️  Failed to fetch detailed metrics."),
                      }
                  },
-                 Err(_) => println!("📡 Connection: {}", "OFFLINE".red()),
+                 Err((code, err)) => {
+                     println!("📡 Connection: {}", "ONLINE (Physical) but SSH FAILED".yellow());
+                     let diagnosis = SshConnection::diagnose(code, &err);
+                     println!("   ❌ Error: {}", diagnosis.message.red());
+                     println!("   💡 Action: {}", diagnosis.recommendation.dimmed());
+                 }
              }
         } else {
              println!("❌ Target '{}' not found in inventory.", t);
