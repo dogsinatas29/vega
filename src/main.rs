@@ -818,6 +818,12 @@ async fn main() {
                                         
                                         // 🛡️ Safety Interceptor: Check if SSH is used on a Storage target
                                         let mut final_cmd = masker.resolve_command(&ai_res.command);
+
+                                        // 🛡️ SSH Port Heuristic: Fix AI's port confusion (11434 is for AI, not SSH)
+                                        if (final_cmd.contains("ssh ") || final_cmd.contains("scp ")) && final_cmd.contains("-p 11434") {
+                                            eprintln!("{}", "⚠️  [Heuristic] AI attempted SSH on port 11434. Swapping to default SSH port 22...".yellow());
+                                            final_cmd = final_cmd.replace("-p 11434", "-p 22");
+                                        }
                                         
                                         if (final_cmd.contains("ssh ") || final_cmd.contains("scp ")) && 
                                            storage_targets.iter().any(|t| ai_res.command.contains(t)) {

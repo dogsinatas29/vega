@@ -191,7 +191,7 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
             mgmt_port.to_string().yellow(),
             status_color,
             load,
-            format!("{} (Primary)", tags).yellow()
+            format!("{} (Management)", tags).yellow()
         );
 
         // 2. Extra Service Discovery (Quick Probe for Dashboard)
@@ -203,13 +203,12 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
             if let Ok(addr) = addr_str.parse::<std::net::SocketAddr>() {
                 if std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(100)).is_ok() {
                     let svc_label = match p {
-                        22 => "SSH",
-                        11434 => "AI/Ollama",
+                        22 => "SSH/SRE",
+                        11434 => "API/Ollama",
                         80 | 443 | 8080 => "HTTP/Web",
                         3000 => "Node/App",
-                        5432 => "PostgreSQL",
-                        6379 => "Redis",
-                        27017 => "MongoDB",
+                        5432 => "Database",
+                        6379 => "Cache/Redis",
                         _ => "Service",
                     };
                     println!(
