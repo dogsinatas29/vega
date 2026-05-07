@@ -1,6 +1,28 @@
 use std::process::Command;
+use std::io::{Read, Write};
+use std::net::TcpStream;
+use std::time::Duration;
 
 pub struct SshConnection;
+
+impl SshConnection {
+    /// Verifies if the port is actually an SSH server by checking the protocol banner.
+    pub fn verify_ssh_fingerprint(ip: &str, port: u16) -> bool {
+        if let Ok(mut stream) = TcpStream::connect_timeout(
+            &format!("{}:{}", ip, port).parse().unwrap_or("127.0.0.1:0".parse().unwrap()),
+            Duration::from_millis(500)
+        ) {
+            let mut buffer = [0; 8];
+            if stream.set_read_timeout(Some(Duration::from_millis(500))).is_ok() {
+                if stream.read_exact(&mut buffer).is_ok() {
+                    let banner = String::from_utf8_lossy(&buffer);
+                    return banner.starts_with("SSH-2.0-");
+                }
+            }
+        }
+        false
+    }
+}
 
 pub struct DiagnosticResult {
     pub message: String,
