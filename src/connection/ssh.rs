@@ -1,5 +1,5 @@
 use std::process::Command;
-use std::io::{Read, Write};
+use std::io::Read;
 use std::net::TcpStream;
 use std::time::Duration;
 
