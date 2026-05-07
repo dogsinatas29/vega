@@ -14,67 +14,71 @@ pub enum EngineType {
     OpenAI,
     Offline,
     WebSession,
+    Ollama,
     #[allow(dead_code)]
     Mock,
 }
 
 impl SmartRouter {
     pub fn determine_engine(query: &str, preferred: Option<String>) -> EngineType {
-        // 1. User Preference
+        use colored::Colorize;
+
+        // 1. User Preference - Absolute priority
         if let Some(pref) = preferred {
             match pref.to_lowercase().as_str() {
                 "gemini" => {
-                    debug!("🎯 Router: User forced Gemini");
+                    debug!("🎯 Router: User selected Gemini");
                     return EngineType::Gemini;
                 }
+                "ollama" => {
+                    debug!("🎯 Router: User selected Local LLM (Ollama)");
+                    return EngineType::Ollama;
+                }
                 "vertex_ai" | "vertexai" => {
-                    debug!("🎯 Router: User forced Vertex AI");
+                    debug!("🎯 Router: User selected Vertex AI");
                     return EngineType::VertexAI;
                 }
                 "claude" => {
-                    debug!("🎯 Router: User forced Claude");
+                    debug!("🎯 Router: User selected Claude");
                     return EngineType::Claude;
                 }
                 "openai" | "gpt" => {
-                    debug!("🎯 Router: User forced OpenAI");
+                    debug!("🎯 Router: User selected OpenAI");
                     return EngineType::OpenAI;
                 }
                 "offline" => {
-                    debug!("🎯 Router: User forced Offline");
+                    debug!("🎯 Router: User selected Offline mode");
                     return EngineType::Offline;
                 }
                 "web" | "websession" => {
-                    debug!("🎯 Router: User forced Web Session");
+                    debug!("🎯 Router: User selected Web Session");
                     return EngineType::WebSession;
                 }
                 _ => {
-                    warn!("⚠️ Invalid engine '{}', ignoring.", pref);
+                    warn!("⚠️ Invalid engine '{}' in config, using intelligent routing.", pref);
                 }
             }
+        } else {
+            // 2. No preference set - Warn user to run setup
+            println!("{}", "⚠️  LLM Provider not configured. Run 'vega setup' to select an engine.".yellow());
+            println!("   (Attempting fallback to default/offline engine...)");
         }
 
-        // 2. Context Analysis
+        // 3. Intelligent Routing (Fallback when no preference or invalid)
         let refined_query = query.to_lowercase();
 
-        // Deep Analysis -> Claude
+        // Deep Analysis -> Gemini (as current high-performance default)
         if refined_query.contains("analyze")
             || refined_query.contains("debug")
             || refined_query.contains("why")
         {
-            // Mock fallback to Gemini for now but log intention
-            debug!("🧠 Router: Deep analysis detected. Preferred: Claude (Falling back to Gemini mock)");
+            debug!("🧠 Router: Deep analysis detected. Routing to Gemini fallback.");
             return EngineType::Gemini;
         }
 
-        // Long Context -> Gemini
-        if query.len() > 1000 {
-            debug!("📜 Router: Long context (>1000 chars). Selected: Gemini");
-            return EngineType::Gemini;
-        }
-
-        // Simple Command -> Gemini/GPT
-        debug!("⚡ Router: Default/Simple query. Selected: Gemini");
-        EngineType::Gemini
+        // Default to Offline if no preference and not a complex query
+        debug!("🛡️  Router: No preference and simple query. Selected: Offline");
+        EngineType::Offline
     }
 
     pub fn get_provider(engine: EngineType) -> Result<Box<dyn AiProvider>, String> {
@@ -134,6 +138,20 @@ impl SmartRouter {
                     Ok(p) => Ok(Box::new(p)),
                     Err(e) => Err(format!("Web Session Init Failed: {}", e)),
                 }
+            }
+            EngineType::Ollama => {
+                let config_path = crate::init::get_config_path();
+                let config = crate::config::VegaConfig::load(config_path.to_str().unwrap())
+                    .map_err(|e| format!("Failed to load config: {}", e))?;
+
+                let ollama_config = config.ai
+                    .and_then(|ai| ai.ollama)
+                    .ok_or("Ollama not configured. Please run 'vega setup' and select Local LLM.")?;
+
+                Ok(Box::new(crate::ai::providers::ollama::OllamaProvider::new(
+                    ollama_config.endpoint,
+                    ollama_config.model,
+                )))
             }
         }
     }

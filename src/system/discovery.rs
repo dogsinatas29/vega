@@ -1,5 +1,6 @@
 use crate::remote::rclone::RcloneProvider;
 use crate::remote::RemoteMasker;
+use colored::Colorize;
 use std::fs;
 use std::path::PathBuf;
 
@@ -13,7 +14,9 @@ pub struct DiscoveryResult {
 
 impl Discovery {
     pub fn run() -> Result<DiscoveryResult, String> {
-        eprintln!("⚠️  IP Unknown. Running automatic discovery...");
+        let hostname = crate::context::SystemContext::get_hostname();
+        let ip = crate::context::SystemContext::get_local_ip();
+        eprintln!("📡 Identifying as: {} ({})", hostname.cyan(), ip.cyan());
         let mut result = DiscoveryResult {
             cloud_remotes: Vec::new(),
             ssh_hosts: Vec::new(),
@@ -30,15 +33,12 @@ impl Discovery {
                 println!("☁️  Discovery: Found {} rclone remotes.", remotes.len());
                 let mut masker = RemoteMasker::new();
                 for remote in remotes {
-                    let masked = masker.mask(&remote);
+                    let masked = masker.mask(&remote, Some("STORAGE"));
                     println!("   📡 Remote identified: {}", masked);
                     result.cloud_remotes.push(remote.clone());
 
                     // Depth-limited search for "workspace" indicators
                     let provider = RcloneProvider::new(remote);
-                    // This is blocking for now, ideally we'd want it async or backgrounded
-                    // But for discovery phase, simple is better.
-                    // We'll just look for a few indicators in the root
                     if let Ok(output) = provider
                         .execute_rclone(vec!["lsjson", &format!("{}:", provider.remote_name)])
                     {
@@ -66,30 +66,67 @@ impl Discovery {
                     "🔑 Discovery: Found {} potential SSH targets in config.",
                     ssh_hosts.len()
                 );
+                let mut masker = RemoteMasker::new();
                 for host in ssh_hosts {
-                    println!("   📡 SSH Target identified: {}", host);
+                    let masked = masker.mask(&host, Some("HOST"));
+                    println!("   📡 SSH Target identified: {}", masked);
                     result.ssh_hosts.push(host);
                 }
             }
         }
 
-        eprintln!("ℹ️  Network discovery completed.");
 
         Ok(result)
     }
 
     pub fn parse_ssh_config() -> Option<Vec<String>> {
+        let mut hosts = Vec::new();
         if let Ok(home) = std::env::var("HOME") {
-            let config_path = PathBuf::from(&home).join(".ssh/config");
+            let config_path = std::path::PathBuf::from(&home).join(".ssh/config");
             if config_path.exists() {
                 if let Ok(content) = fs::read_to_string(config_path) {
-                    let mut hosts = Vec::new();
                     for line in content.lines() {
-                        let line: &str = line.trim();
+                        let line = line.trim();
                         if line.starts_with("Host ") && !line.contains('*') && !line.contains('?') {
                             let host = line.replace("Host ", "").trim().to_string();
-                            if !host.is_empty() {
+                            if !host.is_empty() && host != "localhost" {
                                 hosts.push(host);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Fallback: Check known_hosts
+            if let Some(kh_hosts) = Self::parse_known_hosts() {
+                for host in kh_hosts {
+                    if !hosts.contains(&host) {
+                        hosts.push(host);
+                    }
+                }
+            }
+        }
+
+        if hosts.is_empty() {
+            None
+        } else {
+            Some(hosts)
+        }
+    }
+
+    pub fn parse_known_hosts() -> Option<Vec<String>> {
+        if let Ok(home) = std::env::var("HOME") {
+            let kh_path = std::path::PathBuf::from(&home).join(".ssh/known_hosts");
+            if kh_path.exists() {
+                if let Ok(content) = fs::read_to_string(kh_path) {
+                    let mut hosts = Vec::new();
+                    for line in content.lines() {
+                        if let Some(host_part) = line.split_whitespace().next() {
+                            // Extract first host (it might be a comma separated list of host/ip)
+                            let host = host_part.split(',').next().unwrap_or("").trim();
+                            // Filter out hashed hosts or complex entries for now
+                            if !host.starts_with('|') && !host.is_empty() && host != "localhost" && host != "127.0.0.1" {
+                                hosts.push(host.to_string());
                             }
                         }
                     }

@@ -48,9 +48,40 @@ pub async fn sync_cloud_storage(
 }
 
 #[allow(dead_code)]
-pub async fn update_all(_kb: &KnowledgeBase) {
-    // ... existing fleet update logic can be refactored to use RemoteProvider ...
-    // Keeping existing for BC for now, but added generic hooks above.
+pub async fn update_fleet(kb: &mut KnowledgeBase, filter_tag: Option<&str>) -> Result<(), String> {
+    use crate::connection::ssh::SshConnection;
+    use colored::Colorize;
+
+    println!("🚀 Initiating Fleet-wide Maintenance...");
+    if let Some(tag) = filter_tag {
+        println!("   🎯 Filter: Only nodes with tag '{}'", tag.yellow());
+    }
+    
+    for (name, entry) in &mut kb.targets {
+        if entry.protocol == "ssh" {
+            // Check Tag Filter
+            if let Some(tag) = filter_tag {
+                if !entry.tags.contains(&tag.to_string()) {
+                    continue;
+                }
+            }
+
+            println!("📡 Maintenance on {}: Refreshing health...", name.green());
+            match SshConnection::get_system_info(&entry.ip).await {
+                Ok((kernel, load)) => {
+                    println!("   ✅ [Connected] Kernel: {}, Load: {}", kernel.cyan(), load.cyan());
+                    entry.kernel = Some(kernel);
+                    entry.cpu_load = Some(load);
+                    entry.last_success = chrono::Local::now().to_rfc3339();
+                }
+                Err(e) => {
+                    println!("   ❌ [Failed] {}", e.red());
+                }
+            }
+        }
+    }
+    
+    kb.save().map_err(|e| format!("Failed to save KB: {}", e))
 }
 pub async fn sync_all_cloud(
     ctx: &crate::context::SystemContext,
@@ -65,10 +96,12 @@ pub async fn sync_all_cloud(
         return sync_cloud_storage(&provider, &source, "backup/vega_sync").await;
     }
 
-    for _node in &ctx.cloud_nodes {
-        // Fallback: sync to all discovered nodes (using masked names here is tricky,
-        // orchestrator needs real names. Discovery stores real names in DB but context has masked ones for AI.)
-        // For now, if no primary is set, we'll just log and skip or sync to first available real remote found in discovery.
+    for node in &ctx.remotes {
+        if node.r#type == crate::context::RemoteType::Storage {
+            info!("Syncing project to discovered storage node: {}", node.real_name);
+            let provider = RcloneProvider::new(node.real_name.clone());
+            let _ = sync_cloud_storage(&provider, &source, "backup/vega_sync").await;
+        }
     }
     Ok(())
 }

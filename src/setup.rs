@@ -7,7 +7,7 @@ use std::io::{self, Write};
 pub struct SetupWizard;
 
 impl SetupWizard {
-    pub fn run() {
+    pub async fn run() {
         // 0. Check for Silent Mode (--yes / -y)
         let args: Vec<String> = env::args().collect();
         let silent_mode = args.contains(&"--yes".to_string()) || args.contains(&"-y".to_string());
@@ -31,43 +31,110 @@ impl SetupWizard {
             println!("\n[1] Setup Intelligence (LLM)");
         }
 
-        let provider = if silent_mode {
-            "gemini".to_string() // Default for silent
-        } else {
-            Self::select_provider()
-        };
+        let mut provider = "gemini".to_string();
+        let mut source = "manual".to_string();
+        let mut ollama_config = None;
 
-        let (_api_key, source) = if silent_mode {
-            // In silent mode, try to find key, if not, fail or use dummy?
-            // Design decision: Try to find env var first.
-            let env_key = match provider.as_str() {
-                "gemini" => env::var("GEMINI_API_KEY"),
-                "chatgpt" => env::var("OPENAI_API_KEY"),
-                "claude" => env::var("ANTHROPIC_API_KEY"),
-                _ => Err(std::env::VarError::NotPresent),
-            };
-
-            if let Ok(_) = env_key {
-                ("***MASKED***".to_string(), "env_var".to_string())
-            } else {
-                // Try file scan
-                if let Some((_, path)) = crate::system::env_scanner::find_key(&provider) {
-                    ("***MASKED***".to_string(), format!("file:{}", path))
-                } else {
-                    println!(
-                        "❌ Silent Mode Error: No API Key found for {}. Please set env var.",
-                        provider
-                    );
-                    return;
-                }
+        if silent_mode {
+            // In silent mode, try to find key, if not, use gemini default
+            if let Some((_, path)) = crate::system::env_scanner::find_key("gemini") {
+                source = format!("file:{}", path);
             }
         } else {
-            Self::discover_and_confirm_key(&provider)
-        };
+            println!("   Select LLM Provider Type:");
+            println!("      1) Cloud LLM (자동 검색)");
+            println!("      2) Cloud LLM (수동 선택)");
+            println!("      3) Local LLM (로컬 서버)");
 
-        if !silent_mode {
-            println!("   - Provider: {}", provider);
-            println!("   - API Key Source: {}", source);
+            loop {
+                let choice = Self::prompt("   Select (1-3): ", Some("1"));
+                match choice.as_str() {
+                    "1" => {
+                        // Auto Select
+                        let found_keys = crate::system::env_scanner::find_all_keys();
+                        if found_keys.is_empty() {
+                            println!("   ⚠️  No API keys found in shell configs. Switching to Manual Select.");
+                            provider = Self::select_provider();
+                            let (_, s) = Self::discover_and_confirm_key(&provider);
+                            source = s;
+                        } else if found_keys.len() == 1 {
+                            let (p, m, _, path) = &found_keys[0];
+                            println!("   🔍 Found {} API Key in {} ({})", p, path, m);
+                            if Self::confirm("   Use this key? (Y/n): ", Some("Y")) {
+                                provider = p.clone();
+                                source = format!("file:{}", path);
+                            } else {
+                                provider = Self::select_provider();
+                                let (_, s) = Self::discover_and_confirm_key(&provider);
+                                source = s;
+                            }
+                        } else {
+                            println!("   🔍 Multiple API Keys found:");
+                            for (i, (p, m, _, path)) in found_keys.iter().enumerate() {
+                                println!("      {}) {} [{}] (in {})", i + 1, p, m, path);
+                            }
+                            let idx_str = Self::prompt("   Select (1-N): ", Some("1"));
+                            if let Ok(idx) = idx_str.parse::<usize>() {
+                                if idx > 0 && idx <= found_keys.len() {
+                                    let (p, _, _, path) = &found_keys[idx - 1];
+                                    provider = p.clone();
+                                    source = format!("file:{}", path);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    "2" => {
+                        // Manual Select
+                        provider = Self::select_provider();
+                        let (_, s) = Self::discover_and_confirm_key(&provider);
+                        source = s;
+                        break;
+                    }
+                    "3" => {
+                        // Local LLM
+                        provider = "ollama".to_string();
+                        source = "local".to_string();
+                        let endpoint = Self::prompt("   🖥️  Enter Local LLM Endpoint: ", Some("http://localhost:11434"));
+                        
+                        println!("   🔍 Fetching models from {}...", endpoint);
+                        let model_result = crate::ai::providers::ollama::OllamaProvider::list_models(&endpoint).await;
+                        
+                        let model = match model_result {
+                            Ok(models) => {
+                                if models.is_empty() {
+                                    println!("   ⚠️  No models found on the server.");
+                                    Self::prompt("   📦 Enter Model Name manually: ", Some("llama3"))
+                                } else {
+                                    println!("   📦 Available Models:");
+                                    for (i, m) in models.iter().enumerate() {
+                                        println!("      {}) {}", i + 1, m);
+                                    }
+                                    let idx_str = Self::prompt(&format!("   Select Model (1-{}): ", models.len()), Some("1"));
+                                    if let Ok(idx) = idx_str.parse::<usize>() {
+                                        if idx > 0 && idx <= models.len() {
+                                            models[idx - 1].clone()
+                                        } else {
+                                            models[0].clone()
+                                        }
+                                    } else {
+                                        models[0].clone()
+                                    }
+                                }
+                            }
+                            Err(e) => {
+                                println!("   ❌ Failed to fetch models: {}. Please check if the server is running.", e);
+                                Self::prompt("   📦 Enter Model Name manually: ", Some("llama3"))
+                            }
+                        };
+                        
+                        println!("   ✅ Selected Model: {}", model);
+                        ollama_config = Some(crate::config::OllamaConfig { endpoint, model });
+                        break;
+                    }
+                    _ => println!("   ❌ Invalid choice."),
+                }
+            }
         }
 
         // 2.5 Cloud Integration Setup
@@ -100,6 +167,109 @@ impl SetupWizard {
             }
         }
 
+        // 2.6 Fleet Inventory Setup (SSH)
+        if !silent_mode {
+            println!("\n[3] Setup Fleet Inventory (SSH)");
+            let mut kb = crate::knowledge::KnowledgeBase::load();
+            let discovery = crate::system::discovery::Discovery::run().unwrap_or_default();
+
+            if !discovery.ssh_hosts.is_empty() {
+                println!("   🔍 Found {} potential SSH targets in your system:", discovery.ssh_hosts.len());
+                for (i, host) in discovery.ssh_hosts.iter().enumerate() {
+                    println!("      {}) {}", i + 1, host);
+                }
+
+                println!("   💡 Select hosts to REGISTER for management (e.g., 1,2,4 or 'all')");
+                let choice = Self::prompt("   Selection (Enter to skip): ", None);
+
+                if !choice.is_empty() {
+                    let mut selected_hosts = Vec::new();
+                    if choice.to_lowercase() == "all" {
+                        selected_hosts = discovery.ssh_hosts.clone();
+                    } else {
+                        for part in choice.split(',') {
+                            if let Ok(idx) = part.trim().parse::<usize>() {
+                                if idx > 0 && idx <= discovery.ssh_hosts.len() {
+                                    selected_hosts.push(discovery.ssh_hosts[idx - 1].clone());
+                                }
+                            }
+                        }
+                    }
+
+                    for host in selected_hosts {
+                        println!("   📡 Verifying {}...", host);
+                        // Quick check
+                        if crate::connection::ssh::SshConnection::check_connection(&host, None).is_ok() {
+                            let os = crate::connection::ssh::SshConnection::detect_os(&host, None);
+                            kb.add(&host, crate::knowledge::KnowledgeEntry {
+                                ip: host.clone(),
+                                user: None,
+                                protocol: "ssh".to_string(),
+                                port: Some(22),
+                                os_type: os,
+                                kernel: None,
+                                cpu_load: None,
+                                tags: Vec::new(),
+                                last_success: chrono::Local::now().to_rfc3339(),
+                            });
+                            println!("      ✅ Registered: {}", host);
+                        } else {
+                            println!("      ❌ Unreachable: {}. Adding anyway as 'Unverified'.", host);
+                            kb.add(&host, crate::knowledge::KnowledgeEntry {
+                                ip: host.clone(),
+                                user: None,
+                                protocol: "ssh".to_string(),
+                                port: Some(22),
+                                os_type: None,
+                                kernel: None,
+                                cpu_load: None,
+                                tags: Vec::new(),
+                                last_success: "Never".to_string(),
+                            });
+                        }
+                    }
+                    let _ = kb.save();
+                }
+            } else {
+                println!("   ⚠️  No SSH hosts found in config/known_hosts.");
+                if Self::confirm("   Would you like to manually add a node now? (y/n): ", Some("n")) {
+                    let host = Self::prompt("   Enter Host/IP: ", None);
+                    if !host.is_empty() {
+                        println!("   📡 Verifying {}...", host);
+                        if crate::connection::ssh::SshConnection::check_connection(&host, None).is_ok() {
+                            let os = crate::connection::ssh::SshConnection::detect_os(&host, None);
+                            kb.add(&host, crate::knowledge::KnowledgeEntry {
+                                ip: host.clone(),
+                                user: None,
+                                protocol: "ssh".to_string(),
+                                port: Some(22),
+                                os_type: os,
+                                kernel: None,
+                                cpu_load: None,
+                                tags: Vec::new(),
+                                last_success: chrono::Local::now().to_rfc3339(),
+                            });
+                            println!("      ✅ Registered: {}", host);
+                        } else {
+                            println!("      ❌ Unreachable: {}. Adding as 'Unverified'.", host);
+                            kb.add(&host, crate::knowledge::KnowledgeEntry {
+                                ip: host.clone(),
+                                user: None,
+                                protocol: "ssh".to_string(),
+                                port: Some(22),
+                                os_type: None,
+                                kernel: None,
+                                cpu_load: None,
+                                tags: Vec::new(),
+                                last_success: "Never".to_string(),
+                            });
+                        }
+                        let _ = kb.save();
+                    }
+                }
+            }
+        }
+
         // 3. Generate Config
         let mut config = VegaConfig::default();
         config.system.log_level = Some("INFO".to_string());
@@ -109,6 +279,7 @@ impl SetupWizard {
             api_key_source: source,
             model: None,
             vertex_ai: None,
+            ollama: ollama_config,
         });
 
         config.optimization = Some(OptimizationConfig {

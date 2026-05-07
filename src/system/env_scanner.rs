@@ -163,3 +163,51 @@ pub fn find_key(provider: &str) -> Option<(String, String)> {
 
     None
 }
+/// Scans all standard shell configuration files for any supported API Key patterns.
+/// Returns a list of (Provider, MaskedKey, RawKey, SourcePath)
+pub fn find_all_keys() -> Vec<(String, String, String, String)> {
+    let providers = vec![
+        ("gemini", "GEMINI_API_KEY"),
+        ("chatgpt", "OPENAI_API_KEY"),
+        ("claude", "ANTHROPIC_API_KEY"),
+    ];
+
+    let mut results = Vec::new();
+    let home = env::var("HOME").unwrap_or_else(|_| ".".to_string());
+    let candidates = vec![
+        format!("{}/.zshrc", home),
+        format!("{}/.bashrc", home),
+        format!("{}/.config/fish/config.fish", home),
+        format!("{}/.profile", home),
+        format!("{}/.bash_profile", home),
+    ];
+
+    for (name, var) in providers {
+        let pattern = format!(r#"(?:export\s+)?{}\s*=\s*["']?([a-zA-Z0-9_\-]+)["']?"#, var);
+        if let Ok(re) = Regex::new(&pattern) {
+            for path in &candidates {
+                if let Ok(content) = std::fs::read_to_string(path) {
+                    if let Some(caps) = re.captures(&content) {
+                        if let Some(matched) = caps.get(1) {
+                            let raw_key = matched.as_str().to_string();
+                            if !raw_key.is_empty() {
+                                let masked = if raw_key.len() > 6 {
+                                    format!("{}*******{}", &raw_key[0..3], &raw_key[raw_key.len() - 3..])
+                                } else {
+                                    "******".to_string()
+                                };
+                                results.push((
+                                    name.to_string(),
+                                    masked,
+                                    raw_key,
+                                    path.clone(),
+                                ));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    results
+}

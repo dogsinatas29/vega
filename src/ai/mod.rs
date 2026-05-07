@@ -6,6 +6,7 @@ pub enum LlmProvider {
     Gemini,
     ChatGPT,
     Claude,
+    Ollama,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize)]

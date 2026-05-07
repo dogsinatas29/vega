@@ -1,0 +1,53 @@
+{
+  "project_name": "data",
+  "gemini_md_path": "/home/dogsinatas/rust_project/vega/data/GEMINI.md",
+  "canvas_state": {
+    "zoom_level": 1,
+    "offset": {
+      "x": 0,
+      "y": 0
+    },
+    "visible_layers": [
+      "source",
+      "documentation"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "RULES",
+      "filePath": "RULES.md",
+      "type": "documentation",
+      "label": "RULES",
+      "cluster_id": "doc_shelf",
+      "degree": 0,
+      "data": {
+        "label": "RULES",
+        "file": "RULES.md",
+        "cluster_id": "doc_shelf",
+        "icon": "📚",
+        "hiddenOnCanvas": true,
+        "hasAtomicSignature": false,
+        "hasImportSignature": false
+      }
+    }
+  ],
+  "edges": [],
+  "clusters": [
+    {
+      "id": "cluster_ghosts",
+      "label": "☁️ External Ghosts",
+      "type": "system"
+    },
+    {
+      "id": "doc_shelf",
+      "label": "📚 Documentation Shelf",
+      "type": "system",
+      "collapsed": false
+    },
+    {
+      "id": "sys_cluster_reserved",
+      "label": "🛡️ Reserved (Internal Pending)",
+      "type": "system"
+    }
+  ]
+}

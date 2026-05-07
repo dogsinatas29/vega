@@ -1,6 +1,8 @@
 use vega::*;
 
 use std::env;
+use std::fs;
+use std::io::{self, Write};
 use std::process::Command;
 
 use crate::context::SystemContext;
@@ -19,29 +21,33 @@ use crate::system::virt::VmScanner;
 use crate::system::healer::Healer;
 use crate::system::storage::SmartStorage;
 use crate::system::virt::VmController;
+use crate::config::VegaConfig;
 
 #[tokio::main]
 async fn main() {
     // 0. Parse Input (Early)
     let args: Vec<String> = env::args().collect();
-    // println!("DEBUG: args={:?}", args); // Uncomment for debugging
     if args.len() < 2 {
         println!("Usage: vega <command>");
-        println!("Commands: connect, install, backup, start, health, status, refresh, update --all, setup, login, history");
+        println!("Commands: connect, install, backup, start, health, status, refresh, update, setup, login, history");
         return;
     }
     let input = &args[1];
     let full_input = args[1..].join(" ");
     let full_input = full_input.trim();
 
-    if input == "setup" {
-        if args.contains(&"--cookie".to_string()) {
-            SetupWizard::setup_cookie();
-        } else {
-            SetupWizard::run();
+    // 1. Bootstrap (Auto-Init or Load)
+    let _config = init::bootstrap().unwrap_or_else(|e| {
+        if input != "setup" {
+            eprintln!("❌ Bootstrap Failed: {}", e);
+            eprintln!("💡 Tip: Run 'vega setup' to repair configuration.");
+            std::process::exit(1);
         }
-        return;
-    }
+        VegaConfig::default() // Dummy for setup
+    });
+
+    // 2. Initialize Knowledge Base
+    let mut kb = KnowledgeBase::load();
 
     if input == "reset" {
         if args.contains(&"--all".to_string()) {
@@ -75,7 +81,17 @@ async fn main() {
     }
 
     if input == "update" {
-        if args.contains(&"--all".to_string()) {
+        if args.contains(&"--fleet".to_string()) {
+            println!("🛠️  [Fleet Management] Performing Global Maintenance...");
+            let tag_filter = args.iter().position(|r| r == "--tag")
+                .and_then(|idx| args.get(idx + 1).map(|s| s.as_str()));
+
+            if let Err(e) = executor::orchestrator::update_fleet(&mut kb, tag_filter).await {
+                eprintln!("❌ Fleet Update Failed: {}", e);
+            } else {
+                println!("✅ Fleet Maintenance Completed.");
+            }
+        } else if args.contains(&"--all".to_string()) {
             println!("🛠️  [SRE Fallback] Performing System Update...");
             let status = Command::new("sudo").arg("apt").arg("update").status();
 
@@ -88,7 +104,129 @@ async fn main() {
             }
             println!("✅ System update attempt complete.");
         } else {
-            println!("⚠️  Usage: vega update --all");
+            println!("⚠️  Usage: vega update --all (local) or vega update --fleet (remote)");
+        }
+        return;
+    }
+
+    if input == "setup" {
+        if args.contains(&"--cookie".to_string()) {
+            SetupWizard::setup_cookie();
+        } else {
+            SetupWizard::run().await;
+        }
+        return;
+    }
+
+    if input == "add-node" {
+        println!("➕ Registering New Node for Management...");
+        let name = args.get(2).cloned().unwrap_or_else(|| {
+            print!("   Enter Host/IP: ");
+            io::stdout().flush().unwrap();
+            let mut input = String::new();
+            io::stdin().read_line(&mut input).unwrap();
+            input.trim().to_string()
+        });
+        
+        if name.is_empty() {
+            println!("❌ Host/IP cannot be empty.");
+            return;
+        }
+
+        println!("   📡 Verifying connectivity to {}...", name);
+        if SshConnection::check_connection(&name, None).is_ok() {
+            let os = SshConnection::detect_os(&name, None);
+            kb.add(&name, crate::knowledge::KnowledgeEntry {
+                ip: name.clone(),
+                user: None,
+                protocol: "ssh".to_string(),
+                port: Some(22),
+                os_type: os,
+                kernel: None,
+                cpu_load: None,
+                tags: Vec::new(),
+                last_success: chrono::Local::now().to_rfc3339(),
+            });
+            let _ = kb.save();
+            println!("✅ Successfully registered node: {}", name);
+        } else {
+            println!("⚠️  Warning: Host is unreachable. Register anyway? (y/n)");
+            let mut input = String::new();
+            io::stdin().read_line(&mut input).unwrap();
+            if input.trim().to_lowercase() == "y" {
+                kb.add(&name, crate::knowledge::KnowledgeEntry {
+                    ip: name.clone(),
+                    user: None,
+                    protocol: "ssh".to_string(),
+                    port: Some(22),
+                    os_type: None,
+                    kernel: None,
+                    cpu_load: None,
+                    tags: Vec::new(),
+                    last_success: "Never".to_string(),
+                });
+                let _ = kb.save();
+                println!("✅ Registered node (Unverified): {}", name);
+            }
+        }
+        return;
+    }
+
+    if input == "sync-ssh" {
+        println!("🔄 Synchronizing Knowledge Base to ~/.ssh/config...");
+        let mut config_block = String::from("\n# --- VEGA MANAGED HOSTS (AUTO-GENERATED) ---\n");
+        let mut count = 0;
+
+        for (name, entry) in &kb.targets {
+            if entry.protocol == "ssh" {
+                config_block.push_str(&format!("Host {}\n", name));
+                config_block.push_str(&format!("    HostName {}\n", entry.ip));
+                if let Some(user) = &entry.user {
+                    config_block.push_str(&format!("    User {}\n", user));
+                }
+                config_block.push_str("    ConnectTimeout 5\n\n");
+                count += 1;
+            }
+        }
+
+        if count == 0 {
+            println!("⚠️  No SSH nodes found in Knowledge Base to sync.");
+            return;
+        }
+
+        if let Ok(home) = env::var("HOME") {
+            let ssh_dir = std::path::Path::new(&home).join(".ssh");
+            let config_path = ssh_dir.join("config");
+
+            if !ssh_dir.exists() {
+                let _ = fs::create_dir_all(&ssh_dir);
+            }
+
+            let mut current_content = if config_path.exists() {
+                fs::read_to_string(&config_path).unwrap_or_default()
+            } else {
+                String::new()
+            };
+
+            // Remove old Vega block if exists to avoid duplicates
+            if let Some(start_idx) = current_content.find("# --- VEGA MANAGED HOSTS") {
+                let rest = &current_content[start_idx..];
+                if let Some(end_idx) = rest[24..].find("# ---") { // Find next block or end
+                     current_content.replace_range(start_idx..start_idx + 24 + end_idx + 5, "");
+                } else {
+                     current_content.replace_range(start_idx.., "");
+                }
+            }
+
+            current_content.push_str(&config_block);
+            current_content.push_str("# --- END OF VEGA MANAGED HOSTS ---\n");
+
+            if fs::write(&config_path, current_content).is_ok() {
+                println!("✅ Successfully updated {} hosts in {:?}", count, config_path);
+                println!("   💡 Now you can use 'ssh <name>' directly from your terminal.");
+            } else {
+                println!("❌ Failed to write to {:?}", config_path);
+            }
         }
         return;
     }
@@ -306,24 +444,62 @@ async fn main() {
     }
 
     // Refresh Context
-    if input == "refresh" && args.len() >= 3 {
-        let target_name = &args[2];
-        if let Some(mut entry) = kb.get(target_name).cloned() {
-            println!("🔄 Refreshing context for '{}'...", target_name);
-            match SshConnection::check_connection(&entry.ip, entry.user.as_deref()) {
-                Ok(_) => {
-                    let os = SshConnection::detect_os(&entry.ip, entry.user.as_deref());
-                    println!("   OS Detected: {}", os.as_deref().unwrap_or("Unknown"));
-                    entry.os_type = os;
-                    entry.last_success = chrono::Local::now().to_rfc3339();
-                    kb.add(target_name, entry);
-                    let _ = kb.save();
-                    println!("✅ Knowledge Base Updated.");
+    if input == "refresh" {
+        let target_name = args.get(2).cloned();
+        
+        if let Some(name) = target_name {
+            if let Some(mut entry) = kb.get(&name).cloned() {
+                println!("🔄 Refreshing context for '{}'...", name);
+                match SshConnection::check_connection(&entry.ip, entry.user.as_deref()) {
+                    Ok(_) => {
+                        let os = SshConnection::detect_os(&entry.ip, entry.user.as_deref());
+                        println!("   OS Detected: {}", os.as_deref().unwrap_or("Unknown"));
+                        entry.os_type = os;
+                        entry.last_success = chrono::Local::now().to_rfc3339();
+                        kb.add(&name, entry);
+                        let _ = kb.save();
+                        println!("✅ Knowledge Base Updated.");
+                    }
+                    Err(e) => println!("❌ Host Unreachable: {}", e.1),
                 }
-                Err(e) => println!("❌ Host Unreachable: {}", e.1),
+            } else {
+                println!("❌ Target '{}' not found in Knowledge Base.", name);
             }
         } else {
-            println!("❌ Target '{}' not found in Knowledge Base.", target_name);
+            // Global Refresh: Discover and register all hosts
+            println!("🔄 Initiating Global Refresh...");
+            let ctx = SystemContext::collect();
+            let mut registered_count = 0;
+
+            for node in ctx.remotes {
+                if node.r#type == crate::context::RemoteType::Host {
+                    println!("📡 Verifying: {} ({})", node.name, node.real_name);
+                    if SshConnection::check_connection(&node.real_name, None).is_ok() {
+                        let os = SshConnection::detect_os(&node.real_name, None);
+                        kb.add(
+                            &node.name,
+                            crate::knowledge::KnowledgeEntry {
+                                ip: node.real_name.clone(),
+                                user: None,
+                                protocol: "ssh".to_string(),
+                                port: Some(22),
+                                os_type: os,
+                                kernel: None,
+                                cpu_load: None,
+                                tags: Vec::new(),
+                                last_success: chrono::Local::now().to_rfc3339(),
+                            },
+                        );
+                        registered_count += 1;
+                    }
+                }
+            }
+            if registered_count > 0 {
+                let _ = kb.save();
+                println!("✅ Global Refresh Complete. Registered {} nodes.", registered_count);
+            } else {
+                println!("⚠️  Global Refresh Complete. No new hosts registered.");
+            }
         }
         return;
     }
@@ -390,6 +566,9 @@ async fn main() {
                             protocol: "ssh".to_string(),
                             port: Some(22),
                             os_type: os_detected,
+                            kernel: None,
+                            cpu_load: None,
+                            tags: Vec::new(),
                             last_success: chrono::Local::now().to_rfc3339(),
                         },
                     );
@@ -556,15 +735,29 @@ async fn main() {
 
                                         // RE-RESOLVE REMOTE NAMES (Unmasking)
                                         let mut masker = crate::remote::RemoteMasker::new();
-                                        // Discovery::run() returns real names. We need to mask them to get the same REMOTE_XX mapping.
+                                        let mut storage_targets = Vec::new();
+                                        
                                         if let Ok(discovery) =
                                             crate::system::discovery::Discovery::run()
                                         {
                                             for remote in discovery.cloud_remotes {
-                                                let _ = masker.mask(&remote);
+                                                let masked = masker.mask(&remote, Some("STORAGE"));
+                                                storage_targets.push(masked);
+                                            }
+                                            for host in discovery.ssh_hosts {
+                                                let _ = masker.mask(&host, Some("HOST"));
                                             }
                                         }
+                                        
+                                        // 🛡️ Safety Interceptor: Check if SSH is used on a Storage target
                                         let mut final_cmd = masker.resolve_command(&ai_res.command);
+                                        
+                                        if (final_cmd.contains("ssh ") || final_cmd.contains("scp ")) && 
+                                           storage_targets.iter().any(|t| ai_res.command.contains(t)) {
+                                            println!("{}", "❌ [Safety Interceptor] Type Mismatch: Cannot use SSH/SCP on a STORAGE target.".red().bold());
+                                            println!("   Hint: Use 'rclone' commands for STORAGE targets.");
+                                            return;
+                                        }
 
                                         if final_cmd != ai_res.command {
                                             println!("   🔗 [Resolved] {}", final_cmd.cyan());
@@ -660,7 +853,7 @@ async fn main() {
         .unwrap_or(false)
     {
         let ctx = SystemContext::collect();
-        if !ctx.cloud_nodes.is_empty() {
+        if !ctx.remotes.is_empty() {
             println!("🔄 Auto-Syncing session state to cloud...");
             let primary = config
                 .optimization

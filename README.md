@@ -162,8 +162,10 @@ vega "Find all files larger than 1GB in /home"
 > **AI Execution Flow (Pipeline v0.0.10):**
 > 1.  **Intent**: Resolves structured "What" (e.g., `backup`).
 > 2.  **Simulation**: VEE checks path existence locally.
-> 3.  **Proposal**: AI suggests optimized `options` (flags).
-> 4.  **Audit**: Logs the decision lineage before execution.
+> 3.  **Data De-identification**: Sensitive info like IPs and Keys is masked before API transmission.
+> 4.  **Hardened SSH**: `-o BatchMode=yes` is forced to prevent hangs and zombie sessions.
+> 5.  **Proposal**: AI suggests optimized `options` (flags).
+> 6.  **Audit**: Logs the decision lineage before execution.
 
 ---
 
@@ -274,22 +276,41 @@ vega sync
 
 ---
 
+## 🛰️ Fleet Management (v0.0.12)
+
+VEGA now features a deterministic management system for your entire server fleet.
+
+### 1. Registration
+Registered nodes are stored in the local **Knowledge Base (KB)** and prioritized over temporary discovery results.
+- **Auto-Registration**: During `vega setup`, select discovered hosts to add to your fleet.
+- **Manual Addition**: `vega add-node 192.168.0.150` to explicitly manage a new server.
+
+### 2. SSH Self-Healing (`sync-ssh`)
+Automatically bridge the gap between your management agent and your shell.
+- Run `vega sync-ssh` to generate/update entries in your `~/.ssh/config` based on your registered nodes.
+- This enables you to use `ssh <name>` directly from any terminal window.
+
+### 3. Real-time Monitoring
+The `vega status` dashboard performs real-time TCP probes to verify server availability instantly, ensuring your "ONLINE" status is always accurate.
+
+---
+
 ## 📋 Internal Commands
 
 Vega provides several built-in commands for direct control.
 
-| Command | Description |
-| :--- | :--- |
-| `setup` | Run the configuration wizard |
+| `setup` | Run the configuration wizard (includes Fleet setup) |
 | `login` | Authenticate via Google OAuth2 |
 | `history` | Interactive history UI via fzf |
 | `install <pkg>` | Install packages (detects apt/dnf/pacman) |
+| `add-node <ip>` | Manually register a new SSH node |
+| `sync-ssh` | Generate/Sync ~/.ssh/config from Knowledge Base |
 | `connect <host>` | SSH connection with context memory |
-| `status` | Show system status dashboard |
+| `status` | Show system status dashboard (AI Alias, Load, Tags) |
 | `health` | Analyze system logs and suggest fixes |
 | `backup <src> <dst>` | Smart backup with validation |
-| `refresh <target>` | Refresh SSH host context |
-| `update --all` | Update system packages |
+| `refresh` | Global refresh (Discover nodes & Snapshot shell) |
+| `update --fleet` | Fleet-wide maintenance (Kernel, Load sync) |
 | `sync` | rclone-based cloud project & state synchronization |
 | `config` | Sync shell environment snapshot |
 
@@ -299,6 +320,7 @@ Vega provides several built-in commands for direct control.
 
 *   **Explicit Confirmation**: Critical commands (`rm`, `dd`) require typing "YES".
 *   **Data Redaction**: Sensitive data (IPs, Keys) is redacted before sending to AI.
+*   **Non-interactive SSH**: Mandatory `-o BatchMode=yes` to prevent hang-ups and ensure deterministic failures.
 *   **Local Processing**: Simple commands match locally without API calls.
 
 ---

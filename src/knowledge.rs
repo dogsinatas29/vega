@@ -10,7 +10,10 @@ pub struct KnowledgeEntry {
     pub user: Option<String>,
     pub protocol: String, // ssh, ftp
     pub port: Option<u16>,
-    pub os_type: Option<String>, // Added for detection optimization
+    pub os_type: Option<String>,
+    pub kernel: Option<String>,
+    pub cpu_load: Option<String>,
+    pub tags: Vec<String>,
     pub last_success: String,
 }
 

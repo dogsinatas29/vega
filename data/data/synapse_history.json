@@ -1,0 +1,92 @@
+[
+  {
+    "id": "snap_1776422057223",
+    "timestamp": 1776422057223,
+    "data": {
+      "nodes": [
+        {
+          "id": "RULES",
+          "filePath": "RULES.md",
+          "type": "documentation",
+          "label": "RULES",
+          "cluster_id": "doc_shelf",
+          "degree": 0,
+          "data": {
+            "label": "RULES",
+            "file": "RULES.md",
+            "cluster_id": "doc_shelf",
+            "icon": "📚",
+            "hiddenOnCanvas": true,
+            "hasAtomicSignature": false,
+            "hasImportSignature": false
+          }
+        }
+      ],
+      "edges": [],
+      "clusters": [
+        {
+          "id": "cluster_ghosts",
+          "label": "☁️ External Ghosts",
+          "type": "system"
+        },
+        {
+          "id": "doc_shelf",
+          "label": "📚 Documentation Shelf",
+          "type": "system",
+          "collapsed": false
+        },
+        {
+          "id": "sys_cluster_reserved",
+          "label": "🛡️ Reserved (Internal Pending)",
+          "type": "system"
+        }
+      ],
+      "timestamp": 1776422057223
+    }
+  },
+  {
+    "id": "snap_1776422105131",
+    "timestamp": 1776422105131,
+    "data": {
+      "nodes": [
+        {
+          "id": "RULES",
+          "filePath": "RULES.md",
+          "type": "documentation",
+          "label": "RULES",
+          "cluster_id": "doc_shelf",
+          "degree": 0,
+          "data": {
+            "label": "RULES",
+            "file": "RULES.md",
+            "cluster_id": "doc_shelf",
+            "icon": "📚",
+            "hiddenOnCanvas": true,
+            "hasAtomicSignature": false,
+            "hasImportSignature": false
+          }
+        }
+      ],
+      "edges": [],
+      "clusters": [
+        {
+          "id": "cluster_ghosts",
+          "label": "☁️ External Ghosts",
+          "type": "system"
+        },
+        {
+          "id": "doc_shelf",
+          "label": "📚 Documentation Shelf",
+          "type": "system",
+          "collapsed": false
+        },
+        {
+          "id": "sys_cluster_reserved",
+          "label": "🛡️ Reserved (Internal Pending)",
+          "type": "system"
+        }
+      ],
+      "timestamp": 1776422105130
+    }
+  }
+]

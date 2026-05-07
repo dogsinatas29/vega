@@ -1,4 +1,3 @@
-use crate::storage::db::Database;
 use crate::system::discovery::Discovery;
 use crate::system::virt::{VirtManager, VirtualMachine};
 use serde::{Deserialize, Serialize};
@@ -28,6 +27,8 @@ pub enum PartitionType {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SystemContext {
+    pub hostname: String,
+    pub local_ip: String,
     pub os_name: String,
     pub kernel_version: String,
     pub load_avg: Vec<f64>,
@@ -42,16 +43,25 @@ pub struct SystemContext {
     pub plugin_manager: Option<String>,
     pub ssh_auth_sock: Option<String>,
     pub locale: String,
-    pub cloud_nodes: Vec<CloudStorageNode>,
+    pub remotes: Vec<RemoteNode>,
     pub sync_edges: Vec<SyncEdge>,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum RemoteType {
+    Storage, // rclone / cloud
+    Host,    // SSH / Bare metal
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CloudStorageNode {
-    pub name: String,
+pub struct RemoteNode {
+    pub name: String, // Masked name like STORAGE:REMOTE_01 or HOST:REMOTE_01
+    pub real_name: String,
+    pub r#type: RemoteType,
     pub provider: String,
     pub status: String,
 }
+
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SyncEdge {
@@ -63,6 +73,8 @@ pub struct SyncEdge {
 impl SystemContext {
     pub fn new() -> Self {
         SystemContext {
+            hostname: "Unknown".to_string(),
+            local_ip: "127.0.0.1".to_string(),
             os_name: "Unknown".to_string(),
             kernel_version: "Unknown".to_string(),
             load_avg: Vec::new(),
@@ -77,42 +89,66 @@ impl SystemContext {
             plugin_manager: None,
             ssh_auth_sock: None,
             locale: "en_US.UTF-8".to_string(),
-            cloud_nodes: Vec::new(),
+            remotes: Vec::new(),
             sync_edges: Vec::new(),
         }
     }
 
     pub fn collect() -> Self {
-        let mut cloud_nodes = Vec::new();
+        let mut remotes = Vec::new();
         let sync_edges = Vec::new();
 
-        // Persistent Discovery & Loading
-        if let Ok(db) = Database::new() {
-            // 1. Run Discovery
-            if let Ok(discovery) = Discovery::run() {
-                // Persist found remotes and populate context
-                let mut masker = crate::remote::RemoteMasker::new();
-                for remote in discovery.cloud_remotes {
-                    let _ = db.set_metadata(&format!("cloud_remote:{}", remote), "discovered");
-                    cloud_nodes.push(CloudStorageNode {
-                        name: masker.mask(&remote),
+        // 1. Load Registered Nodes (Deterministic Inventory)
+        let kb = crate::knowledge::KnowledgeBase::load();
+        let mut masker = crate::remote::RemoteMasker::new();
+
+        for (name, entry) in &kb.targets {
+            let masked_name = masker.mask(name, Some(if entry.protocol == "ssh" { "HOST" } else { "STORAGE" }));
+            remotes.push(RemoteNode {
+                name: masked_name,
+                real_name: entry.ip.clone(),
+                r#type: if entry.protocol == "ssh" { RemoteType::Host } else { RemoteType::Storage },
+                provider: entry.protocol.clone(),
+                status: if entry.last_success == "Never" { "Registered (Unverified)".to_string() } else { "Managed".to_string() },
+            });
+        }
+
+        // 2. Discover New Nodes (Real-time Discovery)
+        if let Ok(discovery) = Discovery::run() {
+            // Map Cloud Storage (rclone)
+            for remote in discovery.cloud_remotes {
+                // Skip if already in KB
+                if !kb.targets.contains_key(&remote) {
+                    let masked_name = masker.mask(&remote, Some("STORAGE"));
+                    remotes.push(RemoteNode {
+                        name: masked_name,
+                        real_name: remote.clone(),
+                        r#type: RemoteType::Storage,
                         provider: "rclone".to_string(),
-                        status: "Available".to_string(),
+                        status: "Discovered".to_string(),
                     });
                 }
-                for host in discovery.ssh_hosts {
-                    let _ = db.set_metadata(&format!("ssh_host:{}", host), "discovered");
+            }
+            
+            // Map SSH Hosts
+            for host in discovery.ssh_hosts {
+                // Skip if already in KB (either by name or IP)
+                if !kb.targets.contains_key(&host) && !kb.targets.values().any(|v| v.ip == host) {
+                    let masked_name = masker.mask(&host, Some("HOST"));
+                    remotes.push(RemoteNode {
+                        name: masked_name,
+                        real_name: host.clone(),
+                        r#type: RemoteType::Host,
+                        provider: "ssh".to_string(),
+                        status: "Discovered".to_string(),
+                    });
                 }
             }
-
-            // 2. Load from Metadata
-            // This is a bit inefficient to iterate all, but for now it works
-            // In a real scenario, we'd query the metadata table for specific keys
-            // But since we don't have a 'get_all_with_prefix' yet, we'll just use the discovery results we have
-            // and maybe some hardcoded lookups if we added manual ones.
         }
 
         SystemContext {
+            hostname: Self::get_hostname(),
+            local_ip: Self::get_local_ip(),
             os_name: Self::get_os_info(),
             kernel_version: Self::get_kernel_version(),
             load_avg: Self::get_load_avg(),
@@ -127,9 +163,31 @@ impl SystemContext {
             plugin_manager: Self::detect_plugin_manager(),
             ssh_auth_sock: std::env::var("SSH_AUTH_SOCK").ok(),
             locale: Self::get_locale(),
-            cloud_nodes,
+            remotes,
             sync_edges,
         }
+    }
+
+    pub fn get_hostname() -> String {
+        Command::new("hostname")
+            .output()
+            .map(|o| String::from_utf8_lossy(&o.stdout).trim().to_string())
+            .unwrap_or_else(|_| "unknown-host".to_string())
+    }
+
+    pub fn get_local_ip() -> String {
+        // Senior's Prescription: use hostname -I for deterministic first IP
+        Command::new("hostname")
+            .arg("-I")
+            .output()
+            .map(|o| {
+                String::from_utf8_lossy(&o.stdout)
+                    .split_whitespace()
+                    .next()
+                    .unwrap_or("127.0.0.1")
+                    .to_string()
+            })
+            .unwrap_or_else(|_| "127.0.0.1".to_string())
     }
 
     fn get_locale() -> String {

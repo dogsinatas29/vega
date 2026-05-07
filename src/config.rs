@@ -11,10 +11,17 @@ pub struct VegaConfig {
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct AiConfig {
-    pub provider: String,       // gemini, chatgpt, claude, vertex_ai
-    pub api_key_source: String, // env_var, manual
+    pub provider: String,       // gemini, chatgpt, claude, vertex_ai, ollama
+    pub api_key_source: String, // env_var, manual, local
     pub model: Option<String>,
     pub vertex_ai: Option<VertexAiConfig>,
+    pub ollama: Option<OllamaConfig>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+pub struct OllamaConfig {
+    pub endpoint: String, // e.g., http://localhost:11434
+    pub model: String,    // e.g., llama3
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]

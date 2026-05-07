@@ -17,12 +17,17 @@ impl RemoteMasker {
         }
     }
 
-    pub fn mask(&mut self, real_name: &str) -> String {
+    pub fn mask(&mut self, real_name: &str, prefix: Option<&str>) -> String {
         if let Some(masked) = self.mapping.get(real_name) {
             return masked.clone();
         }
         let count = self.mapping.len() + 1;
-        let masked = format!("REMOTE_{:02}", count);
+        let base_masked = format!("REMOTE_{:02}", count);
+        let masked = if let Some(p) = prefix {
+            format!("{}:{}", p, base_masked)
+        } else {
+            base_masked
+        };
         self.mapping.insert(real_name.to_string(), masked.clone());
         self.reverse_mapping
             .insert(masked.clone(), real_name.to_string());

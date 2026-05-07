@@ -161,4 +161,14 @@ impl SshConnection {
             Err(String::from_utf8_lossy(&output.stderr).to_string())
         }
     }
+    pub async fn get_system_info(ip: &str) -> Result<(String, String), String> {
+        let cmd = "uname -r && awk '{print $1,$2,$3}' /proc/loadavg";
+        let output = Self::execute_remote_async(ip, cmd).await?;
+        let lines: Vec<&str> = output.lines().collect();
+        if lines.len() >= 2 {
+            Ok((lines[0].to_string(), lines[1].to_string()))
+        } else {
+            Err("Failed to parse system info".to_string())
+        }
+    }
 }
