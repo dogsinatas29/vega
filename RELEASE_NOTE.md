@@ -46,6 +46,7 @@
 - **Self-Healing Config**: `~/.ssh/config` 자동 동기화 기능 정상 작동.
 - **Real-time Visibility**: 300ms 타임아웃 기반의 실시간 `ONLINE` 상태 보고 확인.
 - **SSH Connectivity Hardening**: `BatchMode` 및 `StrictHostKeyChecking=no` 강제 적용으로 255 에러 방지 체계 구축.
+- **Deep Scanning Status**: 특정 IP/호스트 조회 시 OS, 커널, 디스크(/) 메트릭을 실시간 스캔하여 보고하는 고해상도 진단 기능 구현.
 
 ---
 
