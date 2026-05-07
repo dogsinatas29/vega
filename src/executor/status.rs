@@ -95,11 +95,39 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
                      }
                  },
                  Err((code, err)) => {
-                     println!("📡 Connection: {}", "ONLINE (Physical) but SSH FAILED".yellow());
-                     let diagnosis = SshConnection::diagnose(code, &err);
-                     println!("   ❌ Error: {}", diagnosis.message.red());
-                     println!("   💡 Action: {}", diagnosis.recommendation.dimmed());
-                 }
+                      println!("📡 Connection: {}", "ONLINE (Physical) but SSH FAILED on registered port".yellow());
+                      let diagnosis = SshConnection::diagnose(code, &err);
+                      println!("   ❌ Error: {}", diagnosis.message.red());
+                      
+                      // 🧠 Adaptive Routing: Try common SSH port (22) if current isn't 22
+                      if port != 22 {
+                          println!("   🔄 [Adaptive Routing] Trying default SSH port (22) as fallback...");
+                          if SshConnection::check_connection(&entry.ip, entry.user.as_deref(), Some(22)).is_ok() {
+                              println!("   ✅ Found active SSH on port 22! Proceeding with fallback...");
+                              // Retry Deep Scan logic with port 22
+                              let os = SshConnection::detect_os(&entry.ip, entry.user.as_deref(), Some(22));
+                              println!("🐧 OS: {} (via Port 22)", os.as_deref().unwrap_or("Unknown").yellow());
+                              let cmd = "uname -r && df -h / --output=size,used,avail,pcent | tail -1";
+                              if let Ok(output) = SshConnection::execute_output(&entry.ip, entry.user.as_deref(), Some(22), cmd) {
+                                  let lines: Vec<&str> = output.lines().collect();
+                                  if lines.len() >= 2 {
+                                      println!("⚙️  Kernel: {}", lines[0].trim().blue());
+                                      let disk = lines[1].trim().split_whitespace().collect::<Vec<_>>();
+                                      if disk.len() >= 4 {
+                                          println!("💾 Disk (/): Total: {}, Used: {} ({}), Avail: {}", 
+                                              disk[0], disk[1], disk[3].red(), disk[2].green());
+                                      }
+                                  }
+                              }
+                              println!("\n💡 Tip: Your management port in KB is set to {}, but SSH is active on 22.", port.to_string().cyan());
+                              println!("   Run 'vega add-node {}:22' to fix your inventory.", entry.ip);
+                          } else {
+                              println!("   💡 Action: {}", diagnosis.recommendation.dimmed());
+                          }
+                      } else {
+                          println!("   💡 Action: {}", diagnosis.recommendation.dimmed());
+                      }
+                  }
              }
         } else {
              println!("❌ Target '{}' not found in inventory.", t);
