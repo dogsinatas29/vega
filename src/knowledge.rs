@@ -72,8 +72,45 @@ impl KnowledgeBase {
         Ok(())
     }
 
-    pub fn add(&mut self, key: &str, entry: KnowledgeEntry) {
-        self.targets.insert(key.to_string(), entry);
+    pub fn add(&mut self, key: &str, mut entry: KnowledgeEntry) {
+        // 1. Address Sanitization: Split IP and Port if needed
+        if entry.ip.contains(':') {
+            let ip_clone = entry.ip.clone();
+            let parts: Vec<&str> = ip_clone.split(':').collect();
+            if parts.len() == 2 {
+                entry.ip = parts[0].to_string();
+                if let Ok(p) = parts[1].parse::<u16>() {
+                    entry.port = Some(p);
+                }
+            }
+        }
+
+        // 2. IP-Based Deduplication: Search for existing entry with the same IP
+        let mut existing_key = None;
+        for (k, v) in &self.targets {
+            if v.ip == entry.ip {
+                existing_key = Some(k.clone());
+                break;
+            }
+        }
+
+        if let Some(k) = existing_key {
+            // Merge into existing entry
+            let existing = self.targets.get_mut(&k).unwrap();
+            existing.user = entry.user.or(existing.user.clone());
+            existing.port = entry.port.or(existing.port);
+            existing.os_type = entry.os_type.or(existing.os_type.clone());
+            existing.tags = entry.tags; // Override tags
+            existing.last_success = entry.last_success;
+            // Key remains the same to avoid alias bloat
+        } else {
+            // New entry
+            self.targets.insert(key.to_string(), entry);
+        }
+    }
+
+    pub fn remove(&mut self, key: &str) {
+        self.targets.remove(key);
     }
 
     pub fn get(&self, key: &str) -> Option<&KnowledgeEntry> {

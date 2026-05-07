@@ -23,39 +23,53 @@ impl SmartRouter {
     pub fn determine_engine(query: &str, preferred: Option<String>) -> EngineType {
         use colored::Colorize;
 
-        // 1. User Preference - Absolute priority
+        // 1. Resolve Engine Preference
+        let mut target_engine = None;
+
         if let Some(pref) = preferred {
-            match pref.to_lowercase().as_str() {
+            target_engine = Some(pref.to_lowercase());
+        } else {
+            // 💡 Milestone v0.0.14.4: Auto-Discovery from config.toml
+            let config_path = crate::init::get_config_path();
+            if let Ok(config) = crate::config::VegaConfig::load(config_path.to_str().unwrap()) {
+                if let Some(ai) = config.ai {
+                    target_engine = Some(ai.provider.to_lowercase());
+                }
+            }
+        }
+
+        if let Some(engine_str) = target_engine {
+            match engine_str.as_str() {
                 "gemini" => {
-                    debug!("🎯 Router: User selected Gemini");
+                    debug!("🎯 Router: Using Gemini");
                     return EngineType::Gemini;
                 }
                 "ollama" => {
-                    debug!("🎯 Router: User selected Local LLM (Ollama)");
+                    debug!("🎯 Router: Using Local LLM (Ollama)");
                     return EngineType::Ollama;
                 }
                 "vertex_ai" | "vertexai" => {
-                    debug!("🎯 Router: User selected Vertex AI");
+                    debug!("🎯 Router: Using Vertex AI");
                     return EngineType::VertexAI;
                 }
                 "claude" => {
-                    debug!("🎯 Router: User selected Claude");
+                    debug!("🎯 Router: Using Claude");
                     return EngineType::Claude;
                 }
                 "openai" | "gpt" => {
-                    debug!("🎯 Router: User selected OpenAI");
+                    debug!("🎯 Router: Using OpenAI");
                     return EngineType::OpenAI;
                 }
                 "offline" => {
-                    debug!("🎯 Router: User selected Offline mode");
+                    debug!("🎯 Router: Using Offline mode");
                     return EngineType::Offline;
                 }
                 "web" | "websession" => {
-                    debug!("🎯 Router: User selected Web Session");
+                    debug!("🎯 Router: Using Web Session");
                     return EngineType::WebSession;
                 }
                 _ => {
-                    warn!("⚠️ Invalid engine '{}' in config, using intelligent routing.", pref);
+                    warn!("⚠️ Invalid engine '{}' in config, using intelligent routing.", engine_str);
                 }
             }
         } else {
