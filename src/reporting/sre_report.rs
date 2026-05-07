@@ -10,6 +10,7 @@ pub struct SreReport {
     pub solution: String,
     pub forecast: String,
     pub result: String,
+    pub raw_data: Option<crate::system::diagnostic::DiagnosticData>,
 }
 
 impl SreReport {
@@ -23,6 +24,7 @@ impl SreReport {
             solution: String::from("-"),
             forecast: String::from("-"),
             result: String::from("-"),
+            raw_data: None,
         }
     }
 
@@ -31,6 +33,7 @@ impl SreReport {
         data: crate::system::diagnostic::DiagnosticData
     ) -> anyhow::Result<Self> {
         let mut report = Self::new(session_id);
+        report.raw_data = Some(data.clone());
         
         let prompt = format!(
             r#"As a 20-year veteran Senior SRE, generate a SOVEREIGN SYSTEM REPORT based on this data.
@@ -48,7 +51,7 @@ DATASET:
 
 Output JSON Format:
 {{
-  "emotional_summary": "One-line emotional impact (e.g., '시스템은 건강하나 원격지 권한이 불안정합니다.')",
+  "emotional_summary": "One-line emotional impact",
   "issue": "Summary of problems found",
   "cause": "Deep root cause analysis",
   "solution": "Immediate technical actions",
@@ -77,7 +80,9 @@ Output JSON Format:
                     report.result = res["result"].as_str().unwrap_or("-").to_string();
                 }
             },
-            Err(e) => eprintln!("⚠️ AI Diagnostic Report Failed: {}", e),
+            Err(_) => {
+                report.emotional_summary = "AI 요약 실패 (기술 데이터를 직접 확인하십시오)".to_string();
+            },
         }
 
         Ok(report)
