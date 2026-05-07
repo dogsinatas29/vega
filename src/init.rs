@@ -11,7 +11,7 @@ pub fn bootstrap() -> Result<VegaConfig, Box<dyn std::error::Error>> {
         println!("🚀 VEGA: First Run Detected. Analyzing System Environment...");
         
         // 1. Fingerprint
-        let ctx = SystemContext::collect();
+        let ctx = SystemContext::collect(true);
         println!("   - Pkg Manager: {}", ctx.pkg_manager);
         println!("   - Virtualization: {}", if ctx.is_vm { "Yes" } else { "No" });
         println!("   - Git User: {}", ctx.git_user);

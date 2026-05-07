@@ -117,20 +117,31 @@ impl ExecutionProvider for LocalExecutionProvider {
 pub struct RemoteExecutionProvider {
     pub ip: String,
     pub user: Option<String>,
+    pub port: Option<u16>,
+    pub password: Option<String>,
 }
 
 #[async_trait]
 impl ExecutionProvider for RemoteExecutionProvider {
     async fn execute(&self, ast: &CommandAst) -> anyhow::Result<ExecuteResult> {
         let cmd_str = ast.to_shell_command();
-        let output = crate::connection::ssh::SshConnection::execute_remote_async(&self.ip, &cmd_str).await
-            .map_err(|e| anyhow::anyhow!("SSH Execution Failed: {}", e))?;
-        
-        Ok(ExecuteResult {
-            success: true, 
-            stdout: output,
-            stderr: "".to_string(),
-            exit_code: Some(0),
-        })
+        match crate::connection::ssh::SshConnection::execute_remote_async(&self.ip, self.user.as_deref(), self.port, self.password.as_deref(), &cmd_str).await {
+            Ok(stdout) => {
+                Ok(ExecuteResult {
+                    success: true,
+                    stdout,
+                    stderr: "".to_string(),
+                    exit_code: Some(0),
+                })
+            }
+            Err(stderr) => {
+                Ok(ExecuteResult {
+                    success: false,
+                    stdout: "".to_string(),
+                    stderr,
+                    exit_code: Some(255), // SSH general failure code
+                })
+            }
+        }
     }
 }

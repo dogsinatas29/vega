@@ -94,7 +94,7 @@ impl SystemContext {
         }
     }
 
-    pub fn collect() -> Self {
+    pub fn collect(silent: bool) -> Self {
         let mut remotes = Vec::new();
         let sync_edges = Vec::new();
 
@@ -114,7 +114,7 @@ impl SystemContext {
         }
 
         // 2. Discover New Nodes (Real-time Discovery)
-        if let Ok(discovery) = Discovery::run() {
+        if let Ok(discovery) = Discovery::run(silent) {
             // Map Cloud Storage (rclone)
             for remote in discovery.cloud_remotes {
                 // Skip if already in KB

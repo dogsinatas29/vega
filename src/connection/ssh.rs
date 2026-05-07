@@ -48,7 +48,7 @@ impl SshConnection {
         let output = Command::new("ssh")
             .args(&[
                 "-o", "BatchMode=yes",
-                "-o", "ConnectTimeout=3",
+                "-o", "ConnectTimeout=30",
                 "-o", "StrictHostKeyChecking=no",
                 "-p", &port_str,
                 &target,
@@ -162,12 +162,20 @@ impl SshConnection {
         }
         if stderr.contains("timed out")
             || stderr.contains("No route to host")
-            || status_code == Some(255)
+            || stderr.contains("Network is unreachable")
         {
             return DiagnosticResult {
                 message: "🔌 Network Timeout / Unreachable".to_string(),
                 recommendation: "Verify VM is running ('virsh list') and Network Bridge is active."
                     .to_string(),
+            };
+        }
+
+        // If it's 255 but doesn't have a specific message, it's a generic connection/auth failure
+        if status_code == Some(255) {
+            return DiagnosticResult {
+                message: "🔌 Connection Failed (SSH 255)".to_string(),
+                recommendation: format!("Check if port 22 is open and credentials are correct. Raw: {}", stderr),
             };
         }
         if stderr.contains("Host key verification failed") {
@@ -184,20 +192,100 @@ impl SshConnection {
         }
     }
 
-    #[allow(dead_code)]
-    pub async fn execute_remote_async(ip: &str, cmd: &str) -> Result<String, String> {
+    pub async fn execute_remote_async(
+        ip: &str,
+        user: Option<&str>,
+        port: Option<u16>,
+        password: Option<&str>,
+        cmd: &str,
+    ) -> Result<String, String> {
+        let port_val = port.unwrap_or(22);
+        let user_val = user.unwrap_or("root").to_string();
+        let cmd_val = cmd.to_string();
+        let ip_val = ip.to_string();
+
+        if let Some(pass) = password {
+            // 🛡️ [Milestone v0.0.14.14] Pure Rust SSH Fallback (using ssh2)
+            // ssh2 is synchronous, so we run it in a blocking task
+            let pass_val = pass.to_string();
+            return tokio::task::spawn_blocking(move || {
+                use ssh2::Session;
+                use std::io::Read;
+                use std::net::TcpStream;
+
+                let tcp = TcpStream::connect_timeout(
+                    &format!("{}:{}", ip_val, port_val).parse().map_err(|e| format!("Invalid Address: {}", e))?,
+                    Duration::from_secs(30)
+                ).map_err(|e| format!("TCP Connect Timeout (30s): {}", e))?;
+                
+                let mut sess = Session::new().map_err(|e| format!("SSH Session Init Failed: {}", e))?;
+                sess.set_timeout(30000); // 30 seconds timeout for all operations
+                sess.set_blocking(true); // Ensure blocking mode for reliable data transfer
+                sess.set_tcp_stream(tcp);
+                
+                eprintln!("   🔐 [Internal] Initiating Handshake...");
+                sess.handshake().map_err(|e| format!("SSH Handshake Failed: {}", e))?;
+                
+                eprintln!("   🔐 [Internal] Authenticating as '{}'...", user_val);
+                sess.userauth_password(&user_val, &pass_val)
+                    .map_err(|e| format!("SSH Auth Failed (Password): {}", e))?;
+                
+                if !sess.authenticated() {
+                    return Err("SSH Authentication Failed (Unknown Reason)".to_string());
+                }
+                
+                eprintln!("   ✅ [Internal] SSH Authenticated.");
+                let mut channel = sess.channel_session().map_err(|e| format!("Channel Open Failed: {}", e))?;
+                
+                // 🛡️ [Milestone v0.0.14.15] Automatic Sudo Password Injection
+                let final_cmd = if cmd_val.contains("sudo ") && !cmd_val.contains("-S") {
+                    cmd_val.replace("sudo ", "sudo -S -p '' ")
+                } else {
+                    cmd_val.clone()
+                };
+
+                channel.exec(&final_cmd).map_err(|e| format!("Command Exec Failed: {}", e))?;
+                
+                if final_cmd.contains("sudo -S") {
+                    use std::io::Write;
+                    let sudo_pass = format!("{}\n", pass_val);
+                    channel.write_all(sudo_pass.as_bytes()).ok();
+                    channel.flush().ok();
+                }
+
+                let mut s = String::new();
+                channel.read_to_string(&mut s).map_err(|e| format!("Read Failed: {}", e))?;
+                channel.wait_close().ok();
+                
+                let exit_status = channel.exit_status().unwrap_or(0);
+                if exit_status != 0 {
+                    let mut err_msg = String::new();
+                    channel.stderr().read_to_string(&mut err_msg).ok();
+                    return Err(format!("Command Failed (Exit Code: {}): {}", exit_status, err_msg));
+                }
+
+                Ok(s)
+            }).await.map_err(|e| e.to_string())?;
+        }
+
+        // --- Standard CLI Path (for Key-based Auth) ---
+        let target = if user.is_some() {
+            format!("{}@{}", user.unwrap(), ip)
+        } else {
+            ip.to_string()
+        };
+        let port_str = port_val.to_string();
+
         let output = tokio::process::Command::new("ssh")
             .args(&[
-                "-o",
-                "BatchMode=yes",
-                "-o",
-                "ConnectTimeout=10",
-                "-o",
-                "StrictHostKeyChecking=no",
-                ip,
+                "-o", "BatchMode=yes",
+                "-o", "ConnectTimeout=10",
+                "-o", "StrictHostKeyChecking=no",
+                "-p", &port_str,
+                &target,
                 cmd,
             ])
-            .stderr(std::process::Stdio::null()) // Sovereign SRE: Suppress remote noise
+            .stderr(std::process::Stdio::piped())
             .output()
             .await
             .map_err(|e| e.to_string())?;
@@ -205,12 +293,13 @@ impl SshConnection {
         if output.status.success() {
             Ok(String::from_utf8_lossy(&output.stdout).to_string())
         } else {
-            Err(String::from_utf8_lossy(&output.stderr).to_string())
+            let stderr = String::from_utf8_lossy(&output.stderr).to_string();
+            Err(stderr)
         }
     }
     pub async fn get_system_info(ip: &str) -> Result<(String, String), String> {
         let cmd = "uname -r && awk '{print $1,$2,$3}' /proc/loadavg";
-        let output = Self::execute_remote_async(ip, cmd).await?;
+        let output = Self::execute_remote_async(ip, None, None, None, cmd).await?;
         let lines: Vec<&str> = output.lines().collect();
         if lines.len() >= 2 {
             Ok((lines[0].to_string(), lines[1].to_string()))

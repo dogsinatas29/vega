@@ -9,7 +9,7 @@ pub struct AiOptionGenerator;
 #[async_trait]
 impl OptionGenerator for AiOptionGenerator {
     async fn generate_options(&self, ast: &mut CommandAst) -> anyhow::Result<()> {
-        let ctx = SystemContext::collect();
+        let ctx = SystemContext::collect(true);
         let query = format!(
             "CONTEXT: You are VEGA, a 20-year Senior SRE. 
             TASK: Provide optimal and safe CLI options for the following command skeleton.

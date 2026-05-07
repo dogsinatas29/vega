@@ -153,6 +153,7 @@ async fn main() {
                 kernel: None,
                 cpu_load: None,
                 tags: Vec::new(),
+                password: None,
                 last_success: chrono::Local::now().to_rfc3339(),
             });
             let _ = kb.save();
@@ -171,6 +172,7 @@ async fn main() {
                     kernel: None,
                     cpu_load: None,
                     tags: Vec::new(),
+                    password: None,
                     last_success: "Never".to_string(),
                 });
                 let _ = kb.save();
@@ -349,7 +351,7 @@ async fn main() {
     // Pkg Manager: vega install <package>
     if input == "install" && args.len() >= 3 {
         let pkg_name = &args[2];
-        let ctx = SystemContext::collect();
+        let ctx = SystemContext::collect(true);
         let pm = pkg::detect(&ctx);
         println!("📦 Package Manager Detected: {}", pm.name());
         let cmd = pm.install(pkg_name);
@@ -379,7 +381,7 @@ async fn main() {
     // Sync: vega sync
     if input == "sync" {
         println!("🔄 Initiating Global Cloud Sync...");
-        let ctx = SystemContext::collect();
+        let ctx = SystemContext::collect(true);
         let primary = config
             .optimization
             .as_ref()
@@ -501,7 +503,7 @@ async fn main() {
         } else {
             // Global Refresh: Discover and register all hosts
             println!("🔄 Initiating Global Refresh...");
-            let ctx = SystemContext::collect();
+            let ctx = SystemContext::collect(true);
             let mut registered_count = 0;
 
             for node in ctx.remotes {
@@ -520,6 +522,7 @@ async fn main() {
                                 kernel: None,
                                 cpu_load: None,
                                 tags: Vec::new(),
+                                password: None,
                                 last_success: chrono::Local::now().to_rfc3339(),
                             },
                         );
@@ -602,6 +605,7 @@ async fn main() {
                             kernel: None,
                             cpu_load: None,
                             tags: Vec::new(),
+                            password: None,
                             last_success: chrono::Local::now().to_rfc3339(),
                         },
                     );
@@ -697,7 +701,7 @@ async fn main() {
     match action {
         Action::SystemUpdate => {
             println!("🔧 [Hybrid] Detected System Update intent.");
-            println!("Context: {:?}", SystemContext::collect().load_avg);
+            println!("Context: {:?}", SystemContext::collect(true).load_avg);
             println!("Executing: sudo apt update && sudo apt upgrade");
         }
         Action::SshConnect(ref target) => {
@@ -734,7 +738,7 @@ async fn main() {
                 println!("   Input: \"{}\"", full_input);
 
                 // Collect context for the AI
-                let ctx = SystemContext::collect();
+                let ctx = SystemContext::collect(false);
                 let preferred_engine = config.ai.as_ref().map(|a| a.provider.clone());
 
                 // 🏗️ Build Detailed Inventory Context (Port, OS awareness)
@@ -760,8 +764,38 @@ async fn main() {
                                    (lower_input.contains("info") && lower_input.contains("system"));
 
                 if is_status_req {
+                    // 🛡️ [Milestone v0.0.14.10] Intelligent Target Detection
+                    let mut target_ip: Option<String> = None;
+                    let kb = crate::knowledge::KnowledgeBase::load();
+                    
+                    for (name, entry) in &kb.targets {
+                        if lower_input.contains(&name.to_lowercase()) || lower_input.contains(&entry.ip) {
+                            target_ip = Some(entry.ip.clone());
+                            break;
+                        }
+                    }
+                    
+                    // Heuristic: If "ssh" mentioned and no explicit target, pick the first remote
+                    if target_ip.is_none() && lower_input.contains("ssh") {
+                        if let Some((_, entry)) = kb.targets.iter().next() {
+                            target_ip = Some(entry.ip.clone());
+                        }
+                    }
+
                     println!("🔍 [VEGA] Initiating Full-Stack SRE Diagnostic...");
-                    let diag_data = crate::system::diagnostic::DiagnosticScanner::scan();
+                    let diag_data = if let Some(ip) = target_ip {
+                        println!("📡 Target identified: {} (Remote Scan)", ip);
+                        match crate::system::diagnostic::DiagnosticScanner::scan_remote(&ip).await {
+                            Ok(data) => data,
+                            Err(e) => {
+                                eprintln!("⚠️  Remote scan failed: {}", e);
+                                eprintln!("⚠️  Falling back to Local Scan for context comparison.");
+                                crate::system::diagnostic::DiagnosticScanner::scan()
+                            }
+                        }
+                    } else {
+                        crate::system::diagnostic::DiagnosticScanner::scan()
+                    };
                     
                     match crate::reporting::sre_report::SreReport::generate_full_diagnostic(0, diag_data).await {
                         Ok(report) => {
@@ -819,7 +853,7 @@ async fn main() {
                                         let mut host_targets = Vec::new();
                                         
                                         if let Ok(discovery) =
-                                            crate::system::discovery::Discovery::run()
+                                            crate::system::discovery::Discovery::run(true)
                                         {
                                             for remote in discovery.cloud_remotes {
                                                 let masked = masker.mask(&remote, Some("STORAGE"));
@@ -839,13 +873,26 @@ async fn main() {
                                             }
                                         }
                                         
-                                        // 🛡️ Safety Interceptor: Check if SSH is used on a Storage target
+                                        // 🛡️ [Milestone v0.0.14.9] Intelligent Port Heuristic
                                         let mut final_cmd = masker.resolve_command(&ai_res.command);
+                                        
+                                        // 1. Detect Communication Protocols
+                                        let is_ssh_protocol = final_cmd.contains("ssh ") || final_cmd.contains("scp ") || 
+                                                            final_cmd.contains("rsync ") || final_cmd.contains("sftp ");
 
-                                        // 🛡️ SSH Port Heuristic: Fix AI's port confusion (11434 is for AI, not SSH)
-                                        if (final_cmd.contains("ssh ") || final_cmd.contains("scp ")) && final_cmd.contains("-p 11434") {
-                                            eprintln!("{}", "⚠️  [Heuristic] AI attempted SSH on port 11434. Swapping to default SSH port 22...".yellow());
-                                            final_cmd = final_cmd.replace("-p 11434", "-p 22");
+                                        if is_ssh_protocol {
+                                            // 2. Resolve target IP and check if it's using the AI port (11434)
+                                            // Heuristic: If the resolved command contains ':11434', it's almost certainly a mistake by AI
+                                            if final_cmd.contains(":11434") {
+                                                eprintln!("{}", "⚠️  [SRE Guard] AI attempted SSH/SCP on Ollama port (11434). Redirecting to standard port 22...".yellow());
+                                                final_cmd = final_cmd.replace(":11434", ":22");
+                                                // If it was just 'ip:11434' (without -p), it might become 'ip:22' which is valid for scp/rsync but not for raw ssh
+                                                // Handle raw ssh '-p' flag if needed
+                                                final_cmd = final_cmd.replace("-p 11434", "-p 22");
+                                            }
+                                            
+                                            // 3. Last Resort: If no port is specified but we know the target from KB, 
+                                            // the SSH provider will handle the default port (usually 22).
                                         }
                                         
                                         if (final_cmd.contains("ssh ") || final_cmd.contains("scp ")) && 
@@ -892,25 +939,83 @@ async fn main() {
                                             }
                                         }
 
-                                        let status = Command::new("sh")
-                                            .arg("-c")
-                                            .arg(&final_cmd)
-                                            .stderr(std::process::Stdio::null()) // Sovereign SRE: Suppress "Permission denied" noise
-                                            .status();
+                                        // 🛡️ [Milestone v0.0.14.18] Intelligent SSH Execution Interceptor
+                                        let mut execution_handled = false;
+                                        let lower_cmd = final_cmd.to_lowercase();
+                                        
+                                        if lower_cmd.starts_with("ssh ") || lower_cmd.starts_with("scp ") {
+                                            // 🕵️ Extraction: Find target IP in the unmasked command (handles ip:port)
+                                            let kb_run = crate::knowledge::KnowledgeBase::load();
+                                            let found_ip = kb_run.targets.values().find(|e| {
+                                                final_cmd.contains(&e.ip) || final_cmd.contains(&format!("{}:", e.ip))
+                                            }).map(|e| e.ip.clone());
+
+                                            if let Some(ip) = found_ip {
+                                                let entry = kb_run.targets.values().find(|e| e.ip == ip);
+                                                if let Some(pass) = entry.and_then(|e| e.password.as_deref()) {
+                                                    let user = entry.and_then(|e| e.user.as_deref());
+                                                    let port = entry.and_then(|e| e.port).unwrap_or(22);
+                                                    
+                                                    // 🛡️ [Milestone v0.0.14.19] Smart Quote-Aware Extractor
+                                                    let remote_cmd_part = if let Some(pos) = final_cmd.find('"') {
+                                                        let end = final_cmd.rfind('"').unwrap_or(pos);
+                                                        if end > pos { final_cmd[pos+1..end].trim().to_string() } else { "".to_string() }
+                                                    } else if let Some(pos) = final_cmd.find('\'') {
+                                                        let end = final_cmd.rfind('\'').unwrap_or(pos);
+                                                        if end > pos { final_cmd[pos+1..end].trim().to_string() } else { "".to_string() }
+                                                    } else {
+                                                        // Fallback: Use the last argument
+                                                        final_cmd.split_whitespace().last().unwrap_or("").to_string()
+                                                    };
+
+                                                    if !remote_cmd_part.is_empty() {
+                                                        println!("🔐 [SRE Interceptor] Redirecting to internal secure engine for {}...", ip.cyan());
+                                                        let mut final_remote_cmd = remote_cmd_part;
+                                                        // 🛡️ [Milestone v0.0.14.20] Auto-Sudo Injection Recovery
+                                                        if final_remote_cmd.contains("sudo ") {
+                                                            final_remote_cmd = format!("echo '{}' | sudo -S {}", pass, final_remote_cmd);
+                                                        }
+                                                        
+                                                        match crate::connection::ssh::SshConnection::execute_remote_async(&ip, user, Some(port), Some(pass), &final_remote_cmd).await {
+                                                            Ok(stdout) => {
+                                                                if !stdout.trim().is_empty() {
+                                                                    println!("{}", stdout);
+                                                                }
+                                                                println!("✅ [SRE] Remote command executed successfully via internal engine.");
+                                                                execution_handled = true;
+                                                            }
+                                                            Err(e) => {
+                                                                eprintln!("❌ [SRE] Internal execution failed: {}", e.red());
+                                                                println!("🔄 Falling back to standard shell...");
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        let status = if !execution_handled {
+                                            Command::new("sh")
+                                                .arg("-c")
+                                                .arg(&final_cmd)
+                                                .stderr(std::process::Stdio::null())
+                                                .status()
+                                                .map_err(|e| e.to_string())
+                                        } else {
+                                            // Mock for handled execution
+                                            Ok(std::process::Command::new("true").status().unwrap())
+                                        };
 
                                         match status {
                                             Ok(s) => {
-                                                if s.success() {
-                                                    println!("✅ Execution Successful.");
-                                                } else if s.code() == Some(1)
-                                                    && final_cmd.contains("find ")
-                                                {
+                                                if s.success() || execution_handled {
+                                                    if !execution_handled {
+                                                        println!("✅ Execution Successful.");
+                                                    }
+                                                } else if s.code() == Some(1) && final_cmd.contains("find ") {
                                                     println!("✅ Search completed (system/protected paths skipped).");
                                                 } else {
-                                                    println!(
-                                                        "❌ Execution Failed (Exit Code: {:?})",
-                                                        s.code()
-                                                    );
+                                                    println!("❌ Execution Failed (Exit Code: {:?})", s.code());
                                                 }
                                             }
                                             Err(e) => println!("❌ Failed to spawn shell: {}", e),
@@ -948,7 +1053,7 @@ async fn main() {
         .and_then(|o| o.auto_sync)
         .unwrap_or(false)
     {
-        let ctx = SystemContext::collect();
+        let ctx = SystemContext::collect(true);
         if !ctx.remotes.is_empty() {
             println!("🔄 Auto-Syncing session state to cloud...");
             let primary = config

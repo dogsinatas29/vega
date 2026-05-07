@@ -13,10 +13,12 @@ pub struct DiscoveryResult {
 }
 
 impl Discovery {
-    pub fn run() -> Result<DiscoveryResult, String> {
+    pub fn run(silent: bool) -> Result<DiscoveryResult, String> {
         let hostname = crate::context::SystemContext::get_hostname();
         let ip = crate::context::SystemContext::get_local_ip();
-        eprintln!("📡 Identifying as: {} ({})", hostname.cyan(), ip.cyan());
+        if !silent {
+            eprintln!("📡 Identifying as: {} ({})", hostname.cyan(), ip.cyan());
+        }
         let mut result = DiscoveryResult {
             cloud_remotes: Vec::new(),
             ssh_hosts: Vec::new(),

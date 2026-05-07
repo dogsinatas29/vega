@@ -19,9 +19,15 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 -   **Silent Discovery:** Background scanning triggered upon incomplete information (e.g., missing IP).
 - **Resolve & Persist:** Found system info is cached to prevent redundant queries.
 - **Cloud Sync Integration:** Non-disruptive project backup and state synchronization powered by `rclone`.
-- **Hybrid Execution Pipeline (v0.0.10):** A decoupled 7-stage engine (Intent -> AST -> AI Options -> Simulation -> Execution) for maximum safety.
+- **Hybrid Execution Pipeline (v0.0.14.9):** A decoupled engine with advanced context-awareness and safety interceptors.
 - **Decision Lineage:** Every reasoning step (why a command was proposed) is permanently recorded in the State DB.
 - **Persistent Metadata:** Dedicated SQLite storage for system-specific configurations and long-term state.
+- **Full-Stack SRE Diagnostic:** Automated technical analysis with OS/HW/Network visibility and GB-normalized metrics.
+- **Dynamic Localization:** System locale-aware prompt and report generation (Full Korean Support).
+- **Intelligent Port Heuristics:** Automated safety guard to prevent AI port confusion (forcing SSH to port 22 over AI ports).
+- **Llama 3.1 Hardening:** Specialized persona injection and instruction compliance for 8B-class local models.
+- **Autonomous Remote SRE Control (v0.1.6):** Secure internal SSH engine (`ssh2`) with encrypted credential persistence and automatic `sudo` password injection.
+- **One-Shot Remote Diagnostic:** 10x faster system metric collection via single-session multi-command payloads.
 
 ### 📜 SRE Operating Principles
 1. **Error Budgets**: "No system is perfect. Automate as much as possible within acceptable failure margins."
@@ -30,7 +36,7 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 
 ---
 
-## 🧠 Core Architecture (Hybrid Pipeline v0.0.10)
+## 🧠 Core Architecture (Hybrid Pipeline v0.0.14.9)
 
 Vega operates on a **Decoupled Execution Pipeline** that ensures absolute deterministic control with AI-assisted optimizations.
 
@@ -40,7 +46,7 @@ Vega operates on a **Decoupled Execution Pipeline** that ensures absolute determ
 4.  **VEE (Virtual Execution Engine)**: Performs **State-based Simulation**. Checks path existence and predicts system impact.
 5.  **Risk Evaluation**: Assigns a risk score (0-100). Critical ops require explicit manual authorization.
 6.  **Execution Provider**: Dispatches commands to local or remote (SSH) environments.
-7.  **Reporting & Lineage**: Persists the entire trace (Lineage) and generates technical SRE reports.
+7.  **Reporting & Lineage**: Persists the entire trace (Lineage) and generates **AI-Powered SRE 5-Step Reports**.
 
 ---
 

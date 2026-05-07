@@ -22,7 +22,7 @@ impl SetupWizard {
         // 1. System Scan
         if !silent_mode {
             println!("🔍 Scanning System...");
-            let context = SystemContext::collect();
+            let context = SystemContext::collect(true);
             println!("🏠 OS: {}", context.os_name);
         }
 
@@ -141,7 +141,7 @@ impl SetupWizard {
         let mut primary_remote = None;
         if !silent_mode {
             println!("\n[2] Setup Cloud Integration (rclone)");
-            let discovery = crate::system::discovery::Discovery::run().unwrap_or_default();
+            let discovery = crate::system::discovery::Discovery::run(true).unwrap_or_default();
             if !discovery.cloud_remotes.is_empty() {
                 println!(
                     "   🔍 Found {} cloud remotes:",
@@ -171,7 +171,7 @@ impl SetupWizard {
         if !silent_mode {
             println!("\n[3] Setup Fleet Inventory (SSH)");
             let mut kb = crate::knowledge::KnowledgeBase::load();
-            let discovery = crate::system::discovery::Discovery::run().unwrap_or_default();
+            let discovery = crate::system::discovery::Discovery::run(true).unwrap_or_default();
 
             if !discovery.ssh_hosts.is_empty() {
                 println!("   🔍 Found {} potential SSH targets in your system:", discovery.ssh_hosts.len());
@@ -210,6 +210,7 @@ impl SetupWizard {
                                 kernel: None,
                                 cpu_load: None,
                                 tags: Vec::new(),
+                                password: None,
                                 last_success: chrono::Local::now().to_rfc3339(),
                             });
                             println!("      ✅ Registered: {}", host);
@@ -224,6 +225,7 @@ impl SetupWizard {
                                 kernel: None,
                                 cpu_load: None,
                                 tags: Vec::new(),
+                                password: None,
                                 last_success: "Never".to_string(),
                             });
                         }
@@ -247,6 +249,7 @@ impl SetupWizard {
                                 kernel: None,
                                 cpu_load: None,
                                 tags: Vec::new(),
+                                password: None,
                                 last_success: chrono::Local::now().to_rfc3339(),
                             });
                             println!("      ✅ Registered: {}", host);
@@ -261,6 +264,7 @@ impl SetupWizard {
                                 kernel: None,
                                 cpu_load: None,
                                 tags: Vec::new(),
+                                password: None,
                                 last_success: "Never".to_string(),
                             });
                         }

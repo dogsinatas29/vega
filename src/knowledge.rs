@@ -14,6 +14,7 @@ pub struct KnowledgeEntry {
     pub kernel: Option<String>,
     pub cpu_load: Option<String>,
     pub tags: Vec<String>,
+    pub password: Option<String>,
     pub last_success: String,
 }
 

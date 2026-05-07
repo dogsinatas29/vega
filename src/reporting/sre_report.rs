@@ -86,8 +86,8 @@ impl SreReport {
             system_lang
         );
 
-        let dummy_ctx = crate::context::SystemContext::collect();
-        match crate::ai::router::SmartRouter::generate_with_fallback(&dummy_ctx, &prompt, None).await {
+        
+        match crate::ai::router::SmartRouter::generate_with_fallback(&data.context, &prompt, None).await {
             Ok(json_str) => {
                 // 🛡️ Milestone v0.0.14.9: Robust JSON Extraction
                 let clean_json = if json_str.contains("```json") {
@@ -204,8 +204,8 @@ CRITICAL: Your entire response (thought and summary) MUST be in {} ONLY.
             system_lang
         );
 
-        let dummy_ctx = crate::context::SystemContext::collect();
-        match crate::ai::router::SmartRouter::generate_with_fallback(&dummy_ctx, &prompt, None).await {
+        
+        match crate::ai::router::SmartRouter::generate_with_fallback(&data.context, &prompt, None).await {
             Ok(json_str) => {
                 // 🛡️ Milestone v0.0.14.9: Robust JSON Extraction
                 let clean_json = if json_str.contains("```json") {

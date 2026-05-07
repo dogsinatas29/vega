@@ -75,7 +75,7 @@ impl IntentResolver for HybridIntentResolver {
 #[async_trait]
 impl IntentResolver for AiIntentResolver {
     async fn resolve(&self, input: &str) -> anyhow::Result<Intent> {
-        let ctx = crate::context::SystemContext::collect();
+        let ctx = crate::context::SystemContext::collect(true);
         let query = format!(
             "TASK: Resolve structured operational intent from natural language.
              INPUT: \"{}\"

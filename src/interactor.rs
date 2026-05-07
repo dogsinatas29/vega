@@ -53,4 +53,39 @@ impl Interactor {
         let input = input.trim().to_lowercase();
         input == "y" || input == "yes"
     }
+
+    pub fn ask(prompt: &str) -> Option<String> {
+        use std::io::{self, Write};
+        print!("{}: ", prompt);
+        io::stdout().flush().unwrap();
+        
+        let mut input = String::new();
+        if io::stdin().read_line(&mut input).is_ok() {
+            let result = input.trim().to_string();
+            if result.is_empty() {
+                None
+            } else {
+                Some(result)
+            }
+        } else {
+            None
+        }
+    }
+
+    pub fn ask_password(prompt: &str) -> Option<String> {
+        use std::io::{self, Write};
+        print!("{}: ", prompt);
+        io::stdout().flush().unwrap();
+        
+        match rpassword::read_password() {
+            Ok(p) => {
+                if p.is_empty() {
+                    None
+                } else {
+                    Some(p)
+                }
+            }
+            Err(_) => None,
+        }
+    }
 }

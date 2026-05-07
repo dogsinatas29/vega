@@ -4,7 +4,7 @@ use std::sync::OnceLock;
 static SYSTEM_CONTEXT: OnceLock<SystemContext> = OnceLock::new();
 
 pub fn initialize() {
-    SYSTEM_CONTEXT.get_or_init(|| SystemContext::collect());
+    SYSTEM_CONTEXT.get_or_init(|| SystemContext::collect(true));
 }
 
 pub fn get_context() -> &'static SystemContext {

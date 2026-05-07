@@ -226,7 +226,7 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
     }
 
     // 2. Discovered Nodes
-    let ctx = SystemContext::collect();
+    let ctx = SystemContext::collect(true);
     let mut discovered_count = 0;
     for node in &ctx.remotes {
         if node.r#type == crate::context::RemoteType::Host &&
