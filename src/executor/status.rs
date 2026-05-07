@@ -125,33 +125,55 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
             entry.tags.join(",")
         };
         
-        // Real-time Health Probe (Senior's Secret Sauce)
-         let port = entry.port.unwrap_or(22);
-         let is_alive = if let Ok(addr) = format!("{}:{}", entry.ip, port).parse::<std::net::SocketAddr>() {
-             std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(300)).is_ok()
-         } else {
-             // Fallback for names that are not IPs (e.g. Hostnames in /etc/hosts)
-             std::net::TcpStream::connect_timeout(&(entry.ip.as_str(), port).to_socket_addrs().map(|mut i| i.next().unwrap()).unwrap(), std::time::Duration::from_millis(300)).is_ok()
-         };
-
-        let status_color = if is_alive {
-            "ONLINE".green()
+        let masked_name = masker.mask(name, Some(if entry.protocol == "ssh" { "HOST" } else { "STORAGE" }));
+        
+        // 1. Management Port (From KB)
+        let mgmt_port = entry.port.unwrap_or(22);
+        let is_mgmt_alive = if let Ok(addr) = format!("{}:{}", entry.ip, mgmt_port).parse::<std::net::SocketAddr>() {
+            std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(300)).is_ok()
         } else {
-            "OFFLINE".red()
+            // Fallback for names
+            match (entry.ip.as_str(), mgmt_port).to_socket_addrs() {
+                Ok(mut iter) => {
+                    if let Some(addr) = iter.next() {
+                        std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(300)).is_ok()
+                    } else { false }
+                }
+                Err(_) => false
+            }
         };
 
-        let masked_name = masker.mask(name, Some(if entry.protocol == "ssh" { "HOST" } else { "STORAGE" }));
-        let port = entry.port.unwrap_or(22).to_string();
-
+        let status_color = if is_mgmt_alive { "ONLINE".green() } else { "OFFLINE".red() };
         println!(
             "{:<20} | {:<15} | {:<6} | {:<10} | {:<10} | {}",
             masked_name.bold().cyan(), 
             entry.ip, 
-            port.yellow(),
+            mgmt_port.to_string().yellow(),
             status_color,
             load,
             tags.yellow()
         );
+
+        // 2. Extra Service Discovery (Quick Probe for Dashboard)
+        let extra_ports = vec![11434, 8080, 80, 443, 3000];
+        for p in extra_ports {
+            if p == mgmt_port { continue; } // Skip if already shown
+            
+            let addr_str = format!("{}:{}", entry.ip, p);
+            if let Ok(addr) = addr_str.parse::<std::net::SocketAddr>() {
+                if std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(50)).is_ok() {
+                    println!(
+                        "{:<20} | {:<15} | {:<6} | {:<10} | {:<10} | {}",
+                        masked_name.dimmed(), 
+                        entry.ip, 
+                        p.to_string().cyan(),
+                        "ONLINE".green(),
+                        "-",
+                        "Service".italic().dimmed()
+                    );
+                }
+            }
+        }
     }
 
     // 2. Discovered Nodes

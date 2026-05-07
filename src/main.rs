@@ -163,10 +163,10 @@ async fn main() {
             io::stdin().read_line(&mut input).unwrap();
             if input.trim().to_lowercase() == "y" {
                 kb.add(&name, crate::knowledge::KnowledgeEntry {
-                    ip: name.clone(),
+                    ip: ip,
                     user: None,
                     protocol: "ssh".to_string(),
-                    port: Some(22),
+                    port: Some(port),
                     os_type: None,
                     kernel: None,
                     cpu_load: None,
@@ -174,7 +174,7 @@ async fn main() {
                     last_success: "Never".to_string(),
                 });
                 let _ = kb.save();
-                println!("✅ Registered node (Unverified): {}", name);
+                println!("✅ Registered node (Unverified): {} (Port: {})", name, port);
             }
         }
         return;
