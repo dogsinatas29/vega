@@ -1,4 +1,5 @@
 pub mod archivist;
+pub mod diagnostic;
 
 pub use crate::context::{Partition, PartitionType, SystemContext};
 pub mod discovery;

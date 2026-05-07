@@ -26,6 +26,63 @@ impl SreReport {
         }
     }
 
+    pub async fn generate_full_diagnostic(
+        session_id: i64,
+        data: crate::system::diagnostic::DiagnosticData
+    ) -> anyhow::Result<Self> {
+        let mut report = Self::new(session_id);
+        
+        let prompt = format!(
+            r#"As a 20-year veteran Senior SRE, generate a SOVEREIGN SYSTEM REPORT based on this data.
+Language: Korean (Strictly)
+Tone: Professional, Concise, Action-oriented.
+
+DATASET:
+- Host: {}
+- Uptime: {}
+- Load: {:?}
+- Memory: {}
+- Disk IO: {}
+- Listening Ports: {}
+- Remotes: {}
+
+Output JSON Format:
+{{
+  "emotional_summary": "One-line emotional impact (e.g., '시스템은 건강하나 원격지 권한이 불안정합니다.')",
+  "issue": "Summary of problems found",
+  "cause": "Deep root cause analysis",
+  "solution": "Immediate technical actions",
+  "forecast": "Expected stability after fix",
+  "result": "Final verdict on system health"
+}}
+"#, 
+            data.context.hostname, 
+            data.uptime, 
+            data.context.load_avg,
+            serde_json::to_string(&data.context.mem_info).unwrap_or_default(),
+            data.disk_io,
+            data.listening_ports.join("\n"),
+            serde_json::to_string(&data.context.remotes).unwrap_or_default()
+        );
+
+        let dummy_ctx = crate::context::SystemContext::collect();
+        match crate::ai::router::SmartRouter::generate_with_fallback(&dummy_ctx, &prompt, None).await {
+            Ok(json_str) => {
+                if let Ok(res) = serde_json::from_str::<serde_json::Value>(&json_str) {
+                    report.emotional_summary = res["emotional_summary"].as_str().unwrap_or("Done").to_string();
+                    report.issue = res["issue"].as_str().unwrap_or("-").to_string();
+                    report.cause = res["cause"].as_str().unwrap_or("-").to_string();
+                    report.solution = res["solution"].as_str().unwrap_or("-").to_string();
+                    report.forecast = res["forecast"].as_str().unwrap_or("-").to_string();
+                    report.result = res["result"].as_str().unwrap_or("-").to_string();
+                }
+            },
+            Err(e) => eprintln!("⚠️ AI Diagnostic Report Failed: {}", e),
+        }
+
+        Ok(report)
+    }
+
     pub async fn generate_from_lineage(
         session_id: i64, 
         lineage: &[crate::storage::db::DecisionRecord]
@@ -49,7 +106,6 @@ impl SreReport {
         let prompt = format!(
             r#"As a Senior SRE, analyze the following session data and generate a technical report in the 5-step SRE format.
 Language: Korean
-
 Data:
 {}
 
@@ -64,9 +120,7 @@ Output JSON Format:
 }}
 "#, context_str);
 
-        // We use a dummy SystemContext for the router
         let dummy_ctx = crate::context::SystemContext::collect();
-        
         match crate::ai::router::SmartRouter::generate_with_fallback(&dummy_ctx, &prompt, None).await {
             Ok(json_str) => {
                 if let Ok(res) = serde_json::from_str::<serde_json::Value>(&json_str) {

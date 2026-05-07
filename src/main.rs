@@ -752,6 +752,24 @@ async fn main() {
                     full_input.to_string()
                 };
 
+                // 🧠 Milestone v0.0.14: Intelligent SRE Diagnostic Trigger
+                let lower_input = full_input.to_lowercase();
+                if lower_input.contains("상태") || lower_input.contains("status") || lower_input.contains("리포트") || lower_input.contains("진단") {
+                    println!("🔍 [VEGA] Initiating Full-Stack SRE Diagnostic...");
+                    let diag_data = crate::system::diagnostic::DiagnosticScanner::scan();
+                    
+                    match crate::reporting::sre_report::SreReport::generate_full_diagnostic(0, diag_data).await {
+                        Ok(report) => {
+                            println!("\n{}", report.render_markdown());
+                            println!("✅ [Diagnostic] Full SRE Report generated successfully.");
+                            return;
+                        }
+                        Err(e) => {
+                            eprintln!("❌ [Diagnostic] Failed to generate report: {}", e);
+                        }
+                    }
+                }
+
                 // Call async generate_with_fallback
                 match crate::ai::router::SmartRouter::generate_with_fallback(
                     &ctx,
