@@ -82,10 +82,10 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
 
     println!("📊 Vega Fleet Status");
     println!(
-        "{:<20} | {:<15} | {:<10} | {:<10} | {:<15}",
-        "Target (AI Alias)", "IP Address", "Status", "Load", "Tags"
+        "{:<20} | {:<15} | {:<6} | {:<10} | {:<10} | {:<15}",
+        "Target (AI Alias)", "IP Address", "Port", "Status", "Load", "Tags"
     );
-    println!("{:-<20}-|-{:-<15}-|-{:-<10}-|-{:-<10}-|-{:-<15}", "", "", "", "", "");
+    println!("{:-<20}-|-{:-<15}-|-{:-<6}-|-{:-<10}-|-{:-<10}-|-{:-<15}", "", "", "", "", "", "");
 
     let mut masker = crate::remote::RemoteMasker::new();
 
@@ -114,11 +114,13 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
         };
 
         let masked_name = masker.mask(name, Some(if entry.protocol == "ssh" { "HOST" } else { "STORAGE" }));
+        let port = entry.port.unwrap_or(22).to_string();
 
         println!(
-            "{:<20} | {:<15} | {:<10} | {:<10} | {}",
+            "{:<20} | {:<15} | {:<6} | {:<10} | {:<10} | {}",
             masked_name.bold().cyan(), 
             entry.ip, 
+            port.yellow(),
             status_color,
             load,
             tags.yellow()

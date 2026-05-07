@@ -724,10 +724,25 @@ async fn main() {
                 let ctx = SystemContext::collect();
                 let preferred_engine = config.ai.as_ref().map(|a| a.provider.clone());
 
+                // 🏗️ Build Detailed Inventory Context (Port, OS awareness)
+                let mut inventory_context = String::new();
+                for (name, entry) in &kb.targets {
+                    inventory_context.push_str(&format!(
+                        "- {}: {} (Port: {}, OS: {:?})\n",
+                        name, entry.ip, entry.port.unwrap_or(22), entry.os_type
+                    ));
+                }
+
+                let enriched_query = if !inventory_context.is_empty() {
+                    format!("DETAILED INVENTORY:\n{}\n\nUSER REQUEST: {}", inventory_context, full_input)
+                } else {
+                    full_input.to_string()
+                };
+
                 // Call async generate_with_fallback
                 match crate::ai::router::SmartRouter::generate_with_fallback(
                     &ctx,
-                    full_input,
+                    &enriched_query,
                     preferred_engine,
                 )
                 .await
@@ -754,8 +769,18 @@ async fn main() {
                                         println!("⚡ Executing...");
 
                                         // RE-RESOLVE REMOTE NAMES (Unmasking)
+                                        // Enhance discovery with KnowledgeBase info (Port, OS, etc.)
+                                        let mut discovery_context = String::new();
+                                        for (name, entry) in &kb.targets {
+                                            discovery_context.push_str(&format!(
+                                                "- {}: {} (Port: {}, OS: {:?})\n",
+                                                name, entry.ip, entry.port.unwrap_or(22), entry.os_type
+                                            ));
+                                        }
+
                                         let mut masker = crate::remote::RemoteMasker::new();
                                         let mut storage_targets = Vec::new();
+                                        let mut host_targets = Vec::new();
                                         
                                         if let Ok(discovery) =
                                             crate::system::discovery::Discovery::run()
@@ -765,14 +790,25 @@ async fn main() {
                                                 storage_targets.push(masked);
                                             }
                                             for host in discovery.ssh_hosts {
-                                                let _ = masker.mask(&host, Some("HOST"));
+                                                let masked = masker.mask(&host, Some("HOST"));
+                                                host_targets.push(masked);
                                             }
                                         }
                                         
-                                        // Sync KnowledgeBase targets to masker too
+                                        // Also add KB targets to masker and host_targets
                                         for name in kb.targets.keys() {
-                                            let _ = masker.mask(name, Some("HOST"));
+                                            let masked = masker.mask(name, Some("HOST"));
+                                            if !host_targets.contains(&masked) {
+                                                host_targets.push(masked);
+                                            }
                                         }
+
+                                        let context = format!(
+                                            "STORAGE TARGETS:\n{}\n\nHOST TARGETS:\n{}\n\nDETAILED INVENTORY:\n{}",
+                                            storage_targets.join("\n"),
+                                            host_targets.join("\n"),
+                                            discovery_context
+                                        );
                                         
                                         // 🛡️ Safety Interceptor: Check if SSH is used on a Storage target
                                         let mut final_cmd = masker.resolve_command(&ai_res.command);
