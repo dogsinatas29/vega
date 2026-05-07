@@ -766,6 +766,11 @@ async fn main() {
                                             }
                                         }
                                         
+                                        // Sync KnowledgeBase targets to masker too
+                                        for name in kb.targets.keys() {
+                                            let _ = masker.mask(name, Some("HOST"));
+                                        }
+                                        
                                         // 🛡️ Safety Interceptor: Check if SSH is used on a Storage target
                                         let mut final_cmd = masker.resolve_command(&ai_res.command);
                                         

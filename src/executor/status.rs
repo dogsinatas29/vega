@@ -9,8 +9,23 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
     use colored::Colorize;
 
     if let Some(t) = target {
-        println!("🔍 Deep Scanning Status for: {}", t.bold().cyan());
-        if let Some(entry) = kb.get(t) {
+        let mut resolved_target = t.to_string();
+        
+        // Internal Alias Resolution: If target starts with HOST:, try to find the real name
+        if t.starts_with("HOST:") {
+            let mut masker = crate::remote::RemoteMasker::new();
+            // Populate masker to find the mapping
+            for name in kb.targets.keys() {
+                let masked = masker.mask(name, Some("HOST"));
+                if masked == t {
+                    resolved_target = name.clone();
+                    break;
+                }
+            }
+        }
+
+        println!("🔍 Deep Scanning Status for: {}", resolved_target.bold().cyan());
+        if let Some(entry) = kb.get(&resolved_target) {
              match SshConnection::check_connection(&entry.ip, entry.user.as_deref()) {
                  Ok(_) => {
                      println!("📡 Connection: {}", "ONLINE".green());
