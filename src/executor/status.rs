@@ -3,9 +3,46 @@ use crate::reporting::analytics::Analytics;
 use crate::storage::db::Database;
 use std::net::ToSocketAddrs;
 
-pub fn show_status(kb: &KnowledgeBase) {
+pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
     use crate::context::SystemContext;
+    use crate::connection::ssh::SshConnection;
     use colored::Colorize;
+
+    if let Some(t) = target {
+        println!("🔍 Deep Scanning Status for: {}", t.bold().cyan());
+        if let Some(entry) = kb.get(t) {
+             match SshConnection::check_connection(&entry.ip, entry.user.as_deref()) {
+                 Ok(_) => {
+                     println!("📡 Connection: {}", "ONLINE".green());
+                     
+                     // 1. OS Info
+                     let os = SshConnection::detect_os(&entry.ip, entry.user.as_deref());
+                     println!("🐧 OS: {}", os.as_deref().unwrap_or("Unknown").yellow());
+
+                     // 2. Kernel & Disk via combined SSH probe
+                     let cmd = "uname -r && df -h / --output=size,used,avail,pcent | tail -1";
+                     match SshConnection::execute_output(&entry.ip, entry.user.as_deref(), cmd) {
+                         Ok(output) => {
+                             let lines: Vec<&str> = output.lines().collect();
+                             if lines.len() >= 2 {
+                                 println!("⚙️  Kernel: {}", lines[0].trim().blue());
+                                 let disk = lines[1].trim().split_whitespace().collect::<Vec<_>>();
+                                 if disk.len() >= 4 {
+                                     println!("💾 Disk (/): Total: {}, Used: {} ({}), Avail: {}", 
+                                         disk[0], disk[1], disk[3].red(), disk[2].green());
+                                 }
+                             }
+                         },
+                         Err(_) => println!("⚠️  Failed to fetch detailed metrics."),
+                     }
+                 },
+                 Err(_) => println!("📡 Connection: {}", "OFFLINE".red()),
+             }
+        } else {
+             println!("❌ Target '{}' not found in inventory.", t);
+        }
+        return;
+    }
 
     println!("📊 Vega Fleet Status");
     println!(

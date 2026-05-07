@@ -97,6 +97,31 @@ impl SshConnection {
         None
     }
 
+    pub fn execute_output(ip: &str, user: Option<&str>, cmd: &str) -> Result<String, String> {
+        let target = if let Some(u) = user {
+            format!("{}@{}", u, ip)
+        } else {
+            ip.to_string()
+        };
+
+        let output = Command::new("ssh")
+            .args(&[
+                "-o", "BatchMode=yes",
+                "-o", "ConnectTimeout=5",
+                "-o", "StrictHostKeyChecking=no",
+                &target,
+                cmd,
+            ])
+            .output()
+            .map_err(|e| e.to_string())?;
+
+        if output.status.success() {
+            Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+        } else {
+            Err(String::from_utf8_lossy(&output.stderr).to_string())
+        }
+    }
+
     pub fn diagnose(status_code: Option<i32>, stderr: &str) -> DiagnosticResult {
         // Exit Code 255 is general SSH error
 

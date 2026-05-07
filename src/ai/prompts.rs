@@ -70,11 +70,11 @@ You prioritize safety, precision, and raw technical efficiency.
      "risk_level": "INFO",
      "needs_clarification": false
    }}
-2. User: "ssh로 연결된 PC 리스트 보여줘"
+2. User: "192.168.0.150의 상태를 알려줘"
    Response: {{
-     "thought": "The user wants to see the list of SSH targets. I will execute 'vega status' to show the dashboard.",
-     "command": "vega status",
-     "explanation": "Showing the current fleet status and registered SSH targets: {}.",
+     "thought": "The user wants to see the status of a specific IP. I will map this to its HOST alias and run 'vega status' for a deep scan.",
+     "command": "vega status HOST:REMOTE_01",
+     "explanation": "Performing a deep scan on HOST:REMOTE_01 (192.168.0.150) from the registered targets: {}.",
      "risk_level": "INFO",
      "needs_clarification": false
    }}

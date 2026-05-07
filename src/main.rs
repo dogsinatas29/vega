@@ -439,7 +439,7 @@ async fn main() {
     // Command:    // 5. Route Commands
     // Status Dashboard
     if input == "status" {
-        executor::status::show_status(&kb);
+        executor::status::show_status(&kb, args.get(2).map(|s| s.as_str()));
         return;
     }
 
