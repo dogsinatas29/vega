@@ -1,4 +1,5 @@
 use rusqlite::{params, Connection, Result};
+use serde::{Deserialize, Serialize};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::os::unix::fs::PermissionsExt;
 use std::fs;
@@ -528,6 +529,44 @@ impl Database {
         }
         Ok(())
     }
+
+    pub fn get_decision_lineage(&self, session_id: i64) -> Result<Vec<DecisionRecord>> {
+        let mut stmt = self.conn.prepare(
+            "SELECT user_request, intent, generated_command, simulation_log, risk_score, execution_result, timestamp 
+             FROM decision_lineage 
+             WHERE session_id = ? 
+             ORDER BY timestamp ASC"
+        )?;
+        
+        let records_iter = stmt.query_map(params![session_id], |row| {
+            Ok(DecisionRecord {
+                user_request: row.get(0)?,
+                intent: row.get(1)?,
+                generated_command: row.get(2)?,
+                simulation_log: row.get(3)?,
+                risk_score: row.get(4)?,
+                execution_result: row.get(5)?,
+                timestamp: row.get(6)?,
+            })
+        })?;
+
+        let mut records = Vec::new();
+        for record in records_iter {
+            records.push(record?);
+        }
+        Ok(records)
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DecisionRecord {
+    pub user_request: String,
+    pub intent: String,
+    pub generated_command: String,
+    pub simulation_log: String,
+    pub risk_score: i32,
+    pub execution_result: String,
+    pub timestamp: i64,
 }
 
 fn calculate_weight(command: &str) -> i32 {

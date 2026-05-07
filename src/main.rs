@@ -406,8 +406,25 @@ async fn main() {
 
         let use_markdown =
             args.contains(&"--markdown".to_string()) || args.contains(&"-m".to_string());
+        
+        let use_sre = args.contains(&"--sre".to_string());
 
-        if use_markdown {
+        if use_sre {
+            println!("🚀 Generating AI-Powered SRE 5-Step Report for Session {}...", sid);
+            if let Ok(db) = crate::storage::db::Database::new() {
+                if let Ok(lineage) = db.get_decision_lineage(sid) {
+                    match crate::reporting::sre_report::SreReport::generate_from_lineage(sid, &lineage).await {
+                        Ok(report) => {
+                            let md = report.render_markdown();
+                            let filename = format!("SRE_REPORT_SESSION_{}.md", sid);
+                            let _ = fs::write(&filename, md);
+                            println!("✅ SRE Report saved to: {}", filename);
+                        },
+                        Err(e) => eprintln!("❌ SRE Report Failed: {}", e),
+                    }
+                }
+            }
+        } else if use_markdown {
             println!("📝 Generating Markdown Report for Session {}...", sid);
             match crate::reporting::pdf::PdfEngine::generate_markdown_report(sid).await {
                 Ok(path) => println!("✅ Markdown Report saved: {}", path),
