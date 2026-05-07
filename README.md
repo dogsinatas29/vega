@@ -295,24 +295,24 @@ The `vega status` dashboard performs real-time TCP probes to verify server avail
 
 ---
 
-## 📋 Internal Commands
+## 📋 Command Reference (SRE Playbook)
 
-Vega provides several built-in commands for direct control.
-
-| `setup` | Run the configuration wizard (includes Fleet setup) |
-| `login` | Authenticate via Google OAuth2 |
-| `history` | Interactive history UI via fzf |
-| `install <pkg>` | Install packages (detects apt/dnf/pacman) |
-| `add-node <ip>` | Manually register a new SSH node |
-| `sync-ssh` | Generate/Sync ~/.ssh/config from Knowledge Base |
-| `connect <host>` | SSH connection with context memory |
-| `status` | Show system status dashboard (AI Alias, Load, Tags) |
-| `health` | Analyze system logs and suggest fixes |
-| `backup <src> <dst>` | Smart backup with validation |
-| `refresh` | Global refresh (Discover nodes & Snapshot shell) |
-| `update --fleet` | Fleet-wide maintenance (Kernel, Load sync) |
-| `sync` | rclone-based cloud project & state synchronization |
-| `config` | Sync shell environment snapshot |
+| Category | Command | Description |
+| :--- | :--- | :--- |
+| **Fleet** | `vega status` | Show real-time dashboard (Port, Load, Tags) |
+| | `vega status <target>` | **Deep Scan**: Real-time OS, Kernel, Disk metrics via SSH |
+| | `vega add-node <ip>` | Manually register a new SSH node to KB |
+| | `vega sync-ssh` | Sync KB targets to `~/.ssh/config` (Port-aware) |
+| | `vega update --fleet` | Fleet-wide maintenance (Kernel, Load sync) |
+| **Intelligence** | `vega report --sre` | **5-Step Report**: AI analysis of session lineage |
+| | `vega history` | Interactive history UI via `fzf` |
+| | `vega health` | Analyze system logs and suggest automated fixes |
+| **Project** | `vega refresh` | Global refresh (Discover nodes & Snapshot shell) |
+| | `vega sync` | `rclone`-based project & state synchronization |
+| | `vega backup <src> <dst>` | Smart backup with validation & risk check |
+| **Setup** | `vega setup` | Interactive configuration wizard |
+| | `vega login` | Authenticate via Google OAuth2 |
+| | `vega config` | Sync shell environment snapshot |
 
 ---
 

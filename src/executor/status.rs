@@ -66,6 +66,33 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
                          },
                          Err(_) => println!("⚠️  Failed to fetch detailed metrics."),
                      }
+
+                     // 3. Service Discovery (Active Ports)
+                     println!("\n🔍 Active Services (Service Discovery):");
+                     let common_ports = vec![80, 443, 8080, 11434, 3000, 5432, 6379, 27017];
+                     let mut active_ports = Vec::new();
+                     for p in common_ports {
+                         let addr = format!("{}:{}", entry.ip, p);
+                         if let Ok(s_addr) = addr.parse::<std::net::SocketAddr>() {
+                             if std::net::TcpStream::connect_timeout(&s_addr, std::time::Duration::from_millis(100)).is_ok() {
+                                 let svc = match p {
+                                     80 | 443 | 8080 => "HTTP/Web",
+                                     11434 => "AI/Ollama",
+                                     3000 => "Node/App",
+                                     5432 => "PostgreSQL",
+                                     6379 => "Redis",
+                                     27017 => "MongoDB",
+                                     _ => "Unknown",
+                                 };
+                                 active_ports.push(format!("{}({})", p.to_string().yellow(), svc.dimmed()));
+                             }
+                         }
+                     }
+                     if active_ports.is_empty() {
+                         println!("   - No other common services detected.");
+                     } else {
+                         println!("   ✅ Found: {}", active_ports.join(", "));
+                     }
                  },
                  Err((code, err)) => {
                      println!("📡 Connection: {}", "ONLINE (Physical) but SSH FAILED".yellow());

@@ -228,24 +228,24 @@ vega sync
 
 ---
 
-## 📋 내부 명령어
+## 📋 명령어 레퍼런스 (SRE Playbook)
 
-| 명령어 | 설명 |
-| :--- | :--- |
-| `setup` | 설정 마법사 실행 (플릿 설정 포함) |
-| `login` | 구글 OAuth2 인증 및 로그인 |
-| `history` | fzf 기반 대화형 히스토리 UI |
-| `install <pkg>` | 패키지 설치 (매니저 자동 감지) |
-| `add-node <ip>` | 새로운 SSH 노드 수동 등록 |
-| `sync-ssh` | 장부(KB) 기반으로 ~/.ssh/config 생성 및 동기화 |
-| `connect <host>` | 컨텍스트 메모리 기반 SSH 연결 |
-| `status` | 시스템 상태 대시보드 (AI 별칭, 로드, 태그 표시) |
-| `health` | 로그 분석 및 해결책 제안 |
-| `backup <src> <dst>` | 검증 기능을 포함한 스마트 백업 |
-| `refresh` | 글로벌 갱신 (노드 재탐색 및 쉘 스냅샷) |
-| `update --fleet` | 플릿 전체 유지보수 (커널, 로드 동기화) |
-| `sync` | rclone 기반 클라우드 프로젝트 및 상태 동기화 |
-| `config` | 쉘 환경 스냅샷 동기화 |
+| 카테고리 | 명령어 | 설명 |
+| :--- | :--- | :--- |
+| **플릿 관리** | `vega status` | 실시간 대시보드 출력 (포트, 로드, 태그 표시) |
+| | `vega status <target>` | **심층 진단(Deep Scan)**: SSH를 통한 실시간 OS, 커널, 디스크 정보 스캔 |
+| | `vega add-node <ip>` | 새로운 SSH 노드를 장부(KB)에 수동 등록 |
+| | `vega sync-ssh` | 장부의 노드 정보를 `~/.ssh/config`에 동기화 (포트 인지형) |
+| | `vega update --fleet` | 플릿 전체 유지보수 수행 (커널 업데이트, 로드 동기화) |
+| **인텔리전스** | `vega report --sre` | **5단계 SRE 리포트**: AI 기반 세션 이력 분석 및 보고서 생성 |
+| | `vega history` | `fzf` 기반의 대화형 히스토리 UI |
+| | `vega health` | 시스템 로그 분석 및 자동화된 해결책 제안 |
+| **프로젝트** | `vega refresh` | 글로벌 갱신 (노드 재탐색 및 쉘 환경 스냅샷) |
+| | `vega sync` | `rclone` 기반의 프로젝트 및 상태 클라우드 동기화 |
+| | `vega backup <src> <dst>` | 검증 및 위험 평가 기능이 포함된 스마트 백업 |
+| **설정** | `vega setup` | 대화형 초기 설정 마법사 실행 |
+| | `vega login` | 구글 OAuth2 기반 인증 및 로그인 |
+| | `vega config` | 쉘 환경 스냅샷 수동 동기화 |
 
 ---
 

@@ -134,13 +134,21 @@ async fn main() {
         }
 
         println!("   📡 Verifying connectivity to {}...", name);
-        if SshConnection::check_connection(&name, None, None).is_ok() {
-            let os = SshConnection::detect_os(&name, None, None);
+        
+        let (ip, port) = if name.contains(':') {
+            let parts: Vec<&str> = name.split(':').collect();
+            (parts[0].to_string(), parts[1].parse::<u16>().unwrap_or(22))
+        } else {
+            (name.clone(), 22)
+        };
+
+        if SshConnection::check_connection(&ip, None, Some(port)).is_ok() {
+            let os = SshConnection::detect_os(&ip, None, Some(port));
             kb.add(&name, crate::knowledge::KnowledgeEntry {
-                ip: name.clone(),
+                ip: ip,
                 user: None,
                 protocol: "ssh".to_string(),
-                port: Some(22),
+                port: Some(port),
                 os_type: os,
                 kernel: None,
                 cpu_load: None,
@@ -148,7 +156,7 @@ async fn main() {
                 last_success: chrono::Local::now().to_rfc3339(),
             });
             let _ = kb.save();
-            println!("✅ Successfully registered node: {}", name);
+            println!("✅ Successfully registered node: {} (Port: {})", name, port);
         } else {
             println!("⚠️  Warning: Host is unreachable. Register anyway? (y/n)");
             let mut input = String::new();
