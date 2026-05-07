@@ -179,7 +179,7 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
             mgmt_port.to_string().yellow(),
             status_color,
             load,
-            tags.yellow()
+            format!("{} (Primary)", tags).yellow()
         );
 
         // 2. Extra Service Discovery (Quick Probe for Dashboard)

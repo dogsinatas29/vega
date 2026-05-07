@@ -182,7 +182,7 @@ async fn main() {
 
     if input == "sync-ssh" {
         println!("🔄 Synchronizing Knowledge Base to ~/.ssh/config...");
-        let mut config_block = String::from("\n# --- VEGA MANAGED HOSTS (AUTO-GENERATED) ---\n");
+        let mut config_block = String::from("\n");
         let mut count = 0;
 
         for (name, entry) in &kb.targets {
@@ -191,9 +191,6 @@ async fn main() {
                 config_block.push_str(&format!("    HostName {}\n", entry.ip));
                 if let Some(port) = entry.port {
                     config_block.push_str(&format!("    Port {}\n", port));
-                }
-                if let Some(user) = &entry.user {
-                    config_block.push_str(&format!("    User {}\n", user));
                 }
                 config_block.push_str("    ConnectTimeout 5\n\n");
                 count += 1;
@@ -213,30 +210,38 @@ async fn main() {
                 let _ = fs::create_dir_all(&ssh_dir);
             }
 
-            let mut current_content = if config_path.exists() {
+            let current_content = if config_path.exists() {
                 fs::read_to_string(&config_path).unwrap_or_default()
             } else {
                 String::new()
             };
 
-            // Remove old Vega block if exists to avoid duplicates
-            if let Some(start_idx) = current_content.find("# --- VEGA MANAGED HOSTS") {
-                let rest = &current_content[start_idx..];
-                if let Some(end_idx) = rest[24..].find("# ---") { // Find next block or end
-                     current_content.replace_range(start_idx..start_idx + 24 + end_idx + 5, "");
-                } else {
-                     current_content.replace_range(start_idx.., "");
+            // Enhanced Sanitization: Robust Block Replacement
+            let begin_marker = "# --- VEGA MANAGED HOSTS (AUTO-GENERATED) ---";
+            let end_marker = "# --- END OF VEGA MANAGED HOSTS ---";
+            
+            let mut new_content = String::new();
+            let mut in_vega_block = false;
+            
+            for line in current_content.lines() {
+                if line.contains(begin_marker) { in_vega_block = true; continue; }
+                if line.contains(end_marker) { in_vega_block = false; continue; }
+                if !in_vega_block {
+                    new_content.push_str(line);
+                    new_content.push('\n');
                 }
             }
+            
+            new_content.push_str("\n");
+            new_content.push_str(begin_marker);
+            new_content.push_str(&config_block);
+            new_content.push_str(end_marker);
+            new_content.push_str("\n");
 
-            current_content.push_str(&config_block);
-            current_content.push_str("# --- END OF VEGA MANAGED HOSTS ---\n");
-
-            if fs::write(&config_path, current_content).is_ok() {
-                println!("✅ Successfully updated {} hosts in {:?}", count, config_path);
-                println!("   💡 Now you can use 'ssh <name>' directly from your terminal.");
+            if let Err(e) = fs::write(&config_path, new_content) {
+                println!("❌ Failed to write SSH config: {}", e);
             } else {
-                println!("❌ Failed to write to {:?}", config_path);
+                println!("✅ Successfully synced {} hosts to ~/.ssh/config", count);
             }
         }
         return;
