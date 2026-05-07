@@ -199,8 +199,8 @@ impl SetupWizard {
                     for host in selected_hosts {
                         println!("   📡 Verifying {}...", host);
                         // Quick check
-                        if crate::connection::ssh::SshConnection::check_connection(&host, None).is_ok() {
-                            let os = crate::connection::ssh::SshConnection::detect_os(&host, None);
+                        if crate::connection::ssh::SshConnection::check_connection(&host, None, None).is_ok() {
+                            let os = crate::connection::ssh::SshConnection::detect_os(&host, None, None);
                             kb.add(&host, crate::knowledge::KnowledgeEntry {
                                 ip: host.clone(),
                                 user: None,
@@ -236,8 +236,8 @@ impl SetupWizard {
                     let host = Self::prompt("   Enter Host/IP: ", None);
                     if !host.is_empty() {
                         println!("   📡 Verifying {}...", host);
-                        if crate::connection::ssh::SshConnection::check_connection(&host, None).is_ok() {
-                            let os = crate::connection::ssh::SshConnection::detect_os(&host, None);
+                        if crate::connection::ssh::SshConnection::check_connection(&host, None, None).is_ok() {
+                            let os = crate::connection::ssh::SshConnection::detect_os(&host, None, None);
                             kb.add(&host, crate::knowledge::KnowledgeEntry {
                                 ip: host.clone(),
                                 user: None,

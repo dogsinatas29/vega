@@ -27,7 +27,8 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
         println!("🔍 Deep Scanning Status for: {}", resolved_target.bold().cyan());
         if let Some(entry) = kb.get(&resolved_target) {
              // 1. Layer 4: TCP Probe (Physical Life)
-             let addr = format!("{}:22", entry.ip);
+             let port = entry.port.unwrap_or(22);
+             let addr = format!("{}:{}", entry.ip, port);
              let tcp_alive = if let Ok(s_addr) = addr.parse::<std::net::SocketAddr>() {
                  std::net::TcpStream::connect_timeout(&s_addr, std::time::Duration::from_millis(500)).is_ok()
              } else {
@@ -35,23 +36,23 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
              };
 
              if !tcp_alive {
-                 println!("📡 Connection: {}", "OFFLINE (Port 22 unreachable)".red());
+                 println!("📡 Connection: {}", format!("OFFLINE (Port {} unreachable)", port).red());
                  println!("   💡 Tip: Check if the target IP is correct and the server is powered on.");
                  return;
              }
 
              // 2. Layer 7: SSH Handshake (Operational Life)
-             match SshConnection::check_connection(&entry.ip, entry.user.as_deref()) {
+             match SshConnection::check_connection(&entry.ip, entry.user.as_deref(), entry.port) {
                  Ok(_) => {
                      println!("📡 Connection: {}", "ONLINE (SSH Verified)".green());
                      
                      // 1. OS Info
-                     let os = SshConnection::detect_os(&entry.ip, entry.user.as_deref());
+                     let os = SshConnection::detect_os(&entry.ip, entry.user.as_deref(), entry.port);
                      println!("🐧 OS: {}", os.as_deref().unwrap_or("Unknown").yellow());
 
                      // 2. Kernel & Disk via combined SSH probe
                      let cmd = "uname -r && df -h / --output=size,used,avail,pcent | tail -1";
-                     match SshConnection::execute_output(&entry.ip, entry.user.as_deref(), cmd) {
+                     match SshConnection::execute_output(&entry.ip, entry.user.as_deref(), entry.port, cmd) {
                          Ok(output) => {
                              let lines: Vec<&str> = output.lines().collect();
                              if lines.len() >= 2 {
@@ -98,13 +99,13 @@ pub fn show_status(kb: &KnowledgeBase, target: Option<&str>) {
         };
         
         // Real-time Health Probe (Senior's Secret Sauce)
-        // Try to connect to port 22 (SSH) with a very short timeout
-        let is_alive = if let Ok(addr) = format!("{}:22", entry.ip).parse::<std::net::SocketAddr>() {
-            std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(300)).is_ok()
-        } else {
-            // Fallback for names that are not IPs (e.g. Hostnames in /etc/hosts)
-            std::net::TcpStream::connect_timeout(&(entry.ip.as_str(), 22).to_socket_addrs().map(|mut i| i.next().unwrap()).unwrap(), std::time::Duration::from_millis(300)).is_ok()
-        };
+         let port = entry.port.unwrap_or(22);
+         let is_alive = if let Ok(addr) = format!("{}:{}", entry.ip, port).parse::<std::net::SocketAddr>() {
+             std::net::TcpStream::connect_timeout(&addr, std::time::Duration::from_millis(300)).is_ok()
+         } else {
+             // Fallback for names that are not IPs (e.g. Hostnames in /etc/hosts)
+             std::net::TcpStream::connect_timeout(&(entry.ip.as_str(), port).to_socket_addrs().map(|mut i| i.next().unwrap()).unwrap(), std::time::Duration::from_millis(300)).is_ok()
+         };
 
         let status_color = if is_alive {
             "ONLINE".green()

@@ -14,23 +14,21 @@ impl std::fmt::Display for DiagnosticResult {
 }
 
 impl SshConnection {
-    pub fn check_connection(ip: &str, user: Option<&str>) -> Result<(), (Option<i32>, String)> {
+    pub fn check_connection(ip: &str, user: Option<&str>, port: Option<u16>) -> Result<(), (Option<i32>, String)> {
         let target = if let Some(u) = user {
             format!("{}@{}", u, ip)
         } else {
             ip.to_string()
         };
 
-        println!("🔌 Testing connection to {}...", target);
+        let port_str = port.unwrap_or(22).to_string();
 
         let output = Command::new("ssh")
             .args(&[
-                "-o",
-                "BatchMode=yes",
-                "-o",
-                "ConnectTimeout=3",
-                "-o",
-                "StrictHostKeyChecking=no",
+                "-o", "BatchMode=yes",
+                "-o", "ConnectTimeout=3",
+                "-o", "StrictHostKeyChecking=no",
+                "-p", &port_str,
                 &target,
                 "echo 'ok'",
             ])
@@ -45,24 +43,24 @@ impl SshConnection {
         }
     }
 
-    pub fn connect(ip: &str, user: Option<&str>) {
+    pub fn connect(ip: &str, user: Option<&str>, port: Option<u16>) {
         let target = if let Some(u) = user {
             format!("{}@{}", u, ip)
         } else {
             ip.to_string()
         };
-
-        let _ = Command::new("ssh").arg(&target).status();
+        let port_str = port.unwrap_or(22).to_string();
+        let _ = Command::new("ssh").arg("-p").arg(&port_str).arg(&target).status();
     }
 
-    pub fn detect_os(ip: &str, user: Option<&str>) -> Option<String> {
+    pub fn detect_os(ip: &str, user: Option<&str>, port: Option<u16>) -> Option<String> {
         let target = if let Some(u) = user {
             format!("{}@{}", u, ip)
         } else {
             ip.to_string()
         };
-
-        let common_args = &["-o", "BatchMode=yes", "-o", "ConnectTimeout=5", &target];
+        let port_str = port.unwrap_or(22).to_string();
+        let common_args = &["-o", "BatchMode=yes", "-o", "ConnectTimeout=5", "-p", &port_str, &target];
 
         // 1. Try getting ID from os-release (Standard Linux)
         if let Ok(output) = Command::new("ssh")
@@ -97,18 +95,20 @@ impl SshConnection {
         None
     }
 
-    pub fn execute_output(ip: &str, user: Option<&str>, cmd: &str) -> Result<String, String> {
+    pub fn execute_output(ip: &str, user: Option<&str>, port: Option<u16>, cmd: &str) -> Result<String, String> {
         let target = if let Some(u) = user {
             format!("{}@{}", u, ip)
         } else {
             ip.to_string()
         };
+        let port_str = port.unwrap_or(22).to_string();
 
         let output = Command::new("ssh")
             .args(&[
                 "-o", "BatchMode=yes",
                 "-o", "ConnectTimeout=5",
                 "-o", "StrictHostKeyChecking=no",
+                "-p", &port_str,
                 &target,
                 cmd,
             ])

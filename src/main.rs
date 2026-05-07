@@ -134,8 +134,8 @@ async fn main() {
         }
 
         println!("   📡 Verifying connectivity to {}...", name);
-        if SshConnection::check_connection(&name, None).is_ok() {
-            let os = SshConnection::detect_os(&name, None);
+        if SshConnection::check_connection(&name, None, None).is_ok() {
+            let os = SshConnection::detect_os(&name, None, None);
             kb.add(&name, crate::knowledge::KnowledgeEntry {
                 ip: name.clone(),
                 user: None,
@@ -181,6 +181,9 @@ async fn main() {
             if entry.protocol == "ssh" {
                 config_block.push_str(&format!("Host {}\n", name));
                 config_block.push_str(&format!("    HostName {}\n", entry.ip));
+                if let Some(port) = entry.port {
+                    config_block.push_str(&format!("    Port {}\n", port));
+                }
                 if let Some(user) = &entry.user {
                     config_block.push_str(&format!("    User {}\n", user));
                 }
@@ -467,9 +470,9 @@ async fn main() {
         if let Some(name) = target_name {
             if let Some(mut entry) = kb.get(&name).cloned() {
                 println!("🔄 Refreshing context for '{}'...", name);
-                match SshConnection::check_connection(&entry.ip, entry.user.as_deref()) {
+                match SshConnection::check_connection(&entry.ip, entry.user.as_deref(), entry.port) {
                     Ok(_) => {
-                        let os = SshConnection::detect_os(&entry.ip, entry.user.as_deref());
+                        let os = SshConnection::detect_os(&entry.ip, entry.user.as_deref(), entry.port);
                         println!("   OS Detected: {}", os.as_deref().unwrap_or("Unknown"));
                         entry.os_type = os;
                         entry.last_success = chrono::Local::now().to_rfc3339();
@@ -491,8 +494,8 @@ async fn main() {
             for node in ctx.remotes {
                 if node.r#type == crate::context::RemoteType::Host {
                     println!("📡 Verifying: {} ({})", node.name, node.real_name);
-                    if SshConnection::check_connection(&node.real_name, None).is_ok() {
-                        let os = SshConnection::detect_os(&node.real_name, None);
+                    if SshConnection::check_connection(&node.real_name, None, None).is_ok() {
+                        let os = SshConnection::detect_os(&node.real_name, None, None);
                         kb.add(
                             &node.name,
                             crate::knowledge::KnowledgeEntry {
@@ -542,9 +545,9 @@ async fn main() {
             use std::io::{self, Write};
             io::stdout().flush().unwrap();
 
-            if SshConnection::check_connection(&entry.ip, entry.user.as_deref()).is_ok() {
+            if SshConnection::check_connection(&entry.ip, entry.user.as_deref(), entry.port).is_ok() {
                 println!("OK ✅");
-                SshConnection::connect(&entry.ip, entry.user.as_deref());
+                SshConnection::connect(&entry.ip, entry.user.as_deref(), entry.port);
                 return;
             } else {
                 println!("Failed ❌ (Stale or Unreachable)");
@@ -570,11 +573,11 @@ async fn main() {
 
                 // 3. Persist: Update State DB
                 print!("   Verifying new endpoint... ");
-                if SshConnection::check_connection(ip, None).is_ok() {
+                if SshConnection::check_connection(ip, None, None).is_ok() {
                     println!("OK ✅");
                     println!("💾 Persistence: Updating State DB for '{}'...", target_name);
 
-                    let os_detected = SshConnection::detect_os(ip, None);
+                    let os_detected = SshConnection::detect_os(ip, None, None);
                     kb.add(
                         target_name,
                         KnowledgeEntry {
@@ -591,7 +594,7 @@ async fn main() {
                     );
                     let _ = kb.save();
 
-                    SshConnection::connect(ip, None);
+                    SshConnection::connect(ip, None, None);
                     return;
                 } else {
                     println!("Unreachable ❌");
