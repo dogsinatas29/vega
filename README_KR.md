@@ -299,6 +299,48 @@ vega sync
 
 ---
 
-## 📄 라이선스
+## 📊 VEGA SRE 리포트 (Reports)
+
+Vega는 시스템 가시성과 추론 투명성을 보장하기 위해 두 가지 유형의 AI 기반 SRE 리포트를 제공합니다.
+
+### 1. 시스템 진단 보고서 (System Diagnostic - 현재 지원)
+대상 시스템(로컬 또는 원격)의 실시간 "맥박"을 제공합니다.
+*   **실행**: `vega status <target>` 또는 자연어 명령 ("192.168.0.150 시스템 정보 알려줘")
+
+```markdown
+# 🚀 VEGA SRE System Report
+**하드웨어 맥박 (Hardware Pulse)**
+- **OS**: Ubuntu 25.10
+- **CPU**: Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz
+- **RAM**: 1.41 GB / 15.07 GB (Used/Total)
+- **가동 시간**: up 6 hours, 35 minutes
+
+**네트워크 맵 (활성 포트)**
+- **22 (ssh)**: 열림 (표준 관리 포트)
+- **11434 (ollama)**: 활성 (AI/API 서비스)
+```
+
+### 2. 의도 및 문제 분석 보고서 (Decision & Analysis - 작업 예정)
+세션의 추론 과정(Lineage)을 분석하고 SRE 5단계 분석을 통해 "왜"와 "어떻게"에 집중합니다.
+
+```text
+# 🌌 VEGA Maintenance Session Report
+**SID-1042** | **위험 등급: 🟡 MEDIUM**
+
+## 🧠 추론 이력 (Decision Lineage)
+1. 요청: "현재 디렉토리를 serverA로 백업해줘"
+- [의도] rclone sync 도구 식별
+- [위험] 점수 20 (Info). 자동 승인.
+- [최종 명령] rclone sync ./ serverA:backup/vega_sync
+
+## 📄 SRE 5단계 분석
+1. 현안: 11434 포트에서 Ollama 서비스가 작동 중입니다.
+2. 원인: API 서비스 노출.
+3. 해결: 보안 설정 검토 및 접근 제한 권장.
+```
+
+---
+
+## 📄 라이선스 (License)
 
 GPL-3.0 라이선스.

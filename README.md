@@ -366,6 +366,48 @@ Below is an overview of the core components in the `src` directory:
 
 ---
 
+## 📊 VEGA SRE Reports
+
+Vega provides two types of AI-powered SRE reports to ensure complete system visibility and reasoning transparency.
+
+### 1. System Diagnostic Report (Active)
+Provides a real-time "Pulse" of the target system (Local or Remote). 
+*   **Trigger**: `vega status <target>` or via natural language ("Show system info for 192.168.0.150").
+
+```markdown
+# 🚀 VEGA SRE System Report
+**Hardware Pulse**
+- **OS**: Ubuntu 25.10
+- **CPU**: Intel(R) Core(TM) i7-4790 CPU @ 3.60GHz
+- **RAM**: 1.41 GB / 15.07 GB (Used/Total)
+- **Uptime**: up 6 hours, 35 minutes
+
+**Network Map (Listening Ports)**
+- **22 (ssh)**: Open (Standard Management)
+- **11434 (ollama)**: Active (AI/API Service)
+```
+
+### 2. Decision & Analysis Report (Planned / Experimental)
+Focuses on "Why" and "How" by analyzing session lineage and providing deep SRE 5-step analysis.
+
+```text
+# 🌌 VEGA Maintenance Session Report
+**SID-1042** | **Risk Level: 🟡 MEDIUM**
+
+## 🧠 Decision Lineage (Execution Trace)
+1. Request: "backup current dir to serverA"
+- [Intent] Identified Tool: rclone, Op: sync
+- [Risk] Score 20 (Info). Automatic Approval.
+- [Final Command] rclone sync ./ serverA:backup/vega_sync
+
+## 📄 SRE 5-Step Analysis
+1. Issue: Port 11434 is in use by Ollama.
+2. Cause: Active API service exposed.
+3. Solution: Review security config or restrict access.
+```
+
+---
+
 ## 📄 License
 
 GPL-3.0 License.
