@@ -1,4 +1,4 @@
-# 🌌 VEGA Release Note: v0.0.17.14 (Environment-Aware Cognition)
+# 🌌 VEGA Release Note: v0.0.14 (Environment-Aware Cognition)
 
 ## 🚀 Major Updates
 

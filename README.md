@@ -30,7 +30,7 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 - **Llama 3.1 Hardening:** Specialized persona injection and instruction compliance for 8B-class local models.
 - **Autonomous Remote SRE Control (v0.1.6):** Secure internal SSH engine (`ssh2`) with encrypted credential persistence and automatic `sudo` password injection.
 - **One-Shot Remote Diagnostic:** 10x faster system metric collection via single-session multi-command payloads.
-- **Infrastructure Cognition (v0.0.17.15):** Deep physical resource sensing (CPU/RAM/Disk) and proactive validation based on dynamic tool requirements.
+- **Infrastructure Cognition (v0.0.14):** Deep physical resource sensing (CPU/RAM/Disk) and proactive validation based on dynamic tool requirements.
 
 ### 📜 SRE Operating Principles
 1. **Error Budgets**: "No system is perfect. Automate as much as possible within acceptable failure margins."
@@ -39,7 +39,7 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 
 ---
 
-## 🧠 Core Architecture (Hybrid Pipeline v0.0.17.15)
+## 🧠 Core Architecture (Hybrid Pipeline v0.0.14)
 
 Vega operates on a **Decoupled Execution Pipeline** that ensures absolute deterministic control with AI-assisted optimizations.
 
@@ -179,7 +179,7 @@ vega history
 vega "Find all files larger than 1GB in /home"
 ```
 
-> **AI Execution Flow (Hybrid Pipeline v0.0.17.15):**
+> **AI Execution Flow (Hybrid Pipeline v0.0.14):**
 > 1.  **Cognition**: Semantically grounds your request to the correct target (Local or Remote).
 > 2.  **Intent & Simulation**: Resolves the "What" and performs VEE path validation.
 > 3.  **Optimization**: AI suggests the most efficient flags for your environment.
