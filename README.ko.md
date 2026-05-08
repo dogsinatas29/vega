@@ -1,6 +1,6 @@
 # 🌌 Vega: The Sovereign SRE Agent
 
-[![Vega Demo](https://img.shields.io/badge/YouTube-Shorts-red?style=for-the-badge&logo=youtube)](https://youtube.com/shorts/6a-fscWTTVo)
+[![Vega Demo](https://img.shields.io/badge/YouTube-Shorts-red?style=for-the-badge&logo=youtube)](https://youtube.com/shorts/6a-fscWTTVo?si=B4wqRKqZbGJbtn4Z)
 
 [English Documentation](README.md) | [개발 로드맵](ROADMAP_KR.md)
 
