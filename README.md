@@ -2,7 +2,7 @@
 
 [![Vega Demo](https://img.shields.io/badge/YouTube-Shorts-red?style=for-the-badge&logo=youtube)](https://youtube.com/shorts/6a-fscWTTVo)
 
-[한국어 문서 (Korean Documentation)](README_KR.md) | [Development Roadmap](ROADMAP.md)
+[한국어 문서 (Korean Documentation)](README.ko.md) | [Development Roadmap](ROADMAP.md)
 
 > **🚧 Current Status**: Testing system configuration tasks via SSH access to OS running on QEMU.
 
