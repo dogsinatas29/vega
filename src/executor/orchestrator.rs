@@ -220,27 +220,43 @@ impl ActionExecutor {
             }
         };
 
-        if res.success {
-            let _ = self.db.update_action_state(&action_id, "Completed", 1.0);
-            Ok(res)
-        } else {
-            println!("{}", "--- REMOTE EXECUTION FAILED ---".red().bold());
-            if !res.stdout.is_empty() {
-                println!("{} \n{}", "STDOUT:".yellow(), res.stdout);
-            }
-            if !res.stderr.is_empty() {
-                println!("{} \n{}", "STDERR:".red(), res.stderr);
-            }
-            if let Some(code) = res.exit_code {
-                println!("{} {}", "EXIT CODE:".red(), code);
-            }
-            println!("{}", "-------------------------------".red().bold());
+        // 🧩 [Semantic Reconciliation] Evaluate the outcome based on domain knowledge
+        let evaluation = action.evaluate_outcome(&res);
 
-            let _ = self.db.update_action_state(&action_id, &format!("Failed: {}", res.stderr), 0.0);
-            if let Err(re) = action.rollback().await {
-                eprintln!("🛑 Rollback failed: {}", re);
+        match evaluation {
+            crate::executor::action::OutcomeEvaluation::Success => {
+                let _ = self.db.update_action_state(&action_id, "Completed", 1.0);
+                Ok(res)
             }
-            Ok(res)
+            crate::executor::action::OutcomeEvaluation::SuccessAlreadySatisfied(msg) => {
+                println!("{} {}", "ℹ️".blue(), msg.blue().bold());
+                println!("✅ {}", "Desired state satisfied.".green().bold());
+                let _ = self.db.update_action_state(&action_id, &format!("Satisfied: {}", msg), 1.0);
+                
+                // Return a successful version of result to satisfy the rest of the pipeline
+                let mut semantic_success = res.clone();
+                semantic_success.success = true;
+                Ok(semantic_success)
+            }
+            crate::executor::action::OutcomeEvaluation::Failure(err) => {
+                println!("{}", "--- REMOTE EXECUTION FAILED ---".red().bold());
+                if !res.stdout.is_empty() {
+                    println!("{} \n{}", "STDOUT:".yellow(), res.stdout);
+                }
+                if !res.stderr.is_empty() {
+                    println!("{} \n{}", "STDERR:".red(), res.stderr);
+                }
+                if let Some(code) = res.exit_code {
+                    println!("{} {}", "EXIT CODE:".red(), code);
+                }
+                println!("{}", "-------------------------------".red().bold());
+
+                let _ = self.db.update_action_state(&action_id, &format!("Failed: {}", err), 0.0);
+                if let Err(re) = action.rollback().await {
+                    eprintln!("🛑 Rollback failed: {}", re);
+                }
+                Ok(res)
+            }
         }
     }
 }

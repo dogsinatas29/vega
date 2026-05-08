@@ -130,6 +130,21 @@ impl Action for OllamaModelRemove {
     fn build_command(&self) -> String {
         format!("OLLAMA_HOST=127.0.0.1:11434 ollama rm {}", self.model_name)
     }
+
+    fn evaluate_outcome(&self, result: &crate::executor::ExecuteResult) -> crate::executor::action::OutcomeEvaluation {
+        if result.success {
+            crate::executor::action::OutcomeEvaluation::Success
+        } else if result.stderr.contains("not found") {
+            // [Desired State Reconciliation] 
+            // If the model is not found, the goal (absence) is already satisfied.
+            crate::executor::action::OutcomeEvaluation::SuccessAlreadySatisfied(
+                format!("Model '{}' is already absent. Desired state satisfied.", self.model_name)
+            )
+        } else {
+            crate::executor::action::OutcomeEvaluation::Failure(result.stderr.clone())
+        }
+    }
+
     async fn execute(&self) -> Result<ExecuteResult, String> {
         Ok(ExecuteResult {
             success: true,

@@ -47,6 +47,13 @@ pub enum CapabilityRequirement {
     Docker,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub enum OutcomeEvaluation {
+    Success,
+    SuccessAlreadySatisfied(String), // e.g., "Model already absent"
+    Failure(String),
+}
+
 #[async_trait]
 pub trait Action: Send + Sync {
     /// Unique ID for the action instance
@@ -66,6 +73,16 @@ pub trait Action: Send + Sync {
     /// Whether to skip system context snapshot for this action
     fn skip_snapshot(&self) -> bool {
         false
+    }
+
+    /// 🧩 [Semantic Reconciliation] Evaluate if the desired state is satisfied
+    /// regardless of raw exit codes. (e.g., 'already removed' is a success).
+    fn evaluate_outcome(&self, result: &ExecuteResult) -> OutcomeEvaluation {
+        if result.success {
+            OutcomeEvaluation::Success
+        } else {
+            OutcomeEvaluation::Failure(result.stderr.clone())
+        }
     }
 
     /// Validate if the action can be performed based on host capabilities
