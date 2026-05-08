@@ -179,13 +179,12 @@ vega history
 vega "Find all files larger than 1GB in /home"
 ```
 
-> **AI Execution Flow (Pipeline v0.0.10):**
-> 1.  **Intent**: Resolves structured "What" (e.g., `backup`).
-> 2.  **Simulation**: VEE checks path existence locally.
-> 3.  **Data De-identification**: Sensitive info like IPs and Keys is masked before API transmission.
-> 4.  **Hardened SSH**: `-o BatchMode=yes` is forced to prevent hangs and zombie sessions.
-> 5.  **Proposal**: AI suggests optimized `options` (flags).
-> 6.  **Audit**: Logs the decision lineage before execution.
+> **AI Execution Flow (Hybrid Pipeline v0.0.17.15):**
+> 1.  **Cognition**: Semantically grounds your request to the correct target (Local or Remote).
+> 2.  **Intent & Simulation**: Resolves the "What" and performs VEE path validation.
+> 3.  **Optimization**: AI suggests the most efficient flags for your environment.
+> 4.  **Reconciliation**: Evaluates the final outcome based on the desired state (not just exit codes).
+> 5.  **Audit & Lineage**: Records every reasoning step and result in the State DB.
 
 ---
 
