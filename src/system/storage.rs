@@ -50,16 +50,27 @@ impl SmartStorage {
         format!("rclone sync {} {} {}", source, remote, flags)
     }
 
-    #[allow(dead_code)]
-    pub fn list_remotes() -> Vec<String> {
-        let output = Command::new("rclone").arg("listremotes").output();
-        if let Ok(o) = output {
-             String::from_utf8_lossy(&o.stdout)
-                 .lines()
-                 .map(|s| s.trim().to_string())
-                 .collect()
+    pub fn sync_vega_state(&self, target_alias: &str) -> Result<String, String> {
+        let config_dir = dirs::config_dir().ok_or("Config dir not found")?.join("vega");
+        let data_dir = dirs::data_local_dir().ok_or("Data dir not found")?.join("vega");
+
+        let remote = self.aliases.get(target_alias).cloned().unwrap_or_else(|| target_alias.to_string());
+        
+        println!("☁️  [Sync] Preparing Cloud Synchronization to {}...", remote);
+        
+        // 1. Sync Config
+        let config_cmd = self.backup_cmd(config_dir.to_str().unwrap(), &format!("{}/config", target_alias));
+        let _ = Command::new("sh").arg("-c").arg(&config_cmd).status();
+
+        // 2. Sync Data (DB, Reports)
+        let data_cmd = self.backup_cmd(data_dir.to_str().unwrap(), &format!("{}/data", target_alias));
+        let status = Command::new("sh").arg("-c").arg(&data_cmd).status()
+            .map_err(|e| format!("Sync Failed: {}", e))?;
+
+        if status.success() {
+            Ok(format!("✅ Cloud Sync to {} completed successfully.", remote))
         } else {
-            vec![]
+            Err(format!("❌ Cloud Sync to {} failed with exit code: {:?}", remote, status.code()))
         }
     }
 }

@@ -4,10 +4,41 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Intent {
-    pub tool: String,
-    pub operation: String,
-    pub target: Option<String>,
+#[serde(tag = "action", content = "params")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
+pub enum Intent {
+    OllamaListInstalled {},
+    OllamaListRunning {},
+    OllamaPull { model: String },
+    OllamaRemove { 
+        model: String, 
+        force: bool 
+    },
+    OllamaVersion {},
+    InstallApt { name: String },
+    InstallDocker { name: String },
+    SystemUpdate {},
+    SshConnect { host: String },
+    BackupData { source: String, target: String },
+    Unknown,
+}
+
+impl Intent {
+    pub fn get_explanation(&self, target_host: &str) -> String {
+        match self {
+            Intent::OllamaListInstalled {} => format!("{} 호스트에 설치된 모든 Ollama 모델 목록을 조회합니다.", target_host),
+            Intent::OllamaListRunning {} => format!("{} 호스트에서 현재 실행 중인 Ollama 모델 목록을 조회합니다.", target_host),
+            Intent::OllamaVersion {} => format!("{} 호스트의 Ollama 버전을 확인합니다.", target_host),
+            Intent::OllamaPull { model } => format!("{} 호스트로 모델 '{}'을(를) 다운로드합니다.", target_host, model),
+            Intent::OllamaRemove { model, .. } => format!("{} 호스트에서 모델 '{}'을(를) 삭제합니다.", target_host, model),
+            Intent::InstallApt { name } => format!("{} 호스트에 패키지 '{}'을(를) 설치합니다.", target_host, name),
+            Intent::InstallDocker { name } => format!("{} 호스트에서 Docker 이미지 '{}'을(를) 실행합니다.", target_host, name),
+            Intent::SystemUpdate {} => format!("{} 호스트의 시스템을 업데이트합니다.", target_host),
+            Intent::SshConnect { host } => format!("원격 호스트 {}에 연결을 시도합니다.", host),
+            Intent::BackupData { source, target } => format!("{}에서 {}로 데이터를 백업합니다.", source, target),
+            Intent::Unknown => "사용자의 의도를 파악할 수 없습니다. 더 구체적으로 말씀해 주세요.".to_string(),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -45,6 +76,8 @@ pub trait ExecutionProvider {
     async fn execute(&self, ast: &CommandAst) -> anyhow::Result<ExecuteResult>;
 }
 
+use colored::Colorize;
+
 pub struct PipelineOrchestrator {
     pub intent_resolver: Box<dyn IntentResolver + Send + Sync>,
     pub template_builder: Box<dyn TemplateBuilder + Send + Sync>,
@@ -55,42 +88,123 @@ pub struct PipelineOrchestrator {
 }
 
 impl PipelineOrchestrator {
-    pub async fn run_pipeline(&self, input: &str) -> anyhow::Result<ExecuteResult> {
-        // 1. Intent Resolution
-        let intent = self.intent_resolver.resolve(input).await?;
-        let intent_str = format!("{:?}", intent);
-        
-        // 2. Template Building
-        let mut ast = self.template_builder.build(&intent)?;
-        
-        // 3. AI Option Generation
-        self.option_generator.generate_options(&mut ast).await?;
-        let final_cmd = ast.to_shell_command();
-        
-        // 4. Virtual Execution (Simulation)
-        let sim_log = self.vee.simulate(&ast)?;
-        let sim_log_str = format!("{:?}", sim_log);
-        let risk_score = sim_log.risk_score;
-        
-        // 5. Risk Evaluation
-        if !self.risk_evaluator.evaluate(&sim_log) {
-            // Log rejection
-            if let Ok(db) = crate::storage::db::Database::new() {
-                let _ = db.log_decision_lineage(input, &intent_str, &final_cmd, &sim_log_str, risk_score, "DENIED");
-            }
-            anyhow::bail!("Execution denied by Risk Evaluation Engine.");
+    pub fn new_default() -> Self {
+        Self {
+            intent_resolver: Box::new(crate::ai::intent::HybridIntentResolver {
+                local: crate::ai::intent::LocalIntentResolver,
+                ai: crate::ai::intent::AiIntentResolver,
+            }),
+            template_builder: Box::new(crate::executor::template::BasicTemplateBuilder),
+            option_generator: Box::new(crate::executor::template::BasicTemplateBuilder), 
+            vee: Box::new(crate::executor::template::BasicTemplateBuilder),
+            risk_evaluator: Box::new(crate::executor::template::BasicTemplateBuilder),
+            execution_provider: Box::new(crate::executor::pipeline::LocalExecutionProvider),
         }
+    }
+
+    pub async fn run_pipeline(
+        &self, 
+        input: &str, 
+        intent: crate::executor::pipeline::Intent, 
+        target_host: &str, 
+        user: Option<String>, 
+        port: Option<u16>, 
+        password: Option<String>
+    ) -> anyhow::Result<ExecuteResult> {
+        let intent_str = format!("{:?}", intent);
+        println!("🎯 [Semantic Intent] Recognized: {}", intent_str.cyan());
+        
+        // 🛡️ Hard Fail: target_host validation
+        if target_host.is_empty() {
+             return Err(anyhow::anyhow!("Sovereign Violation: Action target host cannot be empty or default."));
+        }
+
+        // 2. Action Creation via Factory
+        let action = crate::executor::action::ActionFactory::create_action(&intent, target_host, user.clone(), port, password.clone())
+            .ok_or_else(|| anyhow::anyhow!("No semantic action mapping found for intent: {}", intent_str))?;
+        
+        println!("🏗️  [Action] Resolved to: {}", action.name().yellow().bold());
+
+        // 3. Pre-flight Validation
+        println!("🔍 [Validation] Running capability checks for: {}", target_host.cyan());
+        let snapshot = if target_host == "localhost" || target_host == "127.0.0.1" {
+            crate::system::snapshot::HostSnapshot::collect_local()
+        } else {
+            crate::system::snapshot::HostSnapshot::collect_remote(
+                target_host, 
+                user.as_deref(), 
+                port, 
+                password.as_deref(),
+                &action.required_capabilities()
+            ).await
+                .map_err(|e| anyhow::anyhow!("Remote Capability Discovery Failed: {}", e))?
+        };
+
+        action.validate(&snapshot).await.map_err(|e| anyhow::anyhow!("Validation Failed: {}", e))?;
+        println!("✅ [Validation] All checks passed.");
+
+        // 4. Execution Plan
+        let plan = action.plan().await.map_err(|e| anyhow::anyhow!(e))?;
+        println!("📝 [Execution Plan]");
+        for step in &plan.steps {
+            println!("   - {}", step);
+        }
+        println!("   Impact: {}", plan.estimated_impact.blue());
+        
+        // 5. Simulation (Legacy bridge for risk score)
+        let risk_score = match plan.danger_level {
+            crate::executor::action::DangerLevel::Safe => 0,
+            crate::executor::action::DangerLevel::Moderate => 30,
+            crate::executor::action::DangerLevel::Dangerous => 70,
+            crate::executor::action::DangerLevel::Critical => 100,
+        };
         
         // 6. Execution
-        let result = self.execution_provider.execute(&ast).await?;
+        println!("⚡ [Execution] Initiating semantic action...");
+        let result = action.execute().await.map_err(|e| anyhow::anyhow!(e))?;
         
-        // 7. Decision Lineage Persistence
+        // 7. Result Presentation (Semantics)
+        let output = action.parse_output(&result);
+        self.render_result(&output);
+
+        // 8. Decision Lineage Persistence
         if let Ok(db) = crate::storage::db::Database::new() {
+            let sim_log_str = format!("Semantic Action: {}", action.name());
+            let final_cmd = "Semantic Internal".to_string();
             let res_str = format!("Success: {}, ExitCode: {:?}", result.success, result.exit_code);
             let _ = db.log_decision_lineage(input, &intent_str, &final_cmd, &sim_log_str, risk_score, &res_str);
         }
         
         Ok(result)
+    }
+
+    fn render_result(&self, output: &crate::executor::action::ActionOutput) {
+        use crate::executor::action::ActionOutput;
+        println!("\n{}", "📊 [Result Presentation]".green().bold());
+        match output {
+            ActionOutput::OllamaVersion(v) => {
+                println!("   ✨ Ollama Version: {}", v.cyan().bold());
+            },
+            ActionOutput::OllamaModelList(models) => {
+                println!("   📦 Installed Models ({}):", models.len());
+                if models.is_empty() {
+                    println!("      (No models found)");
+                } else {
+                    for m in models {
+                        println!("      - {}", m.cyan());
+                    }
+                }
+            },
+            ActionOutput::GenericSuccess(msg) => {
+                println!("   ✅ Success: {}", msg);
+            },
+            ActionOutput::Raw(raw) => {
+                if !raw.is_empty() {
+                    println!("{}", raw.cyan());
+                }
+            }
+        }
+        println!("");
     }
 }
 

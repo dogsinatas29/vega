@@ -9,6 +9,7 @@ pub mod healer;
 
 pub mod storage;
 pub mod virt;
+pub mod snapshot;
 
 /// Sovereign SRE Blacklist: Directories to skip during wide system scans to avoid toil and noise.
 pub const SRE_BLACKLIST: &[&str] = &[

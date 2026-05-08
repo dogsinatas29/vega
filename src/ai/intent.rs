@@ -11,47 +11,52 @@ impl IntentResolver for LocalIntentResolver {
 
         // Backup
         if input_lower.contains("backup") {
-            let re = Regex::new(r"backup (?:of |server )?(\S+)").unwrap();
-            let target = re.captures(&input_lower).map(|c| c[1].to_string());
-            return Ok(Intent {
-                tool: "rclone".to_string(),
-                operation: "sync".to_string(),
-                target,
+            return Ok(Intent::BackupData {
+                source: ".".to_string(),
+                target: "remote".to_string(),
             });
         }
 
         // SSH / Connect
         if input_lower.contains("connect") || input_lower.contains("ssh") {
             let re = Regex::new(r"(?:connect to |ssh to |ssh )(\S+)").unwrap();
-            let target = re.captures(&input_lower).map(|c| c[1].to_string());
-            return Ok(Intent {
-                tool: "ssh".to_string(),
-                operation: "connect".to_string(),
-                target,
-            });
+            let target = re.captures(&input_lower).map(|c| c[1].to_string()).unwrap_or_default();
+            return Ok(Intent::SshConnect { host: target });
         }
 
-        // Install
-        if input_lower.contains("install") {
-            let re = Regex::new(r"install (\S+)").unwrap();
-            let target = re.captures(&input_lower).map(|c| c[1].to_string());
-            return Ok(Intent {
-                tool: "pkg".to_string(),
-                operation: "install".to_string(),
-                target,
-            });
+        // Ollama Logic
+        if input_lower.contains("ollama") {
+            let install_verbs = vec!["설치", "받아", "다운로드", "추가", "pull", "install", "download", "add"];
+            let remove_verbs = vec!["삭제", "지워", "제거", "uninstall", "remove", "delete", "rm"];
+            
+            if install_verbs.iter().any(|&v| input_lower.contains(v)) {
+                let models = vec!["mistral", "llama", "phi", "gemma", "qwen"];
+                for model in models {
+                    if input_lower.contains(model) {
+                        return Ok(Intent::OllamaPull { model: model.to_string() });
+                    }
+                }
+            }
+
+            if remove_verbs.iter().any(|&v| input_lower.contains(v)) {
+                let re = Regex::new(r"(?:rm|remove|삭제|제거) (\S+)").unwrap();
+                let target = re.captures(&input_lower).map(|c| c[1].to_string()).unwrap_or_default();
+                if !target.is_empty() && target != "ollama" {
+                    return Ok(Intent::OllamaRemove { model: target, force: input_lower.contains("force") });
+                }
+            }
+
+            if input_lower.contains("목록") || input_lower.contains("list") {
+                return Ok(Intent::OllamaListInstalled {});
+            }
         }
 
         // Update
         if input_lower.contains("update") || input_lower.contains("upgrade") {
-             return Ok(Intent {
-                tool: "pkg".to_string(),
-                operation: "update".to_string(),
-                target: None,
-            });
+             return Ok(Intent::SystemUpdate {});
         }
 
-        anyhow::bail!("Unknown intent")
+        Ok(Intent::Unknown)
     }
 }
 
@@ -66,7 +71,9 @@ pub struct HybridIntentResolver {
 impl IntentResolver for HybridIntentResolver {
     async fn resolve(&self, input: &str) -> anyhow::Result<Intent> {
         if let Ok(intent) = self.local.resolve(input).await {
-            return Ok(intent);
+            if !matches!(intent, Intent::Unknown) {
+                return Ok(intent);
+            }
         }
         self.ai.resolve(input).await
     }
@@ -80,22 +87,21 @@ impl IntentResolver for AiIntentResolver {
             "TASK: Resolve structured operational intent from natural language.
              INPUT: \"{}\"
              
-             RULES:
-             1. Return ONLY a JSON object with fields: tool, operation, target.
-             2. Do not explain.
-             Example: {{\"tool\": \"rclone\", \"operation\": \"sync\", \"target\": \"server_a\"}}",
+             SCHEMA:
+             {{
+               \"action\": \"OLLAMA_LIST_INSTALLED\" | \"OLLAMA_PULL\" | \"OLLAMA_REMOVE\" | \"INSTALL_APT\" | \"CONNECT\" | \"UPDATE\",
+               \"params\": {{ \"model\": \"...\", \"name\": \"...\", \"force\": false }}
+             }}",
             input
         );
 
         match crate::ai::router::SmartRouter::generate_with_fallback(&ctx, &query, None).await {
             Ok(res) => {
                 let res_trimmed = res.trim();
-                // Attempt to parse JSON
                 if let Ok(intent) = serde_json::from_str::<Intent>(res_trimmed) {
                     Ok(intent)
                 } else {
-                    // Fallback regex if AI results are slightly malformed
-                    anyhow::bail!("AI returned malformed intent: {}", res_trimmed)
+                    anyhow::bail!("AI returned malformed intent JSON: {}", res_trimmed)
                 }
             },
             Err(e) => anyhow::bail!("AI Intent Resolution failed: {}", e),

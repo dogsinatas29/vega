@@ -1,5 +1,6 @@
 pub mod sanitizer;
 pub mod risk;
+pub mod policy;
 
 use colored::Colorize;
 use std::io::{self, Write};
@@ -104,5 +105,56 @@ impl SafetyRegistry {
             return RiskLevel::Critical;
         }
         RiskLevel::Info
+    }
+}
+
+pub struct SreGuard;
+
+impl SreGuard {
+    pub fn secure_port_rewrite(raw_cmd: &str) -> String {
+        let cmd = raw_cmd.trim();
+        let is_ssh_variant = cmd.starts_with("ssh ") || cmd.starts_with("scp ") || 
+                             cmd.starts_with("rsync ") || cmd.starts_with("sftp ");
+        if !is_ssh_variant { return raw_cmd.to_string(); }
+        let partition_idx = cmd.find('\'').or_else(|| cmd.find('"'));
+        match partition_idx {
+            Some(idx) => {
+                let (transport, payload) = cmd.split_at(idx);
+                let safe_transport = transport.replace(":11434", ":22").replace("-p 11434", "-p 22").replace("-P 11434", "-P 22");
+                if safe_transport != transport { println!("{}", "🛡️  [SRE Guard] Transport port 11434 redirected to 22. Payload preserved.".yellow()); }
+                format!("{}{}", safe_transport, payload)
+            }
+            None => {
+                let safe_cmd = cmd.replace(":11434", ":22").replace("-p 11434", "-p 22").replace("-P 11434", "-P 22");
+                if safe_cmd != cmd { println!("{}", "🛡️  [SRE Guard] Direct connection port 11434 redirected to 22.".yellow()); }
+                safe_cmd
+            }
+        }
+    }
+
+    /// 🛡️ Anti-Scraping Shield (v2.1)
+    /// Blocks fragile shell pipelines using a Risk Score system.
+    pub fn check_scraping(command: &str) -> Result<(), String> {
+        let cmd_lower = command.to_lowercase();
+        let mut risk_score = 0;
+        
+        // Count pipes
+        risk_score += cmd_lower.chars().filter(|&c| c == '|').count() * 2;
+        
+        // Forbidden tools
+        let forbidden = vec!["grep", "awk", "sed", "cut", "jq", "xargs"];
+        for tool in forbidden {
+            if cmd_lower.contains(tool) {
+                risk_score += 3;
+            }
+        }
+        
+        if risk_score >= 5 {
+            return Err(format!(
+                "🚨 Scraping Risk Alert (Score: {}): This command looks like a fragile status-parsing pipeline. Please use a Typed Intent instead.",
+                risk_score
+            ));
+        }
+        Ok(())
     }
 }

@@ -197,6 +197,31 @@ impl Database {
             [],
         )?;
 
+        // Phase 1 (v0.0.13): Persistent Action Tracking
+        self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS actions (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                state TEXT NOT NULL,
+                host TEXT,
+                payload TEXT,
+                progress REAL DEFAULT 0.0,
+                created_at INTEGER,
+                updated_at INTEGER
+            )",
+            [],
+        )?;
+
+        // Phase 5 (Planned) -> Integrated now: Persistent Metadata
+        self.conn.execute(
+            "CREATE TABLE IF NOT EXISTS metadata (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL,
+                updated_at INTEGER
+            )",
+            [],
+        )?;
+
     // Migration logic moved to migrate()
     Ok(()) 
     }
@@ -211,6 +236,10 @@ impl Database {
 
         self.current_session_id = Some(self.conn.last_insert_rowid());
         Ok(())
+    }
+
+    pub fn get_session_id(&self) -> Option<i64> {
+        self.current_session_id
     }
 
     pub fn log_command(&self, command: &str, ai_comment: &str, success: bool) -> Result<()> {
@@ -440,9 +469,9 @@ impl Database {
         }
     }
 
-    // --- Phase 3: Local RAG (Pseudo-Semantic Search) ---
-    pub fn search_relevant_context(&self, query: &str, limit: usize) -> Result<Vec<String>> {
-        // Clean query for FTS5 (remove special Chars that break syntax)
+    // --- Search & RAG-Lite (Phase 4) ---
+    pub fn search_knowledge(&self, query: &str, limit: usize) -> Result<Vec<(String, String)>> {
+        // Clean query for FTS5
         let cleaned: String = query.chars()
             .filter(|c| c.is_alphanumeric() || c.is_whitespace())
             .collect();
@@ -450,24 +479,21 @@ impl Database {
         if cleaned.is_empty() { return Ok(vec![]); }
 
         let mut stmt = self.conn.prepare(
-            "SELECT content FROM search_index 
-             WHERE content MATCH ? 
+            "SELECT content, origin_table FROM search_index 
+             WHERE search_index MATCH ? 
              ORDER BY rank 
              LIMIT ?"
         )?;
 
-        // FTS5 Match Query: "word1 OR word2 OR ..." to handle non-exact matches
         let fts_query = cleaned.split_whitespace().collect::<Vec<_>>().join(" OR ");
         
         let rows = stmt.query_map(params![fts_query, limit], |row| {
-            Ok(row.get(0)?)
+            Ok((row.get(0)?, row.get(1)?))
         })?;
 
         let mut results = Vec::new();
-        for res in rows {
-            if let Ok(content) = res {
-                results.push(content);
-            }
+        for row in rows {
+            results.push(row?);
         }
         Ok(results)
     }
@@ -555,6 +581,26 @@ impl Database {
             records.push(record?);
         }
         Ok(records)
+    }
+
+    // --- Phase 1 (v0.0.13) Action Tracking ---
+
+    pub fn register_action(&self, id: &str, name: &str, state: &str, host: Option<&str>) -> Result<()> {
+        let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as i64;
+        self.conn.execute(
+            "INSERT INTO actions (id, name, state, host, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+            params![id, name, state, host, timestamp, timestamp],
+        )?;
+        Ok(())
+    }
+
+    pub fn update_action_state(&self, id: &str, state: &str, progress: f32) -> Result<()> {
+        let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs() as i64;
+        self.conn.execute(
+            "UPDATE actions SET state = ?, progress = ?, updated_at = ? WHERE id = ?",
+            params![state, progress, timestamp, id],
+        )?;
+        Ok(())
     }
 }
 

@@ -1,5 +1,7 @@
 # 🌌 Vega: The Sovereign SRE Agent
 
+[![Vega Demo](https://img.shields.io/badge/YouTube-Shorts-red?style=for-the-badge&logo=youtube)](https://youtube.com/shorts/6a-fscWTTVo)
+
 [English Documentation](README.md) | [개발 로드맵](ROADMAP_KR.md)
 
 > **🚧 현재 상태**: QEMU에서 구동 중인 OS에 SSH로 접속하여 시스템 설정 작업을 테스트 중입니다.
@@ -28,6 +30,7 @@ VEGA는 네트워크(DHCP), 가상화 에이전트(QEMU Agent), ARP 테이블 �
 - **Llama 3.1 하드닝:** 8B급 로컬 모델의 지시 이행 능력 및 한국어 무결성을 위한 전용 페르소나 주입.
 - **원격 SRE 자율 제어 (v0.1.6):** 보안 내장 SSH 엔진(`ssh2`)을 통한 암호 영구 저장 및 `sudo` 자동 암호 주입 제어.
 - **원샷 원격 정밀 진단:** 단일 세션 멀티 커맨드 기술을 통한 10배 빠른 원격 지표 수집 및 분석.
+- **인프라 인지 (v0.0.14):** 물리적 자원(CPU/RAM/Disk)의 심층 감지 및 도구별 요구사항에 기반한 선제적 유효성 검사 구현.
 
 ### 📜 SRE 운영 3대 원칙
 1. **Error Budgets**: "완벽한 시스템은 없다. 허용 가능한 장애 범위 내에서 최대한의 자동화를 추구한다."
@@ -41,12 +44,13 @@ VEGA는 네트워크(DHCP), 가상화 에이전트(QEMU Agent), ARP 테이블 �
 Vega는 AI의 유연성과 전통적인 시스템의 결정론적 제어를 결합한 **단계별 실행 파이프라인**을 통해 작동합니다.
 
 1.  **의도 분석 (Intent Resolution)**: 자연어를 구조화된 작업(백업, 설치 등)으로 변환합니다. 복잡한 명령은 AI가 분석합니다.
-2.  **템플릿 빌더 (Template Builder)**: AI에 의한 문법 오류를 방지하기 위해 결정론적인 **명령어 골격(AST)**을 생성합니다.
-3.  **AI 옵션 생성 (Option Generator)**: AI는 골격에 주입될 최적의 옵션(예: `--checksum`, `--progress`)만 생성합니다.
-4.  **가상 실행 엔진 (VEE)**: **실제 시스템 상태**를 확인(경로 존재 여부 등)하고 예상 파급력을 시뮬레이션합니다.
-5.  **위험 평가 (Risk Evaluation)**: 위험 점수(0-100)를 산출합니다. 위험도가 높으면 명시적 승인을 요구합니다.
-6.  **실행 프로바이더 (Execution)**: 로컬 쉘 또는 원격 SSH 환경에서 명령을 실제로 집행합니다.
-7.  **리포팅 및 이력 관리 (Lineage)**: 모든 추론 근거를 기록하고 **AI 기반 SRE 5단계 리포트**를 생성합니다.
+2.  **인프라 감지 및 검증 (v0.0.14)**: 대상 호스트의 물리적 자원(CPU/RAM/Disk) 정보를 정밀하게 감지하고 유효성을 검증합니다.
+3.  **템플릿 빌더 (Template Builder)**: AI에 의한 문법 오류를 방지하기 위해 결정론적인 **명령어 골격(AST)**을 생성합니다.
+4.  **AI 옵션 생성 (Option Generator)**: AI는 골격에 주입될 최적의 옵션(예: `--checksum`, `--progress`)만 생성합니다.
+5.  **가상 실행 엔진 (VEE)**: **실제 시스템 상태**를 확인(경로 존재 여부 등)하고 예상 파급력을 시뮬레이션합니다.
+6.  **위험 평가 (Risk Evaluation)**: 위험 점수(0-100)를 산출합니다. 위험도가 높으면 명시적 승인을 요구합니다.
+7.  **실행 프로바이더 (Execution)**: 로컬 쉘 또는 원격 SSH 환경에서 명령을 실제로 집행합니다.
+8.  **리포팅 및 이력 관리 (Lineage)**: 모든 추론 근거를 기록하고 **AI 기반 SRE 5단계 리포트**를 생성합니다.
 
 ---
 
@@ -252,6 +256,40 @@ vega sync
 | **설정** | `vega setup` | 대화형 초기 설정 마법사 실행 |
 | | `vega login` | 구글 OAuth2 기반 인증 및 로그인 |
 | | `vega config` | 쉘 환경 스냅샷 수동 동기화 |
+
+---
+
+## 🔑 SSH 키 설정 (권장)
+
+VEGA는 결정론적이고 비대화형 실행을 보장하기 위해 모든 원격 작업에 `BatchMode=yes`를 사용합니다. 따라서 `localhost`를 포함한 모든 관리 대상 노드에는 **공개키 인증(Public Key Authentication)**이 설정되어 있어야 합니다.
+
+### 1. 로컬 공개키 확인
+먼저 로컬에 SSH 키가 존재하는지 확인합니다:
+```bash
+# ed25519 또는 rsa 키 확인
+cat ~/.ssh/id_ed25519.pub || cat ~/.ssh/id_rsa.pub
+```
+*키가 없다면 `ssh-keygen -t ed25519` 명령어로 생성하세요.*
+
+### 2. 대상 노드에 키 복사
+`ssh-copy-id`를 사용하여 원격 서버에 공개키를 등록합니다. 이를 통해 VEGA 작업 중 패스워드 입력 없이 자율적인 실행이 가능해집니다.
+```bash
+# 문법: ssh-copy-id <사용자>@<호스트>
+ssh-copy-id dogsinatas@192.168.0.150
+```
+
+### 3. 비밀번호 없는 접속 확인
+패스워드 입력 없이 로그인이 가능한지 최종 확인합니다:
+```bash
+ssh dogsinatas@192.168.0.150
+```
+*접속에 성공하면 VEGA가 해당 노드를 자율적으로 관리할 수 있는 준비가 된 것입니다.*
+
+### 🛠️ `localhost` 접속 트러블슈팅
+만약 `ssh localhost`가 `Permission denied`로 실패한다면, 로컬 환경이 BatchMode를 지원하도록 설정해야 합니다:
+1. **authorized_keys 설정**: `cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys`
+2. **ssh-agent 가동**: `eval $(ssh-agent -s) && ssh-add ~/.ssh/id_ed25519`
+3. **SSH 서버 확인**: 로컬 시스템을 SSH를 통해 관리하려면 `sshd`가 실행 중이어야 합니다.
 
 ---
 

@@ -1,5 +1,7 @@
 # 🌌 Vega: The Sovereign SRE Agent
 
+[![Vega Demo](https://img.shields.io/badge/YouTube-Shorts-red?style=for-the-badge&logo=youtube)](https://youtube.com/shorts/6a-fscWTTVo)
+
 [한국어 문서 (Korean Documentation)](README_KR.md) | [Development Roadmap](ROADMAP.md)
 
 > **🚧 Current Status**: Testing system configuration tasks via SSH access to OS running on QEMU.
@@ -28,6 +30,7 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 - **Llama 3.1 Hardening:** Specialized persona injection and instruction compliance for 8B-class local models.
 - **Autonomous Remote SRE Control (v0.1.6):** Secure internal SSH engine (`ssh2`) with encrypted credential persistence and automatic `sudo` password injection.
 - **One-Shot Remote Diagnostic:** 10x faster system metric collection via single-session multi-command payloads.
+- **Infrastructure Cognition (v0.0.17.14):** Deep physical resource sensing (CPU/RAM/Disk) and proactive validation based on dynamic tool requirements.
 
 ### 📜 SRE Operating Principles
 1. **Error Budgets**: "No system is perfect. Automate as much as possible within acceptable failure margins."
@@ -36,17 +39,19 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 
 ---
 
-## 🧠 Core Architecture (Hybrid Pipeline v0.0.14.9)
+## 🧠 Core Architecture (Hybrid Pipeline v0.0.17.14)
 
 Vega operates on a **Decoupled Execution Pipeline** that ensures absolute deterministic control with AI-assisted optimizations.
 
 1.  **Intent Resolution**: Decodes natural language into structured operations (Backup, Install, etc.). Fallbacks to AI for complex inputs.
-2.  **Template Building**: Constructs a deterministic **Command AST** (Skeleton) to prevent AI-induced syntax errors.
-3.  **AI Option Generation**: AI provides optimal flags (e.g., `--checksum`, `--progress`) injected into the skeleton.
-4.  **VEE (Virtual Execution Engine)**: Performs **State-based Simulation**. Checks path existence and predicts system impact.
-5.  **Risk Evaluation**: Assigns a risk score (0-100). Critical ops require explicit manual authorization.
-6.  **Execution Provider**: Dispatches commands to local or remote (SSH) environments.
-7.  **Reporting & Lineage**: Persists the entire trace (Lineage) and generates **AI-Powered SRE 5-Step Reports**.
+2.  **Infrastructure Sensing & Validation (v0.0.14)**: Captures deep host snapshots (CPU/RAM/Disk) or performs **Thin Action Execution** (snapshot bypass) for simple control tasks.
+3.  **Environment-Aware Cognition**: Semantically grounds abstract references (e.g., "ssh node", "remote server") to the managed inventory using **Heuristic Target Resolution**.
+4.  **Template Building**: Constructs a deterministic **Command AST** (Skeleton) to prevent AI-induced syntax errors.
+5.  **AI Option Generation**: AI provides optimal flags (e.g., `--checksum`, `--progress`) injected into the skeleton.
+6.  **VEE (Virtual Execution Engine)**: Performs **State-based Simulation**. Checks path existence and predicts system impact.
+7.  **Risk Evaluation**: Assigns a risk score (0-100). Critical ops require explicit manual authorization.
+8.  **Execution & RAW Observability**: Dispatches commands to local/remote (SSH) environments with **Direct Stream Capture** (STDOUT/STDERR/EXIT_CODE).
+9.  **Reporting & Lineage**: Persists the entire trace (Lineage) and generates **AI-Powered SRE 5-Step Reports**.
 
 ---
 
@@ -298,6 +303,40 @@ Automatically bridge the gap between your management agent and your shell.
 
 ### 3. Real-time Monitoring
 The `vega status` dashboard performs real-time TCP probes to verify server availability instantly, ensuring your "ONLINE" status is always accurate.
+
+---
+
+## 🔑 SSH Key Setup (Recommended)
+
+VEGA uses `BatchMode=yes` for all remote operations to ensure deterministic, non-interactive execution. This means **Public Key Authentication** must be configured for all managed nodes (including `localhost`).
+
+### 1. Check your Public Key
+First, verify if you have an existing SSH key:
+```bash
+# Common paths for ed25519 or rsa keys
+cat ~/.ssh/id_ed25519.pub || cat ~/.ssh/id_rsa.pub
+```
+*If you don't have one, generate it via `ssh-keygen -t ed25519`.*
+
+### 2. Copy Key to Target Node
+Use `ssh-copy-id` to authorize your key on the remote server. This eliminates the need for password prompts during VEGA operations.
+```bash
+# Syntax: ssh-copy-id <USER>@<HOST>
+ssh-copy-id dogsinatas@192.168.0.150
+```
+
+### 3. Verify Passwordless Login
+Ensure you can log in without being prompted for a password:
+```bash
+ssh dogsinatas@192.168.0.150
+```
+*Once successful, VEGA will be able to manage this node autonomously.*
+
+### 🛠️ Troubleshooting `localhost` Access
+If `ssh localhost` fails with `Permission denied`, ensure your local environment is configured for BatchMode:
+1. **Setup authorized_keys**: `cat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys`
+2. **Start ssh-agent**: `eval $(ssh-agent -s) && ssh-add ~/.ssh/id_ed25519`
+3. **Check SSH Server**: Ensure `sshd` is running locally if you want VEGA to manage the current host via SSH.
 
 ---
 

@@ -86,9 +86,9 @@ impl AiProvider for OfflineEngine {
 impl OfflineEngine {
     fn search_history_rag(&self, query: &str) -> Option<String> {
         if let Ok(db) = crate::storage::db::Database::new() {
-            if let Ok(matches) = db.search_relevant_context(query, 1) {
-                if let Some(res) = matches.first() {
-                    return Some(sanitize_string(res));
+            if let Ok(matches) = db.search_knowledge(query, 1) {
+                if let Some((content, _)) = matches.first() {
+                    return Some(sanitize_string(content));
                 }
             }
         }

@@ -276,9 +276,13 @@ impl SmartRouter {
     fn get_context_summary(query: &str, limit: usize) -> Option<String> {
         // Local RAG: Search relevant history using SQLite FTS5
         if let Ok(db) = crate::storage::db::Database::new() {
-            if let Ok(matches) = db.search_relevant_context(query, limit) {
+            if let Ok(matches) = db.search_knowledge(query, limit) {
                 if !matches.is_empty() {
-                    return Some(matches.join(" -> "));
+                    let mut summary = String::from("\n[Relevant Context from History]:\n");
+                    for (content, _) in matches {
+                        summary.push_str(&format!("- {}\n", content));
+                    }
+                    return Some(summary);
                 }
             }
         }

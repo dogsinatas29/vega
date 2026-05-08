@@ -100,12 +100,10 @@ impl SystemContext {
 
         // 1. Load Registered Nodes (Deterministic Inventory)
         let kb = crate::knowledge::KnowledgeBase::load();
-        let mut masker = crate::remote::RemoteMasker::new();
 
         for (name, entry) in &kb.targets {
-            let masked_name = masker.mask(name, Some(if entry.protocol == "ssh" { "HOST" } else { "STORAGE" }));
             remotes.push(RemoteNode {
-                name: masked_name,
+                name: name.clone(), // Use real name/alias from KB
                 real_name: entry.ip.clone(),
                 r#type: if entry.protocol == "ssh" { RemoteType::Host } else { RemoteType::Storage },
                 provider: entry.protocol.clone(),
@@ -119,9 +117,8 @@ impl SystemContext {
             for remote in discovery.cloud_remotes {
                 // Skip if already in KB
                 if !kb.targets.contains_key(&remote) {
-                    let masked_name = masker.mask(&remote, Some("STORAGE"));
                     remotes.push(RemoteNode {
-                        name: masked_name,
+                        name: remote.clone(),
                         real_name: remote.clone(),
                         r#type: RemoteType::Storage,
                         provider: "rclone".to_string(),
@@ -134,9 +131,8 @@ impl SystemContext {
             for host in discovery.ssh_hosts {
                 // Skip if already in KB (either by name or IP)
                 if !kb.targets.contains_key(&host) && !kb.targets.values().any(|v| v.ip == host) {
-                    let masked_name = masker.mask(&host, Some("HOST"));
                     remotes.push(RemoteNode {
-                        name: masked_name,
+                        name: host.clone(),
                         real_name: host.clone(),
                         r#type: RemoteType::Host,
                         provider: "ssh".to_string(),

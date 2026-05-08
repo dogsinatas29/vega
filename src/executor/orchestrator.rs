@@ -2,8 +2,248 @@ use crate::knowledge::KnowledgeBase;
 use crate::remote::rclone::RcloneProvider;
 use crate::remote::RemoteProvider;
 use crate::safety::{confirm_action, SafetyRegistry};
+use crate::executor::ExecuteResult;
+use crate::connection::ssh::SshConnection;
 use log::info;
 use std::sync::Arc;
+use colored::Colorize;
+
+use crate::executor::action::{Action, DangerLevel};
+use crate::storage::db::Database;
+
+#[derive(Debug, Clone)]
+pub enum ExecutionTarget {
+    Local,
+    RemoteSsh {
+        host: String,
+        user: Option<String>,
+        port: u16,
+        password: Option<String>,
+    }
+}
+
+impl ExecutionTarget {
+    pub fn is_local(&self) -> bool {
+        matches!(self, ExecutionTarget::Local)
+    }
+
+    pub fn identifier(&self) -> String {
+        match self {
+            ExecutionTarget::Local => "localhost".to_string(),
+            ExecutionTarget::RemoteSsh { host, .. } => host.clone(),
+        }
+    }
+}
+
+pub struct ActionExecutor {
+    db: Arc<Database>,
+    policy_engine: crate::safety::policy::PolicyEngine,
+}
+
+impl ActionExecutor {
+    pub fn new(db: Arc<Database>) -> Self {
+        Self { 
+            db,
+            policy_engine: crate::safety::policy::PolicyEngine::new(),
+        }
+    }
+
+    pub async fn run_goal(&self, goal: crate::executor::goal::Goal) -> Result<(), String> {
+        println!("🧠 [Cognition] Goal detected: {:?}", goal);
+        let plan = crate::executor::goal::GoalPlanner::plan(&goal);
+        
+        println!("📝 [Cognition] Strategy for this goal:");
+        for step in plan {
+            println!("   - {}", step);
+        }
+        
+        // For now, we only print the plan to show cognition.
+        // In the next step, we will implement the actual ActionGraph execution.
+        println!("🚀 [Cognition] Goal orchestration initiated. (WIP)");
+        
+        Ok(())
+    }
+
+    pub async fn run(&self, action: Arc<dyn Action>, target: ExecutionTarget, dry_run: bool) -> Result<ExecuteResult, String> {
+        let action_name = action.name();
+        let target_id = target.identifier();
+        
+        // 🆔 [Persistence] Generate a true unique ID for this specific execution instance
+        let execution_id = uuid::Uuid::new_v4().to_string();
+        
+        // 1. Register Action in DB (Persistence - Non-fatal)
+        if let Err(e) = self.db.register_action(&execution_id, &action_name, if dry_run { "DryRunning" } else { "Queued" }, Some(&target_id)) {
+            info!("⚠️ Action persistence failed: {}. Continuing with execution...", e);
+        }
+
+        let action_id = execution_id; // Use the UUID for tracking through the pipeline
+
+        // 2. Collect Snapshot (The Deep Eye - Minimalist Cognition)
+        let snapshot = if action.skip_snapshot() {
+            println!("🛰️  [Executor] Skipping heavy snapshot capture for {}", action_name);
+            crate::system::snapshot::HostSnapshot::dummy()
+        } else {
+            match &target {
+                ExecutionTarget::Local => {
+                    println!("🛰️  [Executor] Capturing local snapshot...");
+                    crate::system::snapshot::HostSnapshot::collect_local()
+                }
+                ExecutionTarget::RemoteSsh { host, user, port, password } => {
+                    println!("🛰️  [Executor] Capturing minimal remote snapshot for {}...", host);
+                    crate::system::snapshot::HostSnapshot::collect_remote(
+                        host,
+                        user.as_deref(),
+                        Some(*port),
+                        password.as_deref(),
+                        &action.required_capabilities(),
+                    ).await?
+                }
+            }
+        };
+
+        // 3. Validate with Snapshot
+        println!("🔍 [Action] Validating {} based on host capabilities...", action_name);
+        action.validate(&snapshot).await.map_err(|e| {
+            let _ = self.db.update_action_state(&action_id, "Failed", 0.0);
+            format!("Validation failed: {}", e)
+        })?;
+
+        // 4. Planning & Building
+        let cmd = action.build_command();
+
+        if dry_run {
+            println!("🔍 [DryRun] Proposed Command: {}", cmd.yellow());
+            return Ok(ExecuteResult {
+                success: true,
+                stdout: format!("Dry run successful: {}", cmd),
+                stderr: String::new(),
+                exit_code: Some(0),
+            });
+        }
+
+        let plan = action.plan().await?;
+        println!("📝 [Plan] Execution Strategy:");
+        for step in &plan.steps {
+            println!("   - {}", step);
+        }
+        println!("⚠️  [Safety] Impact: {}, Level: {:?}", plan.estimated_impact, plan.danger_level);
+
+        // 5. Policy Check (Phase 2)
+        if let Err(e) = self.policy_engine.check(&snapshot, plan.danger_level.clone()) {
+            eprintln!("🛑 [Policy Block] {}", e);
+            let _ = self.db.update_action_state(&action_id, "PolicyBlocked", 0.0);
+            return Err(e);
+        }
+
+        // 6. Confirmation Barrier
+        if plan.danger_level == DangerLevel::Dangerous || plan.danger_level == DangerLevel::Critical {
+            if !confirm_action(crate::safety::RiskLevel::Warning, &action_name) {
+                let _ = self.db.update_action_state(&action_id, "Cancelled", 0.0);
+                return Err("Action cancelled by user safety check".to_string());
+            }
+        }
+
+        // 7. Strict Guards for Critical Actions (Phase 2)
+        if plan.danger_level == DangerLevel::Critical {
+            println!("🔥 [CRITICAL] This action has system-wide impact.");
+            
+            // A. Active Session Check
+            if let ExecutionTarget::RemoteSsh { host, user, port, password } = &target {
+                let who_cmd = "who | wc -l";
+                let session_count: i32 = SshConnection::execute_remote_async(host, user.as_deref(), Some(*port), password.as_deref(), who_cmd).await
+                    .unwrap_or_default().trim().parse().unwrap_or(0);
+                if session_count > 1 {
+                    println!("⚠️  [Guard] {} other users are currently logged in. Proceed with extreme caution!", session_count - 1);
+                }
+            }
+
+            // B. Cooldown Period
+            for i in (1..=5).rev() {
+                print!("\r⏳ [Cooldown] Executing in {} seconds... (Ctrl+C to abort) ", i);
+                std::io::Write::flush(&mut std::io::stdout()).unwrap();
+                tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
+            }
+            println!("\r🚀 [Cooldown] Time's up. Finalizing execution.          ");
+
+            // C. Second Validation
+            if !confirm_action(crate::safety::RiskLevel::Critical, &format!("FINAL CONFIRMATION: {}", action_name)) {
+                let _ = self.db.update_action_state(&action_id, "Cancelled", 0.0);
+                return Err("Action cancelled at the last second".to_string());
+            }
+        }
+
+        // 8. Execute
+        if dry_run {
+            println!("🌐 [Dry-Run] Simulation mode active. Skipping physical execution.");
+            let _ = self.db.update_action_state(&action_id, "DryRunComplete", 1.0);
+            return Ok(ExecuteResult {
+                success: true,
+                stdout: format!("Dry-run successful: {}", cmd),
+                stderr: String::new(),
+                exit_code: Some(0),
+            });
+        }
+
+        let _ = self.db.update_action_state(&action_id, "Executing", 0.1);
+        
+        // Final Execution Dispatch
+        let res = match &target {
+            ExecutionTarget::Local => {
+                println!("⚡ [Executor] Dispatching Local Command: {}", cmd.green());
+                let output = tokio::process::Command::new("bash")
+                    .arg("-c")
+                    .arg(&cmd)
+                    .output()
+                    .await
+                    .map_err(|e| format!("Local execution failed: {}", e))?;
+                
+                ExecuteResult {
+                    success: output.status.success(),
+                    stdout: String::from_utf8_lossy(&output.stdout).to_string(),
+                    stderr: String::from_utf8_lossy(&output.stderr).to_string(),
+                    exit_code: output.status.code(),
+                }
+            }
+            ExecutionTarget::RemoteSsh { host, user, port, password } => {
+                println!("⚡ [Executor] Dispatching Remote Command: {} to {}", cmd.green(), host);
+                match SshConnection::execute_remote_full(host, user.as_deref(), Some(*port), password.as_deref(), &cmd).await {
+                    Ok(r) => r,
+                    Err(e) => {
+                        ExecuteResult {
+                            success: false,
+                            stdout: String::new(),
+                            stderr: format!("SSH Transport Error: {}. Check remote connectivity and environment.", e),
+                            exit_code: Some(255),
+                        }
+                    }
+                }
+            }
+        };
+
+        if res.success {
+            let _ = self.db.update_action_state(&action_id, "Completed", 1.0);
+            Ok(res)
+        } else {
+            println!("{}", "--- REMOTE EXECUTION FAILED ---".red().bold());
+            if !res.stdout.is_empty() {
+                println!("{} \n{}", "STDOUT:".yellow(), res.stdout);
+            }
+            if !res.stderr.is_empty() {
+                println!("{} \n{}", "STDERR:".red(), res.stderr);
+            }
+            if let Some(code) = res.exit_code {
+                println!("{} {}", "EXIT CODE:".red(), code);
+            }
+            println!("{}", "-------------------------------".red().bold());
+
+            let _ = self.db.update_action_state(&action_id, &format!("Failed: {}", res.stderr), 0.0);
+            if let Err(re) = action.rollback().await {
+                eprintln!("🛑 Rollback failed: {}", re);
+            }
+            Ok(res)
+        }
+    }
+}
 
 #[allow(dead_code, unused_variables)]
 pub async fn execute_task(provider: Arc<dyn RemoteProvider>, cmd: &str) -> Result<String, String> {

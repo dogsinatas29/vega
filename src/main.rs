@@ -23,6 +23,7 @@ use crate::system::storage::SmartStorage;
 use crate::system::virt::VmController;
 use crate::config::VegaConfig;
 
+use std::sync::Arc;
 #[tokio::main]
 async fn main() {
     // 0. Parse Input (Early)
@@ -76,6 +77,66 @@ async fn main() {
             println!("✨ System reset complete. Please run 'vega setup' to re-initialize.");
         } else {
             println!("⚠️  Usage: vega reset --all");
+        }
+        return;
+    }
+
+    if input == "search" {
+        let query = args[2..].join(" ");
+        if query.is_empty() {
+            println!("Usage: vega search <query>");
+            return;
+        }
+        if let Ok(db) = crate::storage::db::Database::new() {
+            println!("🔍 Searching Knowledge Base for: '{}'", query.cyan());
+            match db.search_knowledge(&query, 5) {
+                Ok(results) => {
+                    if results.is_empty() {
+                        println!("   (No matches found)");
+                    }
+                    for (content, origin) in results {
+                        println!("   [{}] {}", origin.yellow(), content);
+                    }
+                }
+                Err(e) => eprintln!("❌ Search Failed: {}", e),
+            }
+        }
+        return;
+    }
+
+    if input == "report" {
+        if let Ok(db) = crate::storage::db::Database::new() {
+            if let Some(session_id) = db.get_session_id() {
+                println!("📊 Generating SRE Session Report for Session #{}...", session_id);
+                let db_arc = std::sync::Arc::new(db);
+                match crate::reporting::sre_report::SreReport::generate_session_summary(db_arc, session_id).await {
+                    Ok(md) => {
+                        let path = format!("vega_report_{}.md", session_id);
+                        std::fs::write(&path, md).unwrap();
+                        println!("✅ Report saved to: {}", path.green().bold());
+                    }
+                    Err(e) => eprintln!("❌ Report Generation Failed: {}", e),
+                }
+            } else {
+                println!("⚠️ No active session found to report.");
+            }
+        }
+        return;
+    }
+
+    if input == "sync" {
+        if let Ok(db) = crate::storage::db::Database::new() {
+            let storage = crate::system::storage::SmartStorage::new();
+            let remote = db.get_metadata("default_sync_remote").unwrap_or(None)
+                .unwrap_or_else(|| "구드".to_string());
+            
+            match storage.sync_vega_state(&remote) {
+                Ok(msg) => println!("{}", msg.green().bold()),
+                Err(e) => {
+                    eprintln!("{}", e.red());
+                    println!("💡 Tip: Ensure rclone is configured and 'default_sync_remote' is set in vega metadata.");
+                }
+            }
         }
         return;
     }
@@ -328,7 +389,14 @@ async fn main() {
             execution_provider: Box::new(LocalExecutionProvider),
         };
 
-        match orchestrator.run_pipeline(&nli).await {
+        let intent = match orchestrator.intent_resolver.resolve(&nli).await {
+            Ok(i) => i,
+            Err(e) => {
+                eprintln!("❌ Failed to resolve intent: {}", e);
+                return;
+            }
+        };
+        match orchestrator.run_pipeline(&nli, intent, "localhost", None, None, None).await {
             Ok(res) => {
                 if res.success {
                     println!("✅ Pipeline Success!");
@@ -668,7 +736,7 @@ async fn main() {
         }
     }
 
-    let mut success = true;
+    let mut _success = true;
 
     // Zero-Token Path: fzf Fallback (General)
     // Only if Action is Unknown AND input is simple (not complex/natural language)
@@ -711,12 +779,12 @@ async fn main() {
             match status {
                 Ok(s) => {
                     if !s.success() {
-                        success = false;
+                        _success = false;
                     }
                 }
                 Err(e) => {
                     println!("SSH Failed: {}", e);
-                    success = false;
+                    _success = false;
                 }
             }
         }
@@ -756,311 +824,219 @@ async fn main() {
                     full_input.to_string()
                 };
 
-                // 🧠 Milestone v0.0.14: Intelligent SRE Diagnostic Trigger
-                let lower_input = full_input.to_lowercase();
-                let is_status_req = lower_input.contains("상태") || lower_input.contains("status") || 
-                                   lower_input.contains("리포트") || lower_input.contains("진단") ||
-                                   (lower_input.contains("정보") && lower_input.contains("시스템")) ||
-                                   (lower_input.contains("info") && lower_input.contains("system"));
-
-                if is_status_req {
-                    // 🛡️ [Milestone v0.0.14.10] Intelligent Target Detection
-                    let mut target_ip: Option<String> = None;
-                    let kb = crate::knowledge::KnowledgeBase::load();
-                    
-                    for (name, entry) in &kb.targets {
-                        if lower_input.contains(&name.to_lowercase()) || lower_input.contains(&entry.ip) {
-                            target_ip = Some(entry.ip.clone());
-                            break;
-                        }
-                    }
-                    
-                    // Heuristic: If "ssh" mentioned and no explicit target, pick the first remote
-                    if target_ip.is_none() && lower_input.contains("ssh") {
-                        if let Some((_, entry)) = kb.targets.iter().next() {
-                            target_ip = Some(entry.ip.clone());
-                        }
-                    }
-
-                    println!("🔍 [VEGA] Initiating Full-Stack SRE Diagnostic...");
-                    let diag_data = if let Some(ip) = target_ip {
-                        println!("📡 Target identified: {} (Remote Scan)", ip);
-                        match crate::system::diagnostic::DiagnosticScanner::scan_remote(&ip).await {
-                            Ok(data) => data,
-                            Err(e) => {
-                                eprintln!("⚠️  Remote scan failed: {}", e);
-                                eprintln!("⚠️  Falling back to Local Scan for context comparison.");
-                                crate::system::diagnostic::DiagnosticScanner::scan()
-                            }
-                        }
-                    } else {
-                        crate::system::diagnostic::DiagnosticScanner::scan()
-                    };
-                    
-                    match crate::reporting::sre_report::SreReport::generate_full_diagnostic(0, diag_data).await {
-                        Ok(report) => {
-                            println!("\n{}", report.render_markdown());
-                            println!("✅ [Diagnostic] Full SRE Report generated successfully.");
-                            return;
-                        }
-                        Err(e) => {
-                            eprintln!("❌ [Diagnostic] Failed to generate report: {}", e);
-                        }
-                    }
-                }
-
-                // Call async generate_with_fallback
-                match crate::ai::router::SmartRouter::generate_with_fallback(
+                // AI Reasoning Engine (Goal & Intent Inference)
+                let response_str = match crate::ai::router::SmartRouter::generate_with_fallback(
                     &ctx,
                     &enriched_query,
                     preferred_engine,
-                )
-                .await
-                {
-                    Ok(response_str) => {
-                        // Try to parse as JSON
-                        use crate::ai::{AiResponse, RiskLevel};
-                        match serde_json::from_str::<AiResponse>(&response_str) {
-                            Ok(ai_res) => {
-                                println!("📝 Explanation: {}", ai_res.explanation);
+                ).await {
+                    Ok(res) => res,
+                    Err(e) => {
+                        eprintln!("❌ AI Routing Failed: {}", e);
+                        return;
+                    }
+                };
 
-                                // Colorize based on risk
-                                let risk_display = match ai_res.risk_level {
-                                    RiskLevel::INFO => "INFO".green(),
-                                    RiskLevel::WARNING => "WARNING".yellow(),
-                                    RiskLevel::CRITICAL => "CRITICAL".red().bold(),
-                                };
-                                println!("⚠️  Risk Level: {}", risk_display);
+                // Parse AI Response (Robust extraction)
+                use crate::ai::AiResponse;
+                let ai_res = match AiResponse::extract_json(&response_str) {
+                    Some(res) => res,
+                    None => {
+                        eprintln!("⚠️ AI Parsing Failed. Raw Response: {}", response_str);
+                        return;
+                    }
+                };
 
-                                if !ai_res.command.is_empty() {
-                                    println!("   > Command: {}", ai_res.command.green().bold());
+                // 🧠 [Cognition Engine V2] - Unified Single-Action Pipeline
+                let raw_target = &ai_res.target;
+                
+                // 🧼 [Target Canonicalization] - Strip ports, user info, and ornaments
+                // "dogsinatas@192.168.0.150:22" -> "192.168.0.150"
+                let cleansed_target = raw_target
+                    .split('@').last().unwrap_or(raw_target) // Remove user@
+                    .split(':').next().unwrap_or(raw_target) // Remove :port
+                    .trim()
+                    .to_string();
 
-                                    if Interactor::confirm("Execute this command?") {
-                                        println!("⚡ Executing...");
-
-                                        // RE-RESOLVE REMOTE NAMES (Unmasking)
-                                        // Enhance discovery with KnowledgeBase info (Port, OS, etc.)
-                                        let mut discovery_context = String::new();
-                                        for (name, entry) in &kb.targets {
-                                            discovery_context.push_str(&format!(
-                                                "- {}: {} (Port: {}, OS: {:?})\n",
-                                                name, entry.ip, entry.port.unwrap_or(22), entry.os_type
-                                            ));
-                                        }
-
-                                        let mut masker = crate::remote::RemoteMasker::new();
-                                        let mut storage_targets = Vec::new();
-                                        let mut host_targets = Vec::new();
-                                        
-                                        if let Ok(discovery) =
-                                            crate::system::discovery::Discovery::run(true)
-                                        {
-                                            for remote in discovery.cloud_remotes {
-                                                let masked = masker.mask(&remote, Some("STORAGE"));
-                                                storage_targets.push(masked);
-                                            }
-                                            for host in discovery.ssh_hosts {
-                                                let masked = masker.mask(&host, Some("HOST"));
-                                                host_targets.push(masked);
-                                            }
-                                        }
-                                        
-                                        // Also add KB targets to masker and host_targets
-                                        for name in kb.targets.keys() {
-                                            let masked = masker.mask(name, Some("HOST"));
-                                            if !host_targets.contains(&masked) {
-                                                host_targets.push(masked);
-                                            }
-                                        }
-                                        
-                                        // 🛡️ [Milestone v0.0.14.9] Intelligent Port Heuristic
-                                        let mut final_cmd = masker.resolve_command(&ai_res.command);
-                                        
-                                        // 1. Detect Communication Protocols
-                                        let is_ssh_protocol = final_cmd.contains("ssh ") || final_cmd.contains("scp ") || 
-                                                            final_cmd.contains("rsync ") || final_cmd.contains("sftp ");
-
-                                        if is_ssh_protocol {
-                                            // 2. Resolve target IP and check if it's using the AI port (11434)
-                                            // Heuristic: If the resolved command contains ':11434', it's almost certainly a mistake by AI
-                                            if final_cmd.contains(":11434") {
-                                                eprintln!("{}", "⚠️  [SRE Guard] AI attempted SSH/SCP on Ollama port (11434). Redirecting to standard port 22...".yellow());
-                                                final_cmd = final_cmd.replace(":11434", ":22");
-                                                // If it was just 'ip:11434' (without -p), it might become 'ip:22' which is valid for scp/rsync but not for raw ssh
-                                                // Handle raw ssh '-p' flag if needed
-                                                final_cmd = final_cmd.replace("-p 11434", "-p 22");
-                                            }
-                                            
-                                            // 3. Last Resort: If no port is specified but we know the target from KB, 
-                                            // the SSH provider will handle the default port (usually 22).
-                                        }
-                                        
-                                        if (final_cmd.contains("ssh ") || final_cmd.contains("scp ")) && 
-                                           storage_targets.iter().any(|t| ai_res.command.contains(t)) {
-                                            println!("{}", "❌ [Safety Interceptor] Type Mismatch: Cannot use SSH/SCP on a STORAGE target.".red().bold());
-                                            println!("   Hint: Use 'rclone' commands for STORAGE targets.");
-                                            return;
-                                        }
-
-                                        if final_cmd != ai_res.command {
-                                            println!("   🔗 [Resolved] {}", final_cmd.cyan());
-                                        }
-
-                                        // Internal Pruning Logic: Auto-inject blacklist for find
-                                        if final_cmd.trim().starts_with("find ")
-                                            && !final_cmd.contains("-prune")
-                                        {
-                                            let enriched = {
-                                                let parts: Vec<&str> =
-                                                    final_cmd.split_whitespace().collect();
-                                                if parts.len() > 2 {
-                                                    let path = parts[1];
-                                                    let mut prune_rules = Vec::new();
-                                                    for b_path in crate::system::SRE_BLACKLIST {
-                                                        prune_rules.push(format!(
-                                                            "-path '{}' -prune",
-                                                            b_path
-                                                        ));
-                                                    }
-                                                    let prune_str = prune_rules.join(" -o ");
-                                                    let original_expr = parts[2..].join(" ");
-                                                    Some(format!(
-                                                        "find {} \\( {} \\) -prune -o \\( {} -print \\)",
-                                                        path, prune_str, original_expr
-                                                    ))
-                                                } else {
-                                                    None
-                                                }
-                                            };
-
-                                            if let Some(new_cmd) = enriched {
-                                                final_cmd = new_cmd;
-                                                println!("   🛡️  [SRE Protection] Applied internal pruning rules.");
-                                            }
-                                        }
-
-                                        // 🛡️ [Milestone v0.0.14.18] Intelligent SSH Execution Interceptor
-                                        let mut execution_handled = false;
-                                        let lower_cmd = final_cmd.to_lowercase();
-                                        
-                                        if lower_cmd.starts_with("ssh ") || lower_cmd.starts_with("scp ") {
-                                            // 🕵️ Extraction: Find target IP in the unmasked command (handles ip:port)
-                                            let kb_run = crate::knowledge::KnowledgeBase::load();
-                                            let found_ip = kb_run.targets.values().find(|e| {
-                                                final_cmd.contains(&e.ip) || final_cmd.contains(&format!("{}:", e.ip))
-                                            }).map(|e| e.ip.clone());
-
-                                            if let Some(ip) = found_ip {
-                                                let entry = kb_run.targets.values().find(|e| e.ip == ip);
-                                                if let Some(pass) = entry.and_then(|e| e.password.as_deref()) {
-                                                    let user = entry.and_then(|e| e.user.as_deref());
-                                                    let port = entry.and_then(|e| e.port).unwrap_or(22);
-                                                    
-                                                    // 🛡️ [Milestone v0.0.14.19] Smart Quote-Aware Extractor
-                                                    let remote_cmd_part = if let Some(pos) = final_cmd.find('"') {
-                                                        let end = final_cmd.rfind('"').unwrap_or(pos);
-                                                        if end > pos { final_cmd[pos+1..end].trim().to_string() } else { "".to_string() }
-                                                    } else if let Some(pos) = final_cmd.find('\'') {
-                                                        let end = final_cmd.rfind('\'').unwrap_or(pos);
-                                                        if end > pos { final_cmd[pos+1..end].trim().to_string() } else { "".to_string() }
-                                                    } else {
-                                                        // Fallback: Use the last argument
-                                                        final_cmd.split_whitespace().last().unwrap_or("").to_string()
-                                                    };
-
-                                                    if !remote_cmd_part.is_empty() {
-                                                        println!("🔐 [SRE Interceptor] Redirecting to internal secure engine for {}...", ip.cyan());
-                                                        let mut final_remote_cmd = remote_cmd_part;
-                                                        // 🛡️ [Milestone v0.0.14.20] Auto-Sudo Injection Recovery
-                                                        if final_remote_cmd.contains("sudo ") {
-                                                            final_remote_cmd = format!("echo '{}' | sudo -S {}", pass, final_remote_cmd);
-                                                        }
-                                                        
-                                                        match crate::connection::ssh::SshConnection::execute_remote_async(&ip, user, Some(port), Some(pass), &final_remote_cmd).await {
-                                                            Ok(stdout) => {
-                                                                if !stdout.trim().is_empty() {
-                                                                    println!("{}", stdout);
-                                                                }
-                                                                println!("✅ [SRE] Remote command executed successfully via internal engine.");
-                                                                execution_handled = true;
-                                                            }
-                                                            Err(e) => {
-                                                                eprintln!("❌ [SRE] Internal execution failed: {}", e.red());
-                                                                println!("🔄 Falling back to standard shell...");
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-
-                                        let status = if !execution_handled {
-                                            Command::new("sh")
-                                                .arg("-c")
-                                                .arg(&final_cmd)
-                                                .stderr(std::process::Stdio::null())
-                                                .status()
-                                                .map_err(|e| e.to_string())
-                                        } else {
-                                            // Mock for handled execution
-                                            Ok(std::process::Command::new("true").status().unwrap())
-                                        };
-
-                                        match status {
-                                            Ok(s) => {
-                                                if s.success() || execution_handled {
-                                                    if !execution_handled {
-                                                        println!("✅ Execution Successful.");
-                                                    }
-                                                } else if s.code() == Some(1) && final_cmd.contains("find ") {
-                                                    println!("✅ Search completed (system/protected paths skipped).");
-                                                } else {
-                                                    println!("❌ Execution Failed (Exit Code: {:?})", s.code());
-                                                }
-                                            }
-                                            Err(e) => println!("❌ Failed to spawn shell: {}", e),
-                                        }
-                                    } else {
-                                        println!("🚫 Aborted by user.");
-                                    }
-                                } else {
-                                    println!("ℹ️  No command to execute.");
-                                }
-                            }
-                            Err(_) => {
-                                // Fallback: Raw text response
-                                println!("📝 Response (Raw):\n{}", response_str);
-                            }
+                // Resolve Real Target: Strict Resolution (No Hallucination, No Fallback)
+                let execution_target: Option<crate::executor::orchestrator::ExecutionTarget> = if cleansed_target == "localhost" || cleansed_target == "127.0.0.1" {
+                    // 💡 [Heuristic Fallback] If user mentioned "ssh" or "remote" but AI returned "localhost"
+                    let user_input_lower = full_input.to_lowercase();
+                    let abstract_keywords = vec!["ssh", "remote", "원격", "연결된", "타겟", "서버", "노드", "target", "node", "server"];
+                    
+                    if abstract_keywords.iter().any(|k| user_input_lower.contains(k)) && kb.targets.len() == 1 {
+                        let entry = kb.targets.values().next().unwrap();
+                        println!("💡 [Resolver] Heuristic: Mapping abstract request to the only managed host: {}", entry.ip.cyan());
+                        Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
+                            host: entry.ip.clone(),
+                            user: entry.user.clone(),
+                            port: entry.port.unwrap_or(22),
+                            password: entry.password.clone(),
+                        })
+                    } else {
+                        Some(crate::executor::orchestrator::ExecutionTarget::Local)
+                    }
+                } else if ["ssh", "remote", "원격", "target", "server"].contains(&cleansed_target.as_str()) {
+                    // 💡 [Heuristic Direct] AI returned a keyword as target
+                    if let Some(entry) = kb.targets.values().next() {
+                        println!("💡 [Resolver] Heuristic: Grounding abstract target '{}' to: {}", cleansed_target, entry.ip.cyan());
+                        Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
+                            host: entry.ip.clone(),
+                            user: entry.user.clone(),
+                            port: entry.port.unwrap_or(22),
+                            password: entry.password.clone(),
+                        })
+                    } else {
+                        None
+                    }
+                } else {
+                    // 1. Try to find by Name (Alias) or IP in KnowledgeBase
+                    if let Some(entry) = kb.targets.get(&cleansed_target) {
+                        Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
+                            host: entry.ip.clone(),
+                            user: entry.user.clone(),
+                            port: entry.port.unwrap_or(22),
+                            password: entry.password.clone(),
+                        })
+                    } else if let Some(entry) = kb.targets.values().find(|v| v.ip == cleansed_target) {
+                        Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
+                            host: entry.ip.clone(),
+                            user: entry.user.clone(),
+                            port: entry.port.unwrap_or(22),
+                            password: entry.password.clone(),
+                        })
+                    } else {
+                        // 2. Direct IP support (if it looks like an IP)
+                        if cleansed_target.chars().all(|c| c.is_digit(10) || c == '.') {
+                            Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
+                                host: cleansed_target.clone(),
+                                user: None,
+                                port: 22,
+                                password: None,
+                            })
+                        } else {
+                            None // Hard resolution failure
                         }
                     }
-                    Err(e) => eprintln!("❌ AI Error: {}", e),
+                };
+
+                let target = match execution_target {
+                    Some(t) => t,
+                    None => {
+                        eprintln!("❌ [Safety] Target resolution failed: '{}' (Raw: '{}'). Action aborted to prevent unintended local impact.", cleansed_target.red().bold(), raw_target);
+                        return;
+                    }
+                };
+                
+                println!("📡 [Target] Resolved to canonical: {}", target.identifier().cyan());
+
+                // Map action + params to Intent for template building
+                let intent_json = serde_json::json!({
+                    "action": ai_res.action,
+                    "params": ai_res.params
+                });
+                
+                let intent: crate::executor::pipeline::Intent = match serde_json::from_value(intent_json) {
+                    Ok(i) => i,
+                    Err(e) => {
+                        eprintln!("❌ [Cognition] Action mapping failed: {}. Action: {}, Params: {}", e, ai_res.action, ai_res.params);
+                        return;
+                    }
+                };
+
+                // 🧩 [Deterministic Explanation] Use Rust template instead of AI hallucination
+                let safe_explanation = match &intent {
+                    crate::executor::pipeline::Intent::OllamaListInstalled {} => 
+                        format!("{}에 설치된 Ollama 모델 목록을 조회합니다.", target.identifier()),
+                    crate::executor::pipeline::Intent::OllamaListRunning {} => 
+                        format!("{}에서 현재 실행 중인 Ollama 모델을 확인합니다.", target.identifier()),
+                    crate::executor::pipeline::Intent::OllamaPull { model } => 
+                        format!("{}에 '{}' 모델을 내려받아 설치합니다.", target.identifier(), model),
+                    crate::executor::pipeline::Intent::OllamaRemove { model, .. } => 
+                        format!("{}에서 '{}' 모델을 제거합니다.", target.identifier(), model),
+                    crate::executor::pipeline::Intent::OllamaVersion {} => 
+                        format!("{}의 Ollama 서버 버전을 확인합니다.", target.identifier()),
+                    crate::executor::pipeline::Intent::SshConnect { host } => 
+                        format!("{} 호스트로 SSH 연결을 시도합니다.", host),
+                    crate::executor::pipeline::Intent::SystemUpdate {} => 
+                        format!("{}의 시스템 패키지를 최신 상태로 업데이트합니다.", target.identifier()),
+                    crate::executor::pipeline::Intent::InstallApt { name } => 
+                        format!("{}에 '{}' 패키지를 apt를 통해 설치합니다.", target.identifier(), name),
+                    crate::executor::pipeline::Intent::InstallDocker { name } => 
+                        format!("{}에 '{}' 도커 이미지를 배포합니다.", target.identifier(), name),
+                    _ => ai_res.explanation.chars().collect::<String>(), // Fallback
+                };
+                
+                println!("📝 Explanation: {}", safe_explanation.green());
+                println!("🎯 Action: {} on {}", ai_res.action.yellow().bold(), target.identifier().cyan());
+
+                if Interactor::confirm("Execute this semantic action?") {
+                    println!("⚡ Executing...");
+                    
+                    // Create Action via Factory
+                    let action = match &target {
+                        crate::executor::orchestrator::ExecutionTarget::Local => {
+                            crate::executor::action::ActionFactory::create_action(
+                                &intent,
+                                "localhost",
+                                None,
+                                Some(22),
+                                None,
+                            )
+                        }
+                        crate::executor::orchestrator::ExecutionTarget::RemoteSsh { host, user, port, password } => {
+                            crate::executor::action::ActionFactory::create_action(
+                                &intent,
+                                host,
+                                user.clone(),
+                                Some(*port),
+                                password.clone(),
+                            )
+                        }
+                    };
+
+                    match action {
+                        Some(action) => {
+                            let db = Arc::new(crate::storage::db::Database::new().unwrap());
+                            let executor = crate::executor::orchestrator::ActionExecutor::new(db);
+
+                            // Convert Box<dyn Action> to Arc<dyn Action> using .into()
+                            let action_arc: Arc<dyn crate::executor::action::Action> = action.into();
+
+                            match executor.run(action_arc, target, false).await {
+                                Ok(res) => {
+                                    if res.success {
+                                        println!("✅ Success: {}", res.stdout);
+                                    } else {
+                                        eprintln!("❌ Error: {}", res.stderr);
+                                    }
+                                }
+                                Err(e) => eprintln!("❌ Execution Failed: {}", e),
+                            }
+                        }
+                        None => eprintln!("❌ [Factory] Failed to create action from intent."),
+                    }
                 }
-                return; // handled by AI
+                } else {
+                // Short command / Alias processing
+                let db = Arc::new(crate::storage::db::Database::new().unwrap());
+                let executor = crate::executor::orchestrator::ActionExecutor::new(db);
+                
+                // Use ShellAction for tracking
+                let shell_action = crate::executor::action::ActionFactory::create_shell_action(&full_input);
+                let action_arc: Arc<dyn crate::executor::action::Action> = shell_action.into();
+                
+                match executor.run(action_arc, crate::executor::orchestrator::ExecutionTarget::Local, false).await {
+                    Ok(res) => {
+                        if res.success {
+                            println!("{}", res.stdout);
+                        } else {
+                            eprintln!("{}", res.stderr);
+                        }
+                    }
+                    Err(e) => eprintln!("❌ Execution Failed: {}", e),
+                }
             }
-
-            // Fallthrough to fzf logic below for simple typos (e.g. "updtae")
-            println!("🤔 Intent unknown locally. Trying Zero-Token fzf...");
-        }
-    }
-
-    // 5. Log Execution
-    logger.log(full_input, &format!("{:?}", action), success);
-
-    // 6. Session Completion Auto-Sync Hook
-    if config
-        .optimization
-        .as_ref()
-        .and_then(|o| o.auto_sync)
-        .unwrap_or(false)
-    {
-        let ctx = SystemContext::collect(true);
-        if !ctx.remotes.is_empty() {
-            println!("🔄 Auto-Syncing session state to cloud...");
-            let primary = config
-                .optimization
-                .as_ref()
-                .and_then(|o| o.primary_remote.clone());
-            let _ = executor::orchestrator::sync_all_cloud(&ctx, primary).await;
         }
     }
 }

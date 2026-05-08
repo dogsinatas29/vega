@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+pub mod goal;
 pub mod orchestrator;
 pub mod pkg;
 pub mod status;
@@ -7,6 +8,12 @@ pub mod ast;
 pub mod pipeline;
 pub mod template;
 pub mod virt;
+pub mod action;
+pub mod ollama;
+pub mod capabilities;
+pub mod service;
+pub mod docker;
+pub mod cuda;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[allow(dead_code)]
