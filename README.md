@@ -138,6 +138,10 @@ source ~/.zshrc
 
 # 6. Verify installation
 vega --help
+
+# 7. Configure API Keys & Preferences
+# This will launch an interactive wizard to set your Gemini/OpenAI/Claude keys.
+vega setup
 ```
 
 ---

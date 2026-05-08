@@ -97,6 +97,10 @@ source ~/.zshrc
 
 # 6. 설치 확인
 vega --help
+
+# 7. API 키 및 환경 설정
+# 대화형 마법사를 실행하여 Gemini/OpenAI/Claude 키를 설정합니다.
+vega setup
 ```
 
 ---
