@@ -30,7 +30,7 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 - **Llama 3.1 Hardening:** Specialized persona injection and instruction compliance for 8B-class local models.
 - **Autonomous Remote SRE Control (v0.1.6):** Secure internal SSH engine (`ssh2`) with encrypted credential persistence and automatic `sudo` password injection.
 - **One-Shot Remote Diagnostic:** 10x faster system metric collection via single-session multi-command payloads.
-- **Infrastructure Cognition (v0.0.17.14):** Deep physical resource sensing (CPU/RAM/Disk) and proactive validation based on dynamic tool requirements.
+- **Infrastructure Cognition (v0.0.17.15):** Deep physical resource sensing (CPU/RAM/Disk) and proactive validation based on dynamic tool requirements.
 
 ### 📜 SRE Operating Principles
 1. **Error Budgets**: "No system is perfect. Automate as much as possible within acceptable failure margins."
@@ -39,7 +39,7 @@ VEGA leverages every available tool (DHCP, QEMU Guest Agent, ARP tables, etc.) t
 
 ---
 
-## 🧠 Core Architecture (Hybrid Pipeline v0.0.17.14)
+## 🧠 Core Architecture (Hybrid Pipeline v0.0.17.15)
 
 Vega operates on a **Decoupled Execution Pipeline** that ensures absolute deterministic control with AI-assisted optimizations.
 
@@ -51,7 +51,8 @@ Vega operates on a **Decoupled Execution Pipeline** that ensures absolute determ
 6.  **VEE (Virtual Execution Engine)**: Performs **State-based Simulation**. Checks path existence and predicts system impact.
 7.  **Risk Evaluation**: Assigns a risk score (0-100). Critical ops require explicit manual authorization.
 8.  **Execution & RAW Observability**: Dispatches commands to local/remote (SSH) environments with **Direct Stream Capture** (STDOUT/STDERR/EXIT_CODE).
-9.  **Reporting & Lineage**: Persists the entire trace (Lineage) and generates **AI-Powered SRE 5-Step Reports**.
+9.  **Desired State Reconciliation**: Semantically evaluates outcomes to ensure the goal is satisfied even if raw commands return non-zero codes (e.g., "already absent" is success).
+10. **Reporting & Lineage**: Persists the entire trace (Lineage) and generates **AI-Powered SRE 5-Step Reports**.
 
 ---
 
@@ -118,20 +119,24 @@ cargo build --release --features vendored-openssl
 Vega is built as a single static binary. No runtime dependencies required.
 
 ```bash
-# 1. Build Release Binary
+# 1. Clone the repository
+git clone https://github.com/dogsinatas29/vega
+cd vega
+
+# 2. Build Release Binary
 cargo build --release
 
-# 2. Create local bin directory
+# 3. Create local bin directory
 mkdir -p ~/.local/bin
 
-# 3. Install to local bin
+# 4. Install to local bin
 cp target/release/vega ~/.local/bin/
 
-# 4. Add to PATH
+# 5. Add to PATH
 echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 
-# 5. Verify installation
+# 6. Verify installation
 vega --help
 ```
 
