@@ -201,6 +201,89 @@ impl SmartRouter {
         }
     }
 
+    pub async fn orchestrate_intent(
+        ctx: &crate::context::SystemContext,
+        query: &str,
+        preferred: Option<String>,
+    ) -> Result<crate::ai::AiResponse, crate::ai::AiError> {
+        // 🔑 [Sovereign Step -1] - Extract Discovered Context
+        let discovered_hosts: Vec<String> = ctx.remotes.iter()
+            .filter(|r| r.r#type == crate::context::RemoteType::Host)
+            .map(|r| r.real_name.clone())
+            .collect();
+
+        // 👑 [Sovereign Step 0] - Deterministic Pre-parsing with Discovery Context
+        let sovereign_res = crate::ai::validator::SovereignParser::parse_sovereign(query, &discovered_hosts);
+        if sovereign_res.confidence >= 1.0 {
+            crate::ui::console::SreConsole::logic("Sovereign: Deterministic match. Skipping LLM.");
+            return Ok(sovereign_res);
+        }
+
+        // Stage 1: Domain Classification
+        let domain_prompt = crate::ai::prompts::PromptBuilder::domain_prompt(ctx);
+        let domain_raw = Self::generate_with_fallback_raw(ctx, &domain_prompt, query, preferred.clone()).await?;
+        
+        let domain_res = crate::ai::DomainResponse::extract_json(&domain_raw)
+            .ok_or_else(|| crate::ai::AiError::Unknown("Failed to parse Domain Classification".to_string()))?;
+        
+        crate::ui::console::SreConsole::telemetry(&format!("Stage 1: Domain: {:?}, Confidence: {:.2}", domain_res.domain, domain_res.confidence));
+
+        if domain_res.domain == crate::ai::Domain::Unknown || domain_res.confidence < 0.6 {
+            // Even if LLM fails, if Sovereign had some idea, try it
+            if sovereign_res.action != "UNKNOWN" {
+                crate::ui::console::SreConsole::logic("Recovery: LLM ambiguous, falling back to Sovereign partial parse.");
+                return Ok(sovereign_res);
+            }
+
+            return Err(crate::ai::AiError::Unknown(format!(
+                "Ambiguous intent detected (Domain: {:?}, Confidence: {:.2}). Action aborted for safety.",
+                domain_res.domain, domain_res.confidence
+            )));
+        }
+
+        // Stage 2: Action Parsing
+        let action_prompt = crate::ai::prompts::PromptBuilder::action_prompt(domain_res.domain);
+        let action_raw = match Self::generate_with_fallback_raw(ctx, &action_prompt, query, preferred).await {
+            Ok(raw) => raw,
+            Err(e) => {
+                if sovereign_res.action != "UNKNOWN" {
+                    crate::ui::console::SreConsole::logic("Recovery: LLM failed, using Sovereign results.");
+                    return Ok(sovereign_res);
+                }
+                return Err(e);
+            }
+        };
+
+        let llm_res = match crate::ai::AiResponse::extract_json(&action_raw) {
+            Some(res) => res,
+            None => {
+                if sovereign_res.action != "UNKNOWN" {
+                    crate::ui::console::SreConsole::logic("Recovery: LLM malformed JSON, using Sovereign results.");
+                    return Ok(sovereign_res);
+                }
+                return Err(crate::ai::AiError::Unknown("Failed to parse Action Parsing".to_string()));
+            }
+        };
+
+        // 👑 [Sovereign Step 3] - Authoritative Reconciliation (Ownership Inversion)
+        let final_res = crate::ai::validator::SovereignParser::reconcile_to_intent(sovereign_res, llm_res, &discovered_hosts);
+        crate::ui::console::SreConsole::telemetry(&format!("Stage 2: Action: {}, Confidence: {:.2}", final_res.action, final_res.confidence));
+
+        Ok(final_res)
+    }
+
+    async fn generate_with_fallback_raw(
+        ctx: &crate::context::SystemContext,
+        system_prompt: &str,
+        query: &str,
+        preferred: Option<String>,
+    ) -> Result<String, crate::ai::AiError> {
+        let engine = Self::determine_engine(query, preferred);
+        let provider = Self::get_provider(engine).map_err(|e| crate::ai::AiError::Unknown(e))?;
+        
+        provider.generate_response_with_system(ctx, system_prompt, query).await
+    }
+
     pub async fn generate_with_fallback(
         ctx: &crate::context::SystemContext,
         query: &str,
@@ -226,7 +309,7 @@ impl SmartRouter {
         };
 
         let provider = Self::get_provider(engine).map_err(|e| crate::ai::AiError::Unknown(e))?;
-        println!("⚡ [Router] Routing to: {:?}", engine);
+        println!("📡 [Classifier] Provider: {:?}, Context: {} targets", engine, ctx.remotes.len());
 
         // Context Sync: Summary Injection logic
         let mut final_query = query.to_string();

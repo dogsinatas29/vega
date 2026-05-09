@@ -29,6 +29,7 @@ pub struct HostCapabilities {
     pub has_ollama: bool,
     pub ollama_version: Option<String>,
     pub has_docker: bool,
+    pub sudo_nopasswd: bool,
     pub disk_free_root_gb: f64,
 }
 
@@ -56,6 +57,7 @@ impl HostSnapshot {
                 has_ollama: true, // Optimistic for skip_snapshot actions
                 ollama_version: None,
                 has_docker: false,
+                sudo_nopasswd: false,
                 disk_free_root_gb: 0.0,
             },
             timestamp: 0,
@@ -108,6 +110,7 @@ impl HostSnapshot {
                     .and_then(|o| String::from_utf8(o.stdout).ok())
                     .map(|s| s.split_whitespace().last().unwrap_or("").to_string()),
                 has_docker: false,
+                sudo_nopasswd: true, // Local usually has cached sudo or is user-run
                 disk_free_root_gb: disk_gb,
             },
             timestamp: chrono::Utc::now().timestamp(),
@@ -127,7 +130,8 @@ impl HostSnapshot {
         let mut script = String::from("printf '---VEGA_JSON_BEGIN---\\n{");
         script.push_str("\"hostname\":\"$(hostname)\",");
         script.push_str("\"arch\":\"$(uname -m)\",");
-        script.push_str("\"distro\":\"$(cat /etc/os-release | grep ^ID= | cut -d= -f2 | tr -d '\"')\"");
+        script.push_str("\"distro\":\"$(cat /etc/os-release | grep ^ID= | cut -d= -f2 | tr -d '\"')\",");
+        script.push_str("\"sudo_nopasswd\":$( (sudo -n true 2>/dev/null && echo \"true\") || echo \"false\" )");
 
         for req in requirements {
             match req {
@@ -149,9 +153,9 @@ impl HostSnapshot {
 
         let output = match SshConnection::execute_remote_async(target, user, port, pass, &script).await {
             Ok(out) => {
-                if out.is_empty() {
-                    // This could be a silent failure or auth error not captured by Result::Err
-                    return Err(format!("🔌 Transport Error: Empty response from {}. Check if SSH connection was successful (BatchMode might have failed silently).", target));
+                if out.trim().is_empty() {
+                    // This is likely a protocol layer failure (framing was not reached or output suppressed)
+                    return Err(format!("📜 Protocol Error: Empty output from {}. The remote shell may have suppressed the snapshot data or session ended prematurely.", target));
                 }
                 out
             },
@@ -199,6 +203,7 @@ impl HostSnapshot {
             ollama: Option<bool>,
             ollama_ver: Option<String>,
             docker: Option<bool>,
+            sudo_nopasswd: Option<bool>,
         }
 
         let data: RemoteData = serde_json::from_str(json_str).map_err(|e| format!("JSON Parse Error: {}. Raw: {}", e, json_str))?;
@@ -231,6 +236,7 @@ impl HostSnapshot {
                 has_ollama: data.ollama.unwrap_or(false),
                 ollama_version: if data.ollama_ver.as_deref() == Some("none") { None } else { data.ollama_ver },
                 has_docker: data.docker.unwrap_or(false),
+                sudo_nopasswd: data.sudo_nopasswd.unwrap_or(false),
                 disk_free_root_gb: data.disk_free.unwrap_or(0.0),
             },
             timestamp: chrono::Utc::now().timestamp(),

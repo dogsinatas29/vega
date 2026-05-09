@@ -78,9 +78,12 @@ impl ActionExecutor {
 
         let action_id = execution_id; // Use the UUID for tracking through the pipeline
 
-        // 2. Collect Snapshot (The Deep Eye - Minimalist Cognition)
-        let snapshot = if action.skip_snapshot() {
-            println!("🛰️  [Executor] Skipping heavy snapshot capture for {}", action_name);
+        // 2. Collect Snapshot (Skip if mode is DirectDispatch or action says not required)
+        let mode = action.execution_mode();
+        let needs_snapshot = action.requires_snapshot() && mode != crate::executor::action::ExecutionMode::DirectDispatch;
+        
+        let snapshot = if !needs_snapshot {
+            println!("🛰️  [Executor] Skipping snapshot: Action '{}' does not require preflight sensing.", action_name);
             crate::system::snapshot::HostSnapshot::dummy()
         } else {
             match &target {
@@ -101,36 +104,51 @@ impl ActionExecutor {
             }
         };
 
-        // 3. Validate with Snapshot
-        println!("🔍 [Action] Validating {} based on host capabilities...", action_name);
+        // 3. Validate with Snapshot & Privilege Check
+        crate::ui::console::SreConsole::telemetry(&format!("Validating {} based on host capabilities...", action_name));
+        
+        // A. Semantic Validation
         action.validate(&snapshot).await.map_err(|e| {
             let _ = self.db.update_action_state(&action_id, "Failed", 0.0);
             format!("Validation failed: {}", e)
         })?;
 
+        // B. Privilege Validation (Root-Guard)
+        if action.requires_root() && !snapshot.capabilities.sudo_nopasswd && !target.is_local() {
+            crate::ui::console::SreConsole::error(&format!("Privilege Block: Remote host '{}' requires interactive sudo authentication.", target_id));
+            crate::ui::console::SreConsole::note("VEGA cannot safely automate this action without NOPASSWD configuration.");
+            let _ = self.db.update_action_state(&action_id, "PrivilegeBlocked", 0.0);
+            return Err(format!("Remote host requires interactive sudo for action '{}'.", action_name));
+        }
+
         // 4. Planning & Building
         let cmd = action.build_command();
 
         if dry_run {
-            println!("🔍 [DryRun] Proposed Command: {}", cmd.yellow());
+            crate::ui::console::SreConsole::logic(&format!("Proposed Command: {}", cmd.yellow()));
             return Ok(ExecuteResult {
                 success: true,
+                status: crate::executor::ExecutionStatus::Success,
                 stdout: format!("Dry run successful: {}", cmd),
                 stderr: String::new(),
                 exit_code: Some(0),
+                error: None, insight: None,
             });
         }
 
         let plan = action.plan().await?;
-        println!("📝 [Plan] Execution Strategy:");
+        crate::ui::console::SreConsole::telemetry("Execution Strategy:");
         for step in &plan.steps {
-            println!("   - {}", step);
+            crate::ui::console::SreConsole::telemetry(&format!("   - {}", step));
         }
-        println!("⚠️  [Safety] Impact: {}, Level: {:?}", plan.estimated_impact, plan.danger_level);
+        
+        if plan.danger_level > crate::executor::action::DangerLevel::Safe {
+             crate::ui::console::SreConsole::logic(&format!("Impact: {}, Level: {:?}", plan.estimated_impact, plan.danger_level));
+        }
 
         // 5. Policy Check (Phase 2)
         if let Err(e) = self.policy_engine.check(&snapshot, plan.danger_level.clone()) {
-            eprintln!("🛑 [Policy Block] {}", e);
+            crate::ui::console::SreConsole::error(&format!("Policy Block: {}", e));
             let _ = self.db.update_action_state(&action_id, "PolicyBlocked", 0.0);
             return Err(e);
         }
@@ -145,7 +163,7 @@ impl ActionExecutor {
 
         // 7. Strict Guards for Critical Actions (Phase 2)
         if plan.danger_level == DangerLevel::Critical {
-            println!("🔥 [CRITICAL] This action has system-wide impact.");
+            crate::ui::console::SreConsole::error("CRITICAL: This action has system-wide impact.");
             
             // A. Active Session Check
             if let ExecutionTarget::RemoteSsh { host, user, port, password } = &target {
@@ -153,7 +171,7 @@ impl ActionExecutor {
                 let session_count: i32 = SshConnection::execute_remote_async(host, user.as_deref(), Some(*port), password.as_deref(), who_cmd).await
                     .unwrap_or_default().trim().parse().unwrap_or(0);
                 if session_count > 1 {
-                    println!("⚠️  [Guard] {} other users are currently logged in. Proceed with extreme caution!", session_count - 1);
+                    crate::ui::console::SreConsole::error(&format!("{} other users are currently logged in. Proceed with extreme caution!", session_count - 1));
                 }
             }
 
@@ -174,22 +192,24 @@ impl ActionExecutor {
 
         // 8. Execute
         if dry_run {
-            println!("🌐 [Dry-Run] Simulation mode active. Skipping physical execution.");
+            crate::ui::console::SreConsole::logic("Simulation mode active. Skipping physical execution.");
             let _ = self.db.update_action_state(&action_id, "DryRunComplete", 1.0);
             return Ok(ExecuteResult {
                 success: true,
+                status: crate::executor::ExecutionStatus::Success,
                 stdout: format!("Dry-run successful: {}", cmd),
                 stderr: String::new(),
                 exit_code: Some(0),
+                error: None, insight: None,
             });
         }
 
         let _ = self.db.update_action_state(&action_id, "Executing", 0.1);
         
         // Final Execution Dispatch
-        let res = match &target {
+        let mut res = match &target {
             ExecutionTarget::Local => {
-                println!("⚡ [Executor] Dispatching Local Command: {}", cmd.green());
+                crate::ui::console::SreConsole::debug(&format!("Dispatching Local Command: {}", cmd));
                 let output = tokio::process::Command::new("bash")
                     .arg("-c")
                     .arg(&cmd)
@@ -199,26 +219,39 @@ impl ActionExecutor {
                 
                 ExecuteResult {
                     success: output.status.success(),
+                    status: if output.status.success() { crate::executor::ExecutionStatus::Success } else { crate::executor::ExecutionStatus::FatalFailure },
                     stdout: String::from_utf8_lossy(&output.stdout).to_string(),
                     stderr: String::from_utf8_lossy(&output.stderr).to_string(),
                     exit_code: output.status.code(),
+                    error: if output.status.success() { None } else { 
+                        Some(crate::executor::OrchestrationError::Execution(String::from_utf8_lossy(&output.stderr).to_string()))
+                    },
+                    insight: None,
                 }
             }
             ExecutionTarget::RemoteSsh { host, user, port, password } => {
-                println!("⚡ [Executor] Dispatching Remote Command: {} to {}", cmd.green(), host);
+                crate::ui::console::SreConsole::debug(&format!("Dispatching Remote Command: {} to {}", cmd, host));
                 match SshConnection::execute_remote_full(host, user.as_deref(), Some(*port), password.as_deref(), &cmd).await {
                     Ok(r) => r,
                     Err(e) => {
                         ExecuteResult {
                             success: false,
+                            status: crate::executor::ExecutionStatus::FatalFailure,
                             stdout: String::new(),
                             stderr: format!("SSH Transport Error: {}. Check remote connectivity and environment.", e),
                             exit_code: Some(255),
+                            error: Some(crate::executor::OrchestrationError::Transport(e)),
+                            insight: None,
                         }
                     }
                 }
             }
         };
+
+        // 🧠 [SRE Insight] Analyze failure causes for technical guidance
+        if !res.success {
+            res.insight = Self::generate_sre_insight(&res.stderr);
+        }
 
         // 🧩 [Semantic Reconciliation] Evaluate the outcome based on domain knowledge
         let evaluation = action.evaluate_outcome(&res);
@@ -255,8 +288,26 @@ impl ActionExecutor {
                 if let Err(re) = action.rollback().await {
                     eprintln!("🛑 Rollback failed: {}", re);
                 }
+
+                // 🧠 [SRE Insight] Final reporting with actionable guidance
+                if let Some(insight) = &res.insight {
+                    println!("\n{}", insight.cyan().bold());
+                }
+
                 Ok(res)
             }
+        }
+    }
+
+    fn generate_sre_insight(stderr: &str) -> Option<String> {
+        if stderr.contains("Authentication failed") || stderr.contains("Permission denied (publickey)") {
+            Some("💡 [SRE Insight] Authentication failed. Possible causes:\n  - sudo password required but VEGA is running non-interactively.\n  - NOPASSWD not configured in /etc/sudoers.d/vega.\n  - SSH key not authorized on target host.".to_string())
+        } else if stderr.contains("invalid model name") {
+            Some("💡 [SRE Insight] The model name provided is invalid. This might be due to encoding issues or phonetic translation hallucination. Ensure model names are ASCII preserved.".to_string())
+        } else if stderr.contains("Connection refused") {
+            Some("💡 [SRE Insight] Connection refused. The target service (Ollama or SSH) might not be running, or a firewall is blocking the port.".to_string())
+        } else {
+            None
         }
     }
 }

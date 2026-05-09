@@ -11,6 +11,7 @@ use crate::logger::ExecutionLogger;
 use crate::setup::SetupWizard;
 use crate::shell::ShellSnapshot;
 use crate::token_saver::{Action, TokenSaver};
+use crate::executor::action::Action as ExecutorAction;
 use colored::Colorize;
 
 use crate::connection::ssh::SshConnection;
@@ -34,12 +35,37 @@ async fn main() {
         return;
     }
     let input = &args[1];
+
+    // 0-1. Standard Flags Handler (v0.1.9+)
+    if args.contains(&"--debug".to_string()) {
+        crate::ui::console::SreConsole::set_verbosity(crate::ui::console::Verbosity::Debug);
+    } else if args.contains(&"--silent".to_string()) {
+        crate::ui::console::SreConsole::set_verbosity(crate::ui::console::Verbosity::Silent);
+    } else if args.contains(&"--dev".to_string()) {
+        crate::ui::console::SreConsole::set_verbosity(crate::ui::console::Verbosity::Developer);
+    }
+
+    if args.contains(&"--version".to_string()) || args.contains(&"-v".to_string()) {
+        println!("VEGA: The Sovereign SRE Agent v0.1.9");
+        println!("Status: Deterministic Cognition Enforced. 🫡🌌");
+        return;
+    }
+    if args.contains(&"--help".to_string()) || args.contains(&"-h".to_string()) {
+        println!("VEGA: The Sovereign SRE Agent");
+        println!("Usage: vega <query|command>");
+        println!("\nExamples:");
+        println!("  vega \"192.168.0.150에 phi-3 설치해줘\"");
+        println!("  vega setup");
+        println!("  vega config");
+        return;
+    }
+
     let full_input = args[1..].join(" ");
     let full_input = full_input.trim();
 
     // 1. Bootstrap (Auto-Init or Load)
     let _config = init::bootstrap().unwrap_or_else(|e| {
-        if input != "setup" {
+        if input != "setup" && input != "--version" && input != "-v" {
             eprintln!("❌ Bootstrap Failed: {}", e);
             eprintln!("💡 Tip: Run 'vega setup' to repair configuration.");
             std::process::exit(1);
@@ -742,8 +768,9 @@ async fn main() {
     // Only if Action is Unknown AND input is simple (not complex/natural language)
     if let Action::Unknown = action {
         let is_complex = full_input.contains(' ') || full_input.len() > 10;
+        let is_flag = full_input.starts_with('-');
 
-        if !is_complex {
+        if !is_complex && !is_flag {
             println!("🤔 Intent unknown locally. Trying Zero-Token fzf...");
 
             let mut candidates = Vec::new();
@@ -802,9 +829,9 @@ async fn main() {
             let is_complex = full_input.contains(' ') || full_input.len() > 10;
 
             if is_complex {
-                println!("🤖 [VEGA] Analyzing natural language request...");
-                println!("   Input: \"{}\"", full_input);
-
+                use crate::ui::console::SreConsole;
+                SreConsole::info("Analyzing natural language request...");
+                
                 // Collect context for the AI
                 let ctx = SystemContext::collect(false);
                 let preferred_engine = config.ai.as_ref().map(|a| a.provider.clone());
@@ -818,117 +845,106 @@ async fn main() {
                     ));
                 }
 
-                let enriched_query = if !inventory_context.is_empty() {
-                    format!("DETAILED INVENTORY:\n{}\n\nUSER REQUEST: {}", inventory_context, full_input)
-                } else {
-                    full_input.to_string()
-                };
-
-                // AI Reasoning Engine (Goal & Intent Inference)
-                let response_str = match crate::ai::router::SmartRouter::generate_with_fallback(
-                    &ctx,
-                    &enriched_query,
-                    preferred_engine,
-                ).await {
+                // 🧠 [Cognition Engine V3] - 2-Stage Domain-First Orchestration
+                let mut ai_res = match crate::ai::router::SmartRouter::orchestrate_intent(&ctx, &full_input, preferred_engine).await {
                     Ok(res) => res,
                     Err(e) => {
-                        eprintln!("❌ AI Routing Failed: {}", e);
+                        SreConsole::error(&format!("Cognition Error: {}", e));
                         return;
                     }
                 };
 
-                // Parse AI Response (Robust extraction)
-                use crate::ai::AiResponse;
-                let ai_res = match AiResponse::extract_json(&response_str) {
-                    Some(res) => res,
-                    None => {
-                        eprintln!("⚠️ AI Parsing Failed. Raw Response: {}", response_str);
-                        return;
-                    }
-                };
-
-                // 🧠 [Cognition Engine V2] - Unified Single-Action Pipeline
-                let raw_target = &ai_res.target;
+                // 🛡️ [Independent Reconcilers] v0.1.8
+                // 1. Resolve Target (Deterministic Priority)
+                let discovered_hosts: Vec<String> = ctx.remotes.iter()
+                    .filter(|r| r.r#type == crate::context::RemoteType::Host)
+                    .map(|r| r.real_name.clone())
+                    .collect();
+                let llm_target_hint = ai_res.target.as_deref().unwrap_or("localhost");
+                let resolved_target_str = crate::ai::validator::TargetResolver::resolve(&full_input, llm_target_hint, &discovered_hosts);
                 
-                // 🧼 [Target Canonicalization] - Strip ports, user info, and ornaments
-                // "dogsinatas@192.168.0.150:22" -> "192.168.0.150"
+                // 2. Resolve Model (Slot Locking)
+                if let Some(model) = ai_res.params.get_mut("model") {
+                    if let Some(model_str) = model.as_str() {
+                        let locked_model = crate::ai::validator::ModelResolver::resolve(&full_input, model_str);
+                        *model = serde_json::Value::String(locked_model);
+                    }
+                }
+
+                // 3. Validate & Correct Intent (Deterministic Overrule)
+                let corrected_action = crate::ai::validator::IntentValidator::validate_and_correct(&ai_res.action, &full_input);
+                ai_res.action = corrected_action;
+
+                let raw_target = resolved_target_str.as_str();
+                
+                // 🧼 [Target Canonicalization]
                 let cleansed_target = raw_target
-                    .split('@').last().unwrap_or(raw_target) // Remove user@
-                    .split(':').next().unwrap_or(raw_target) // Remove :port
+                    .split('@').last().unwrap_or(raw_target)
+                    .split(':').next().unwrap_or(raw_target)
                     .trim()
                     .to_string();
 
+                if cleansed_target.is_empty() {
+                    SreConsole::error("Target Error: AI failed to resolve a valid target.");
+                    return;
+                }
+
                 // Resolve Real Target: Strict Resolution (No Hallucination, No Fallback)
-                let execution_target: Option<crate::executor::orchestrator::ExecutionTarget> = if cleansed_target == "localhost" || cleansed_target == "127.0.0.1" {
-                    // 💡 [Heuristic Fallback] If user mentioned "ssh" or "remote" but AI returned "localhost"
-                    let user_input_lower = full_input.to_lowercase();
-                    let abstract_keywords = vec!["ssh", "remote", "원격", "연결된", "타겟", "서버", "노드", "target", "node", "server"];
-                    
-                    if abstract_keywords.iter().any(|k| user_input_lower.contains(k)) && kb.targets.len() == 1 {
-                        let entry = kb.targets.values().next().unwrap();
-                        println!("💡 [Resolver] Heuristic: Mapping abstract request to the only managed host: {}", entry.ip.cyan());
-                        Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
-                            host: entry.ip.clone(),
-                            user: entry.user.clone(),
-                            port: entry.port.unwrap_or(22),
-                            password: entry.password.clone(),
-                        })
-                    } else {
-                        Some(crate::executor::orchestrator::ExecutionTarget::Local)
-                    }
-                } else if ["ssh", "remote", "원격", "target", "server"].contains(&cleansed_target.as_str()) {
-                    // 💡 [Heuristic Direct] AI returned a keyword as target
-                    if let Some(entry) = kb.targets.values().next() {
-                        println!("💡 [Resolver] Heuristic: Grounding abstract target '{}' to: {}", cleansed_target, entry.ip.cyan());
-                        Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
-                            host: entry.ip.clone(),
-                            user: entry.user.clone(),
-                            port: entry.port.unwrap_or(22),
-                            password: entry.password.clone(),
-                        })
-                    } else {
-                        None
-                    }
+                let user_input_lower = full_input.to_lowercase();
+                let local_keywords = vec!["내 시스템", "현재 시스템", "내 컴퓨터", "localhost", "my system", "this node"];
+                let remote_keywords = vec!["ssh", "remote", "원격", "연결된", "타겟", "서버", "노드", "target", "node", "server"];
+
+                let execution_target: Option<crate::executor::orchestrator::ExecutionTarget> = if local_keywords.iter().any(|k| user_input_lower.contains(k)) && !user_input_lower.contains("ssh") {
+                     Some(crate::executor::orchestrator::ExecutionTarget::Local)
+                } else if cleansed_target == "localhost" || cleansed_target == "127.0.0.1" {
+                    Some(crate::executor::orchestrator::ExecutionTarget::Local)
                 } else {
-                    // 1. Try to find by Name (Alias) or IP in KnowledgeBase
-                    if let Some(entry) = kb.targets.get(&cleansed_target) {
-                        Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
-                            host: entry.ip.clone(),
-                            user: entry.user.clone(),
-                            port: entry.port.unwrap_or(22),
-                            password: entry.password.clone(),
-                        })
-                    } else if let Some(entry) = kb.targets.values().find(|v| v.ip == cleansed_target) {
-                        Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
-                            host: entry.ip.clone(),
-                            user: entry.user.clone(),
-                            port: entry.port.unwrap_or(22),
-                            password: entry.password.clone(),
-                        })
-                    } else {
-                        // 2. Direct IP support (if it looks like an IP)
-                        if cleansed_target.chars().all(|c| c.is_digit(10) || c == '.') {
-                            Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
-                                host: cleansed_target.clone(),
-                                user: None,
-                                port: 22,
-                                password: None,
-                            })
-                        } else {
-                            None // Hard resolution failure
+                    // Try to match cleansed_target with knowledge base IPs or Aliases
+                    let mut matched = None;
+                    for entry in kb.targets.values() {
+                        if entry.ip == cleansed_target || user_input_lower.contains(&entry.ip) {
+                            matched = Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
+                                host: entry.ip.clone(),
+                                user: entry.user.clone(),
+                                port: entry.port.unwrap_or(22),
+                                password: entry.password.clone(),
+                            });
+                            break;
                         }
                     }
+
+                    // Heuristic: If user mentioned "ssh" and we have only one remote target
+                    if matched.is_none() && remote_keywords.iter().any(|k| user_input_lower.contains(k)) && kb.targets.len() == 1 {
+                        let entry = kb.targets.values().next().unwrap();
+                        SreConsole::logic(&format!("Mapping abstract request to the only managed host: {}", entry.ip.cyan()));
+                        matched = Some(crate::executor::orchestrator::ExecutionTarget::RemoteSsh {
+                            host: entry.ip.clone(),
+                            user: entry.user.clone(),
+                            port: entry.port.unwrap_or(22),
+                            password: entry.password.clone(),
+                        });
+                    }
+                    matched
                 };
 
                 let target = match execution_target {
                     Some(t) => t,
                     None => {
-                        eprintln!("❌ [Safety] Target resolution failed: '{}' (Raw: '{}'). Action aborted to prevent unintended local impact.", cleansed_target.red().bold(), raw_target);
+                        SreConsole::error(&format!("Resolution Error: Could not resolve target '{}'.", cleansed_target));
                         return;
                     }
                 };
                 
-                println!("📡 [Target] Resolved to canonical: {}", target.identifier().cyan());
+                SreConsole::logic(&format!("Target resolved to canonical: {}", target.identifier().cyan()));
+
+                // Derive Domain from Action string
+                let domain = if ai_res.action.starts_with("OLLAMA") { "AI_MODELS" } 
+                            else if ai_res.action.starts_with("SYSTEM") { "SYSTEM" }
+                            else if ai_res.action.starts_with("SSH") { "INFRASTRUCTURE" }
+                            else if ai_res.action.starts_with("INSTALL") { "PACKAGE_MANAGEMENT" }
+                            else { "UNKNOWN" };
+                
+                SreConsole::telemetry(&format!("Domain: {}, Confidence: {:.2}", domain, ai_res.confidence));
 
                 // Map action + params to Intent for template building
                 let intent = crate::executor::pipeline::Intent {
@@ -936,16 +952,17 @@ async fn main() {
                     target: target.identifier().to_string(),
                     params: ai_res.params.clone(),
                     thought: ai_res.thought.clone(),
+                    confidence: ai_res.confidence as f32,
                 };
 
                 // 🧩 [Deterministic Explanation] Use struct-defined template instead of manual match
                 let safe_explanation = intent.get_explanation(&target.identifier());
                 
-                println!("📝 Explanation: {}", safe_explanation.green());
-                println!("🎯 Action: {} on {}", ai_res.action.yellow().bold(), target.identifier().cyan());
+                SreConsole::note(&safe_explanation.green().to_string());
+                SreConsole::action(&format!("Executing {} on {}", ai_res.action.bold(), target.identifier().cyan()));
 
                 if Interactor::confirm("Execute this semantic action?") {
-                    println!("⚡ Executing...");
+                    SreConsole::action("Initiating execution...");
                     
                     // Create Action via Factory
                     let action = match &target {
@@ -975,20 +992,48 @@ async fn main() {
                             let executor = crate::executor::orchestrator::ActionExecutor::new(db);
 
                             // Convert Box<dyn Action> to Arc<dyn Action> using .into()
-                            let action_arc: Arc<dyn crate::executor::action::Action> = action.into();
+                            let action_arc: Arc<dyn ExecutorAction> = action.into();
 
-                            match executor.run(action_arc, target, false).await {
+                            match executor.run(action_arc.clone(), target.clone(), false).await {
                                 Ok(res) => {
                                     if res.success {
-                                        println!("✅ Success: {}", res.stdout);
-                                    } else {
-                                        eprintln!("❌ Error: {}", res.stderr);
-                                    }
-                                }
-                                Err(e) => eprintln!("❌ Execution Failed: {}", e),
+                                        // 📊 [Semantic Presentation] (Alpha 39)
+                                        let output = action_arc.parse_output(&res);
+                                        
+                                        // Use a temporary orchestrator for rendering
+                                        let temp_orch = crate::executor::pipeline::PipelineOrchestrator::new_default();
+                                        temp_orch.render_result(&output);
+
+                                        // 🔧 [Autonomous Remediation Loop] (Alpha 39)
+                                        if let crate::executor::action::ActionOutput::ServiceState(state) = &output {
+                                            if !state.state_converged.unwrap_or(true) 
+                                               && state.remediation_available.unwrap_or(false) 
+                                               && state.safe_to_apply.unwrap_or(false) {
+                                                 
+                                                 if crate::safety::confirm_action(crate::safety::RiskLevel::Warning, "Apply remediation to converge system state?") {
+                                                     SreConsole::remediate("Initiating state reconciliation...");
+                                                     let remediate_action = Arc::new(crate::executor::ollama::OllamaRemediate);
+                                                     
+                                                     // Execute remediation
+                                                     match executor.run(remediate_action.clone(), target, false).await {
+                                                         Ok(rem_res) => {
+                                                             let rem_output = remediate_action.parse_output(&rem_res);
+                                                             temp_orch.render_result(&rem_output);
+                                                             SreConsole::success("Convergence loop completed.");
+                                                         }
+                                                         Err(e) => SreConsole::error(&format!("Remediation Failed: {}", e)),
+                                                     }
+                                                 }
+                                             }
+                                         }
+                                     } else {
+                                         SreConsole::error(&format!("Error: {}", res.stderr));
+                                     }
+                                 }
+                                 Err(e) => SreConsole::error(&format!("Execution Failed: {}", e)),
                             }
                         }
-                        None => eprintln!("❌ [Factory] Failed to create action from intent."),
+                        None => SreConsole::error("Factory: Failed to create action from intent."),
                     }
                 }
                 } else {

@@ -1,5 +1,7 @@
+use std::sync::Arc;
 use crate::executor::ast::CommandAst;
 use crate::executor::ExecuteResult;
+use crate::executor::action::Action;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
@@ -10,7 +12,11 @@ pub struct Intent {
     pub params: serde_json::Value,
     #[serde(default)]
     pub thought: String,
+    #[serde(default = "default_confidence")]
+    pub confidence: f32,
 }
+
+fn default_confidence() -> f32 { 1.0 }
 
 // Legacy Intent enum will be phased out in favor of the structured Intent struct
 // but for compatibility during migration, we keep the mapping logic.
@@ -22,13 +28,16 @@ impl Intent {
             "OLLAMA_LIST_INSTALLED" => format!("{} 호스트에 설치된 모든 Ollama 모델 목록을 조회합니다.", self.target),
             "OLLAMA_LIST_RUNNING" => format!("{} 호스트에서 현재 실행 중인 Ollama 모델 목록을 조회합니다.", self.target),
             "OLLAMA_VERSION" => format!("{} 호스트의 Ollama 버전을 확인합니다.", self.target),
-            "OLLAMA_PULL" => format!("{} 호스트로 모델 '{}'을(를) 다운로드합니다.", self.target, params["model"].as_str().unwrap_or("unknown")),
+            "OLLAMA_START" => format!("원격 호스트 '{}'의 Ollama 서비스를 시작(Start)합니다.", self.target),
+            "OLLAMA_STOP" => format!("원격 호스트 '{}'의 Ollama 서비스를 중단(Stop)합니다.", self.target),
+            "OLLAMA_PULL" => format!("원격 호스트 '{}'에 모델 '{}'을(를) 다운로드합니다.", self.target, params["model"].as_str().unwrap_or("unknown")),
             "OLLAMA_REMOVE" => format!("{} 호스트에서 모델 '{}'을(를) 삭제합니다.", self.target, params["model"].as_str().unwrap_or("unknown")),
             "INSTALL_APT" => format!("{} 호스트에 패키지 '{}'을(를) 설치합니다.", self.target, params["name"].as_str().unwrap_or("unknown")),
             "SYSTEM_UPDATE" => format!("{} 호스트의 시스템을 업데이트합니다.", self.target),
             "SYSTEM_DIAGNOSTIC" => format!("{} 호스트의 시스템 상태를 진단합니다.", self.target),
+            "SYSTEM_SHUTDOWN" => format!("⚠️ {} 호스트를 종료(SHUTDOWN)합니다.", self.target),
             "SSH_CONNECT" => format!("원격 호스트 {}에 연결을 시도합니다.", params["host"].as_str().unwrap_or(&self.target)),
-            _ => format!("사용자의 의도({})를 파악할 수 없습니다.", self.action),
+            _ => format!("결정론적 의도('{}')를 파악하여 오케스트레이션을 준비합니다.", self.action),
         }
     }
 
@@ -42,6 +51,7 @@ impl Intent {
             target: "localhost".to_string(),
             params: serde_json::json!({}),
             thought: "".to_string(),
+            confidence: 0.0,
         }
     }
 }
@@ -172,7 +182,27 @@ impl PipelineOrchestrator {
         let output = action.parse_output(&result);
         self.render_result(&output);
 
-        // 8. Decision Lineage Persistence
+        // 8. Autonomous Remediation Loop (Alpha 39)
+        if let crate::executor::action::ActionOutput::ServiceState(state) = &output {
+            if !state.state_converged.unwrap_or(true) 
+               && state.remediation_available.unwrap_or(false) 
+               && state.safe_to_apply.unwrap_or(false) {
+                
+                if crate::safety::confirm_action(crate::safety::RiskLevel::Warning, "Apply remediation to converge system state?") {
+                    println!("🔧 [Remediation] Initiating state reconciliation...");
+                    let remediate_action: Arc<dyn Action> = Arc::new(crate::executor::ollama::OllamaRemediate);
+                    
+                    // Re-dispatch via execution provider (Simplified for Alpha 39)
+                    let rem_res = remediate_action.execute().await.map_err(|e| anyhow::anyhow!(e))?;
+                    let rem_output = remediate_action.parse_output(&rem_res);
+                    self.render_result(&rem_output);
+                    
+                    println!("✅ [Remediation] Convergence loop completed.");
+                }
+            }
+        }
+
+        // 9. Decision Lineage Persistence
         if let Ok(db) = crate::storage::db::Database::new() {
             let sim_log_str = format!("Semantic Action: {}", action.name());
             let final_cmd = "Semantic Internal".to_string();
@@ -183,10 +213,54 @@ impl PipelineOrchestrator {
         Ok(result)
     }
 
-    fn render_result(&self, output: &crate::executor::action::ActionOutput) {
+    pub fn render_result(&self, output: &crate::executor::action::ActionOutput) {
         use crate::executor::action::ActionOutput;
         println!("\n{}", "📊 [Result Presentation]".green().bold());
         match output {
+            ActionOutput::ServiceState(state) => {
+                let service_name = state.service.clone().unwrap_or("service".to_string()).to_uppercase();
+                if state.is_ready() {
+                    println!("   {} {} ready", "✅".green(), service_name.cyan().bold());
+                } else {
+                    println!("   {} {} state: {}", "⚠️".yellow(), service_name.cyan().bold(), state.status.yellow());
+                }
+
+                println!("   {} Host:    {} ({})", "📍".blue(), state.host.clone().unwrap_or("unknown".to_string()), state.user.clone().unwrap_or("unknown".to_string()));
+                if let Some(v) = &state.version {
+                    println!("   {} Version: {}", "🔢".magenta(), v.cyan());
+                }
+                if let Some(pid) = state.pid {
+                    println!("   {} PID:     {}", "🆔".blue(), pid);
+                }
+                
+                let bind = state.bind.clone().unwrap_or("unknown".to_string());
+                let scope = state.bind_scope.clone().unwrap_or("local".to_string());
+                println!("   {} Bind:    {} ({})", "🔌".yellow(), bind.cyan(), scope.yellow());
+
+                let tunnel = if state.ssh_tunnel_reachable.unwrap_or(false) { "Accessible".green() } else { "Unavailable".red() };
+                println!("   {} SSH Tunnel: {}", "🔗".blue(), tunnel);
+
+                let lan = if state.lan_reachable.unwrap_or(false) { "Exposed".green() } else { "Disabled (Loopback)".yellow() };
+                println!("   {} LAN Direct:  {}", "🌐".blue(), lan);
+
+                if !state.state_converged.unwrap_or(true) {
+                    println!("\n{} {}", "⚠️".yellow().bold(), "State Divergence Detected".yellow().bold());
+                    if let Some(desired) = &state.desired_bind {
+                        println!("   Desired State: {}", desired.cyan());
+                    }
+                    if let Some(actual) = &state.actual_bind {
+                        println!("   Current State: {}", actual.yellow());
+                    }
+                    
+                    if state.remediation_available.unwrap_or(false) && state.safe_to_apply.unwrap_or(false) {
+                        println!("\n{} {}", "🔧".green().bold(), "Remediation Available".green().bold());
+                        if state.requires_restart.unwrap_or(false) {
+                            println!("   {} Ollama requires a restart to apply the new bind configuration.", "💡".blue());
+                            println!("   {} To fix, run: {} or follow the prompts in future versions.", "👉".green(), "sudo systemctl edit ollama".yellow());
+                        }
+                    }
+                }
+            },
             ActionOutput::OllamaVersion(v) => {
                 println!("   ✨ Ollama Version: {}", v.cyan().bold());
             },
@@ -226,9 +300,14 @@ impl ExecutionProvider for LocalExecutionProvider {
         
         Ok(ExecuteResult {
             success: output.status.success(),
+            status: if output.status.success() { crate::executor::ExecutionStatus::Success } else { crate::executor::ExecutionStatus::FatalFailure },
             stdout: String::from_utf8_lossy(&output.stdout).to_string(),
             stderr: String::from_utf8_lossy(&output.stderr).to_string(),
             exit_code: output.status.code(),
+            error: if output.status.success() { None } else { 
+                Some(crate::executor::OrchestrationError::Execution(String::from_utf8_lossy(&output.stderr).to_string()))
+            },
+            insight: None,
         })
     }
 }
@@ -248,17 +327,22 @@ impl ExecutionProvider for RemoteExecutionProvider {
             Ok(stdout) => {
                 Ok(ExecuteResult {
                     success: true,
+                    status: crate::executor::ExecutionStatus::Success,
                     stdout,
                     stderr: "".to_string(),
                     exit_code: Some(0),
+                    error: None, insight: None,
                 })
             }
             Err(stderr) => {
                 Ok(ExecuteResult {
                     success: false,
+                    status: crate::executor::ExecutionStatus::FatalFailure,
                     stdout: "".to_string(),
-                    stderr,
+                    stderr: stderr.clone(),
                     exit_code: Some(255), // SSH general failure code
+                    error: Some(crate::executor::OrchestrationError::Transport(stderr)),
+                    insight: None,
                 })
             }
         }

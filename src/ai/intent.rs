@@ -18,6 +18,7 @@ impl IntentResolver for LocalIntentResolver {
                 target: "localhost".to_string(),
                 params: serde_json::json!({ "host": target }),
                 thought: "Local pattern match for SSH".to_string(),
+                confidence: 1.0,
             });
         }
 
@@ -29,6 +30,7 @@ impl IntentResolver for LocalIntentResolver {
                     target: "localhost".to_string(),
                     params: serde_json::json!({}),
                     thought: "Local pattern match for Ollama List".to_string(),
+                    confidence: 1.0,
                 });
             }
         }
@@ -40,6 +42,7 @@ impl IntentResolver for LocalIntentResolver {
                  target: "localhost".to_string(),
                  params: serde_json::json!({}),
                  thought: "Local pattern match for Update".to_string(),
+                 confidence: 1.0,
              });
         }
 
@@ -77,9 +80,10 @@ impl IntentResolver for AiIntentResolver {
              STRICT SCHEMA (RESPOND ONLY IN THIS JSON):
              {{
                \"thought\": \"Reasoning in Korean\",
-               \"action\": \"OLLAMA_LIST_INSTALLED\" | \"OLLAMA_PULL\" | \"OLLAMA_REMOVE\" | \"INSTALL_APT\" | \"CONNECT\" | \"UPDATE\" | \"SYSTEM_DIAGNOSTIC\",
+               \"action\": \"OLLAMA_LIST_INSTALLED\" | \"OLLAMA_PULL\" | \"OLLAMA_REMOVE\" | \"INSTALL_APT\" | \"CONNECT\" | \"UPDATE\" | \"SYSTEM_DIAGNOSTIC\" | \"SYSTEM_SHUTDOWN\",
                \"target\": \"localhost\" | \"specific IP/Hostname from World State\",
-               \"params\": {{ \"model\": \"...\", \"name\": \"...\", \"force\": false, \"host\": \"...\" }}
+               \"params\": {{ \"model\": \"...\", \"name\": \"...\", \"force\": false, \"host\": \"...\" }},
+               \"confidence\": 0.0 to 1.0
              }}",
             input
         );

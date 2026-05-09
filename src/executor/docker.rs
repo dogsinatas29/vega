@@ -65,7 +65,7 @@ impl Action for DockerPull {
     }
 
     async fn execute(&self) -> Result<ExecuteResult, String> {
-        Ok(ExecuteResult { success: true, stdout: String::new(), stderr: String::new(), exit_code: Some(0) })
+        Ok(ExecuteResult { success: true, status: crate::executor::ExecutionStatus::Success, stdout: String::new(), stderr: String::new(), exit_code: Some(0), error: None, insight: None })
     }
 
     async fn rollback(&self) -> Result<(), String> {

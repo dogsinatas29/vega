@@ -2,7 +2,107 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use crate::executor::ExecuteResult;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub const SENTINEL_READY: &str = "__VEGA_READY__";
+pub const SENTINEL_FAIL: &str = "__VEGA_FAIL__";
+pub const SENTINEL_TIMEOUT: &str = "__VEGA_TIMEOUT__";
+pub const SENTINEL_JSON_PREFIX: &str = "__VEGA_JSON__";
+pub const SENTINEL_PROTOCOL_BEGIN: &str = "__VEGA_PROTOCOL_BEGIN__";
+pub const SENTINEL_PROTOCOL_END: &str = "__VEGA_PROTOCOL_END__";
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct VegaEvent {
+    pub protocol: Option<String>,
+    pub r#type: String,
+    pub status: String,
+    pub service: Option<String>,
+    pub severity: Option<String>,
+    pub message: Option<String>,
+    pub host: Option<String>,
+    pub user: Option<String>,
+    pub pid: Option<u32>,
+    pub version: Option<String>,
+    pub bind: Option<String>,
+    pub local_ready: Option<bool>,
+    pub externally_reachable: Option<bool>,
+    pub progress: Option<f32>,
+    pub gpu_info: Option<serde_json::Value>,
+    pub ack: Option<bool>,
+    pub transaction: Option<String>,
+    pub bind_scope: Option<String>,
+    pub ssh_tunnel_reachable: Option<bool>,
+    pub lan_reachable: Option<bool>,
+    pub desired_bind: Option<String>,
+    pub actual_bind: Option<String>,
+    pub state_converged: Option<bool>,
+    pub remediation_available: Option<bool>,
+    pub requires_restart: Option<bool>,
+    pub safe_to_apply: Option<bool>,
+    // Session & Streaming (Alpha 35)
+    pub session_id: Option<String>,
+    pub request_id: Option<String>,
+    pub correlation_id: Option<String>,
+    pub stream_source: Option<String>, // stdout, stderr, telemetry
+    pub chunk: Option<String>,
+    pub error_category: Option<String>, // AUTH, NETWORK, TIMEOUT, RESOURCE, etc.
+    pub recoverable: Option<bool>,
+    pub retry_hint: Option<String>,
+}
+
+impl VegaEvent {
+    pub fn parse_from_stdout(stdout: &str) -> Vec<Self> {
+        let mut events = Vec::new();
+        let mut in_protocol = false;
+        let mut current_frame = String::new();
+        
+        for line in stdout.lines() {
+            let trimmed = line.trim();
+            
+            if trimmed == SENTINEL_PROTOCOL_BEGIN {
+                in_protocol = true;
+                current_frame.clear();
+                continue;
+            }
+            
+            if trimmed == SENTINEL_PROTOCOL_END {
+                in_protocol = false;
+                // Try parsing the accumulated frame content
+                if !current_frame.is_empty() {
+                    // Attempt to parse line by line in case multiple JSONs are inside one frame
+                    for frame_line in current_frame.lines() {
+                        let f_trimmed = frame_line.trim();
+                        if f_trimmed.is_empty() { continue; }
+                        
+                        let clean_json = f_trimmed.strip_prefix(SENTINEL_JSON_PREFIX).unwrap_or(f_trimmed);
+                        if let Ok(event) = serde_json::from_str::<Self>(clean_json) {
+                            events.push(event);
+                        }
+                    }
+                }
+                current_frame.clear();
+                continue;
+            }
+            
+            if in_protocol {
+                current_frame.push_str(line);
+                current_frame.push('\n');
+            } else if trimmed.starts_with(SENTINEL_JSON_PREFIX) {
+                // Compatibility mode for direct JSON prefix without framing
+                if let Some(json_str) = trimmed.strip_prefix(SENTINEL_JSON_PREFIX) {
+                    if let Ok(event) = serde_json::from_str::<Self>(json_str) {
+                        events.push(event);
+                    }
+                }
+            }
+        }
+        events
+    }
+
+    pub fn is_ready(&self) -> bool {
+        self.status == "READY" || self.status == "SUCCESS"
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub enum DangerLevel {
     Safe,      // No destructive impact (e.g., list, check)
     Moderate,  // Small changes (e.g., install new package)
@@ -28,6 +128,7 @@ pub enum ActionOutput {
     OllamaModelList(Vec<String>),
     GenericSuccess(String),
     Raw(String),
+    ServiceState(VegaEvent),
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -45,6 +146,13 @@ pub enum CapabilityRequirement {
     Gpu,
     Ollama,
     Docker,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum ExecutionMode {
+    FullSnapshot,    // Full system sensing before execution
+    MinimalSnapshot, // Basic reachability check only
+    DirectDispatch,  // Skip all sensing, fire and forget
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -65,15 +173,24 @@ pub trait Action: Send + Sync {
     /// Risk assessment
     fn danger_level(&self) -> DangerLevel;
 
+    /// Execution strategy
+    fn execution_mode(&self) -> ExecutionMode {
+        ExecutionMode::FullSnapshot
+    }
+
     /// Minimum requirements for this action to even be considered
     fn required_capabilities(&self) -> Vec<CapabilityRequirement> {
         vec![] // Default: no specific requirements
     }
 
-    /// Whether to skip system context snapshot for this action
-    fn skip_snapshot(&self) -> bool {
-        false
-    }
+    /// Privilege Requirements: Does this action need sudo/root?
+    fn requires_root(&self) -> bool { false }
+
+    /// Privilege Requirements: Does this action strictly require NOPASSWD?
+    fn requires_nopasswd(&self) -> bool { false }
+
+    /// Snapshot Requirements: Does this action need system sensing before run?
+    fn requires_snapshot(&self) -> bool { true }
 
     /// 🧩 [Semantic Reconciliation] Evaluate if the desired state is satisfied
     /// regardless of raw exit codes. (e.g., 'already removed' is a success).
@@ -141,6 +258,12 @@ impl ActionFactory {
                     force,
                 }))
             },
+            "OLLAMA_STOP" => {
+                Some(Box::new(crate::executor::ollama::OllamaStop))
+            },
+            "OLLAMA_START" => {
+                Some(Box::new(crate::executor::ollama::OllamaStart))
+            },
             "INSTALL_APT" => {
                 let name = params["name"].as_str()?.to_string();
                 Some(Box::new(crate::executor::pkg::AptInstall {
@@ -157,6 +280,16 @@ impl ActionFactory {
             "SYSTEM_DIAGNOSTIC" => {
                 Some(Box::new(crate::executor::system::SystemDiagnostic::new(target.to_string())))
             },
+            "SYSTEM_SHUTDOWN" => {
+                Some(Box::new(crate::executor::system::SystemShutdown::new(target.to_string())))
+            },
+            "SSH_LIST_TARGETS" => {
+                Some(Box::new(crate::executor::discovery::SshListTargetsAction))
+            },
+            "INFRA_LIST_REMOTES" => {
+                Some(Box::new(crate::executor::discovery::InfraListRemotesAction))
+            },
+            "SYSTEM_LIST_PROCESSES" => None, // TODO
             "SSH_CONNECT" => {
                 let host = params["host"].as_str().unwrap_or(target);
                 Some(Box::new(crate::executor::action::ShellAction {
@@ -182,6 +315,12 @@ impl Action for ShellAction {
     fn id(&self) -> String { format!("shell-{}", self.command.len()) }
     fn name(&self) -> String { "Shell Fallback".to_string() }
     fn danger_level(&self) -> DangerLevel { DangerLevel::Moderate }
+    fn required_capabilities(&self) -> Vec<CapabilityRequirement> { vec![] }
+    fn execution_mode(&self) -> ExecutionMode { ExecutionMode::DirectDispatch }
+    
+    // Privilege Requirements
+    fn requires_root(&self) -> bool { false }
+    fn requires_nopasswd(&self) -> bool { false }
 
     async fn validate(&self, _snapshot: &crate::system::snapshot::HostSnapshot) -> Result<(), String> {
         Ok(())
@@ -208,9 +347,14 @@ impl Action for ShellAction {
         
         Ok(ExecuteResult {
             success: output.status.success(),
+            status: if output.status.success() { crate::executor::ExecutionStatus::Success } else { crate::executor::ExecutionStatus::FatalFailure },
             stdout: String::from_utf8_lossy(&output.stdout).to_string(),
             stderr: String::from_utf8_lossy(&output.stderr).to_string(),
             exit_code: output.status.code(),
+            error: if output.status.success() { None } else { 
+                Some(crate::executor::OrchestrationError::Execution(String::from_utf8_lossy(&output.stderr).to_string()))
+            },
+            insight: None,
         })
     }
 

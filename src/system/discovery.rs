@@ -14,11 +14,15 @@ pub struct DiscoveryResult {
 
 impl Discovery {
     pub fn run(silent: bool) -> Result<DiscoveryResult, String> {
+        use crate::ui::console::SreConsole;
+        
         let hostname = crate::context::SystemContext::get_hostname();
         let ip = crate::context::SystemContext::get_local_ip();
+        
         if !silent {
-            eprintln!("📡 Identifying as: {} ({})", hostname.cyan(), ip.cyan());
+            SreConsole::logic(&format!("Identifying as: {} ({})", hostname.cyan(), ip.cyan()));
         }
+
         let mut result = DiscoveryResult {
             cloud_remotes: Vec::new(),
             ssh_hosts: Vec::new(),
@@ -26,17 +30,17 @@ impl Discovery {
 
         // 1. Check for local signatures
         if let Some(pm) = Self::detect_plugin_manager() {
-            println!("🔍 Discovery: Found specific configuration: {}", pm);
+            SreConsole::logic(&format!("Found specific configuration: {}", pm));
         }
 
         // 2. Cloud Discovery Integration
         if let Ok(remotes) = RcloneProvider::list_remotes() {
             if !remotes.is_empty() {
-                println!("☁️  Discovery: Found {} rclone remotes.", remotes.len());
+                SreConsole::logic(&format!("Found {} rclone remotes.", remotes.len()));
                 let mut masker = RemoteMasker::new();
                 for remote in remotes {
                     let masked = masker.mask(&remote, Some("STORAGE"));
-                    println!("   📡 Remote identified: {}", masked);
+                    SreConsole::logic(&format!("Remote identified: {}", masked));
                     result.cloud_remotes.push(remote.clone());
 
                     // Depth-limited search for "workspace" indicators
@@ -52,7 +56,7 @@ impl Discovery {
                                         || name == "lazy-lock.json"
                                         || name == ".git"
                                 }) {
-                                    println!("   🎯 Potential WORKSPACE found on {}", masked);
+                                    SreConsole::logic(&format!("Potential WORKSPACE found on {}", masked));
                                 }
                             }
                         }
@@ -64,19 +68,15 @@ impl Discovery {
         // 3. SSH Discovery Integration
         if let Some(ssh_hosts) = Self::parse_ssh_config() {
             if !ssh_hosts.is_empty() {
-                println!(
-                    "🔑 Discovery: Found {} potential SSH targets in config.",
-                    ssh_hosts.len()
-                );
+                SreConsole::logic(&format!("Found {} potential SSH targets in config.", ssh_hosts.len()));
                 let mut masker = RemoteMasker::new();
                 for host in ssh_hosts {
                     let masked = masker.mask(&host, Some("HOST"));
-                    println!("   📡 SSH Target identified: {}", masked);
+                    SreConsole::logic(&format!("SSH Target identified: {}", masked));
                     result.ssh_hosts.push(host);
                 }
             }
         }
-
 
         Ok(result)
     }

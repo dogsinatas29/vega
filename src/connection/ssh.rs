@@ -393,9 +393,14 @@ impl SshConnection {
                 
                 Ok(crate::executor::ExecuteResult {
                     success: exit_status == 0,
+                    status: if exit_status == 0 { crate::executor::ExecutionStatus::Success } else { crate::executor::ExecutionStatus::FatalFailure },
                     stdout: stdout_buf,
-                    stderr: stderr_buf,
+                    stderr: stderr_buf.clone(),
                     exit_code: Some(exit_status),
+                    error: if exit_status == 0 { None } else { 
+                        Some(crate::executor::OrchestrationError::Transport(stderr_buf))
+                    },
+                    insight: None,
                 })
             }).await.map_err(|e| e.to_string())?
         } else {
@@ -423,9 +428,14 @@ impl SshConnection {
 
             Ok(crate::executor::ExecuteResult {
                 success: output.status.success(),
+                status: if output.status.success() { crate::executor::ExecutionStatus::Success } else { crate::executor::ExecutionStatus::FatalFailure },
                 stdout: stdout_buf,
-                stderr: stderr_buf,
+                stderr: stderr_buf.clone(),
                 exit_code: Some(exit_status),
+                error: if output.status.success() { None } else { 
+                    Some(crate::executor::OrchestrationError::Transport(stderr_buf))
+                },
+                insight: None,
             })
         }
     }

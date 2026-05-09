@@ -16,4 +16,5 @@ pub mod setup;
 pub mod shell;
 pub mod storage;
 pub mod system;
+pub mod ui;
 pub mod token_saver;
