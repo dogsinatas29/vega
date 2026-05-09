@@ -5,35 +5,33 @@ pub struct BasicTemplateBuilder;
 
 impl TemplateBuilder for BasicTemplateBuilder {
     fn build(&self, intent: &Intent) -> anyhow::Result<CommandAst> {
-        match intent {
-            Intent::OllamaListInstalled {} => Ok(CommandAst::new("ollama", "list")),
-            Intent::OllamaListRunning {} => Ok(CommandAst::new("ollama", "ps")),
-            Intent::OllamaPull { model } => Ok(CommandAst::new("ollama", &format!("pull {}", model))),
-            Intent::OllamaRemove { model, .. } => Ok(CommandAst::new("ollama", &format!("rm {}", model))),
-            Intent::OllamaVersion {} => Ok(CommandAst::new("ollama", "--version")),
-            Intent::InstallApt { name } => {
-                Ok(CommandAst::new("sudo apt", &format!("install -y {}", name)))
+        match intent.action.as_str() {
+            "OLLAMA_LIST_INSTALLED" => Ok(CommandAst::new("ollama", "list")),
+            "OLLAMA_LIST_RUNNING" => Ok(CommandAst::new("ollama", "ps")),
+            "OLLAMA_PULL" => Ok(CommandAst::new("ollama", &format!("pull {}", intent.params["model"].as_str().unwrap_or("")))),
+            "OLLAMA_REMOVE" => Ok(CommandAst::new("ollama", &format!("rm {}", intent.params["model"].as_str().unwrap_or("")))),
+            "OLLAMA_VERSION" => Ok(CommandAst::new("ollama", "--version")),
+            "INSTALL_APT" => {
+                Ok(CommandAst::new("sudo apt", &format!("install -y {}", intent.params["name"].as_str().unwrap_or(""))))
             },
-            Intent::InstallDocker { name } => {
-                Ok(CommandAst::new("docker", &format!("run -d {}", name)))
+            "INSTALL_DOCKER" => {
+                Ok(CommandAst::new("docker", &format!("run -d {}", intent.params["name"].as_str().unwrap_or(""))))
             },
-            Intent::SshConnect { host } => {
+            "SSH_CONNECT" => {
                 let mut ast = CommandAst::new("ssh", "connect");
-                ast.target_server = Some(host.clone());
+                ast.target_server = Some(intent.params["host"].as_str().unwrap_or(&intent.target).to_string());
                 Ok(ast)
             },
-            Intent::SystemUpdate {} => {
+            "SYSTEM_UPDATE" => {
                 Ok(CommandAst::new("sudo apt", "update"))
             },
-            Intent::BackupData { source, target } => {
-                let mut ast = CommandAst::new("rclone", "sync");
-                ast.source = Some(source.clone());
-                ast.destination = Some(format!("{}:backup", target));
-                Ok(ast)
+            "SYSTEM_DIAGNOSTIC" => {
+                Ok(CommandAst::new("uname", "-a"))
             },
-            Intent::Unknown => {
+            "UNKNOWN" => {
                 Err(anyhow::anyhow!("Pure Semantic Mode: Cannot generate template for Unknown intent."))
-            }
+            },
+            _ => Err(anyhow::anyhow!("No template for action: {}", intent.action)),
         }
     }
 }

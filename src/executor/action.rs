@@ -112,52 +112,58 @@ pub struct ActionFactory;
 
 impl ActionFactory {
     pub fn create_action(intent: &crate::executor::pipeline::Intent, _target_host: &str, _user: Option<String>, _port: Option<u16>, _password: Option<String>) -> Option<Box<dyn Action>> {
-        use crate::executor::pipeline::Intent;
-        
-        match intent {
-            Intent::OllamaListInstalled {} => {
+        let params = &intent.params;
+        let target = if intent.target == "localhost" { _target_host } else { &intent.target };
+
+        match intent.action.as_str() {
+            "OLLAMA_LIST_INSTALLED" => {
                 Some(Box::new(crate::executor::ollama::OllamaListInstalledModels))
             },
-            Intent::OllamaListRunning {} => {
+            "OLLAMA_LIST_RUNNING" => {
                 Some(Box::new(crate::executor::ollama::OllamaListRunningModels))
             },
-            Intent::OllamaVersion {} => {
+            "OLLAMA_VERSION" => {
                 Some(Box::new(crate::executor::ollama::OllamaVersion))
             },
-            Intent::OllamaPull { model } => {
+            "OLLAMA_PULL" => {
+                let model = params["model"].as_str()?.to_string();
                 Some(Box::new(crate::executor::ollama::OllamaModelPull {
                     id: format!("pull-{}", model),
-                    model_name: model.clone(),
+                    model_name: model,
                 }))
             },
-            Intent::OllamaRemove { model, force } => {
+            "OLLAMA_REMOVE" => {
+                let model = params["model"].as_str()?.to_string();
+                let force = params["force"].as_bool().unwrap_or(false);
                 Some(Box::new(crate::executor::ollama::OllamaModelRemove {
                     id: format!("rm-{}", model),
-                    model_name: model.clone(),
-                    force: *force,
+                    model_name: model,
+                    force,
                 }))
             },
-            Intent::InstallApt { name } => {
+            "INSTALL_APT" => {
+                let name = params["name"].as_str()?.to_string();
                 Some(Box::new(crate::executor::pkg::AptInstall {
-                    package_name: name.clone(),
+                    package_name: name,
                 }))
             },
-            Intent::InstallDocker { name } => {
+            "INSTALL_DOCKER" => {
+                let name = params["name"].as_str()?.to_string();
                 Some(Box::new(crate::executor::pkg::DockerRun {
-                    image_name: name.clone(),
+                    image_name: name,
                 }))
             },
-            Intent::SystemUpdate {} => None,
-            Intent::SystemDiagnostic {} => {
-                Some(Box::new(crate::executor::system::SystemDiagnostic::new(_target_host.to_string())))
+            "SYSTEM_UPDATE" => None,
+            "SYSTEM_DIAGNOSTIC" => {
+                Some(Box::new(crate::executor::system::SystemDiagnostic::new(target.to_string())))
             },
-            Intent::SshConnect { host } => {
+            "SSH_CONNECT" => {
+                let host = params["host"].as_str().unwrap_or(target);
                 Some(Box::new(crate::executor::action::ShellAction {
                     command: format!("ssh {}", host),
                 }))
             },
-            Intent::BackupData { .. } => None,
-            Intent::Unknown => None,
+            _ => None,
         }
     }
     pub fn create_shell_action(command: &str) -> Box<dyn Action> {

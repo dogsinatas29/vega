@@ -1,5 +1,6 @@
 use async_trait::async_trait;
-use crate::executor::{Action, DangerLevel, ExecuteResult, ActionOutput, CapabilityRequirement};
+use crate::executor::action::{Action, DangerLevel, ActionOutput, CapabilityRequirement};
+use crate::executor::ExecuteResult;
 use crate::system::snapshot::HostSnapshot;
 use crate::executor::action::ExecutionPlan;
 use uuid::Uuid;

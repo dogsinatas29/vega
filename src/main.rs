@@ -931,41 +931,15 @@ async fn main() {
                 println!("📡 [Target] Resolved to canonical: {}", target.identifier().cyan());
 
                 // Map action + params to Intent for template building
-                let intent_json = serde_json::json!({
-                    "action": ai_res.action,
-                    "params": ai_res.params
-                });
-                
-                let intent: crate::executor::pipeline::Intent = match serde_json::from_value(intent_json) {
-                    Ok(i) => i,
-                    Err(e) => {
-                        eprintln!("❌ [Cognition] Action mapping failed: {}. Action: {}, Params: {}", e, ai_res.action, ai_res.params);
-                        return;
-                    }
+                let intent = crate::executor::pipeline::Intent {
+                    action: ai_res.action.clone(),
+                    target: target.identifier().to_string(),
+                    params: ai_res.params.clone(),
+                    thought: ai_res.thought.clone(),
                 };
 
-                // 🧩 [Deterministic Explanation] Use Rust template instead of AI hallucination
-                let safe_explanation = match &intent {
-                    crate::executor::pipeline::Intent::OllamaListInstalled {} => 
-                        format!("{}에 설치된 Ollama 모델 목록을 조회합니다.", target.identifier()),
-                    crate::executor::pipeline::Intent::OllamaListRunning {} => 
-                        format!("{}에서 현재 실행 중인 Ollama 모델을 확인합니다.", target.identifier()),
-                    crate::executor::pipeline::Intent::OllamaPull { model } => 
-                        format!("{}에 '{}' 모델을 내려받아 설치합니다.", target.identifier(), model),
-                    crate::executor::pipeline::Intent::OllamaRemove { model, .. } => 
-                        format!("{}에서 '{}' 모델을 제거합니다.", target.identifier(), model),
-                    crate::executor::pipeline::Intent::OllamaVersion {} => 
-                        format!("{}의 Ollama 서버 버전을 확인합니다.", target.identifier()),
-                    crate::executor::pipeline::Intent::SshConnect { host } => 
-                        format!("{} 호스트로 SSH 연결을 시도합니다.", host),
-                    crate::executor::pipeline::Intent::SystemUpdate {} => 
-                        format!("{}의 시스템 패키지를 최신 상태로 업데이트합니다.", target.identifier()),
-                    crate::executor::pipeline::Intent::InstallApt { name } => 
-                        format!("{}에 '{}' 패키지를 apt를 통해 설치합니다.", target.identifier(), name),
-                    crate::executor::pipeline::Intent::InstallDocker { name } => 
-                        format!("{}에 '{}' 도커 이미지를 배포합니다.", target.identifier(), name),
-                    _ => ai_res.explanation.chars().collect::<String>(), // Fallback
-                };
+                // 🧩 [Deterministic Explanation] Use struct-defined template instead of manual match
+                let safe_explanation = intent.get_explanation(&target.identifier());
                 
                 println!("📝 Explanation: {}", safe_explanation.green());
                 println!("🎯 Action: {} on {}", ai_res.action.yellow().bold(), target.identifier().cyan());

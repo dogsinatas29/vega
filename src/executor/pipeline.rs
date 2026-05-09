@@ -4,40 +4,44 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(tag = "action", content = "params")]
-#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-pub enum Intent {
-    OllamaListInstalled {},
-    OllamaListRunning {},
-    OllamaPull { model: String },
-    OllamaRemove { 
-        model: String, 
-        force: bool 
-    },
-    OllamaVersion {},
-    InstallApt { name: String },
-    InstallDocker { name: String },
-    SystemUpdate {},
-    SystemDiagnostic {},
-    SshConnect { host: String },
-    BackupData { source: String, target: String },
-    Unknown,
+pub struct Intent {
+    pub action: String,
+    pub target: String,
+    pub params: serde_json::Value,
+    #[serde(default)]
+    pub thought: String,
 }
 
+// Legacy Intent enum will be phased out in favor of the structured Intent struct
+// but for compatibility during migration, we keep the mapping logic.
+
 impl Intent {
-    pub fn get_explanation(&self, target_host: &str) -> String {
-        match self {
-            Intent::OllamaListInstalled {} => format!("{} 호스트에 설치된 모든 Ollama 모델 목록을 조회합니다.", target_host),
-            Intent::OllamaListRunning {} => format!("{} 호스트에서 현재 실행 중인 Ollama 모델 목록을 조회합니다.", target_host),
-            Intent::OllamaVersion {} => format!("{} 호스트의 Ollama 버전을 확인합니다.", target_host),
-            Intent::OllamaPull { model } => format!("{} 호스트로 모델 '{}'을(를) 다운로드합니다.", target_host, model),
-            Intent::OllamaRemove { model, .. } => format!("{} 호스트에서 모델 '{}'을(를) 삭제합니다.", target_host, model),
-            Intent::InstallApt { name } => format!("{} 호스트에 패키지 '{}'을(를) 설치합니다.", target_host, name),
-            Intent::InstallDocker { name } => format!("{} 호스트에서 Docker 이미지 '{}'을(를) 실행합니다.", target_host, name),
-            Intent::SystemUpdate {} => format!("{} 호스트의 시스템을 업데이트합니다.", target_host),
-            Intent::SshConnect { host } => format!("원격 호스트 {}에 연결을 시도합니다.", host),
-            Intent::BackupData { source, target } => format!("{}에서 {}로 데이터를 백업합니다.", source, target),
-            Intent::Unknown => "사용자의 의도를 파악할 수 없습니다. 더 구체적으로 말씀해 주세요.".to_string(),
+    pub fn get_explanation(&self, _target_host: &str) -> String {
+        let params = &self.params;
+        match self.action.as_str() {
+            "OLLAMA_LIST_INSTALLED" => format!("{} 호스트에 설치된 모든 Ollama 모델 목록을 조회합니다.", self.target),
+            "OLLAMA_LIST_RUNNING" => format!("{} 호스트에서 현재 실행 중인 Ollama 모델 목록을 조회합니다.", self.target),
+            "OLLAMA_VERSION" => format!("{} 호스트의 Ollama 버전을 확인합니다.", self.target),
+            "OLLAMA_PULL" => format!("{} 호스트로 모델 '{}'을(를) 다운로드합니다.", self.target, params["model"].as_str().unwrap_or("unknown")),
+            "OLLAMA_REMOVE" => format!("{} 호스트에서 모델 '{}'을(를) 삭제합니다.", self.target, params["model"].as_str().unwrap_or("unknown")),
+            "INSTALL_APT" => format!("{} 호스트에 패키지 '{}'을(를) 설치합니다.", self.target, params["name"].as_str().unwrap_or("unknown")),
+            "SYSTEM_UPDATE" => format!("{} 호스트의 시스템을 업데이트합니다.", self.target),
+            "SYSTEM_DIAGNOSTIC" => format!("{} 호스트의 시스템 상태를 진단합니다.", self.target),
+            "SSH_CONNECT" => format!("원격 호스트 {}에 연결을 시도합니다.", params["host"].as_str().unwrap_or(&self.target)),
+            _ => format!("사용자의 의도({})를 파악할 수 없습니다.", self.action),
+        }
+    }
+
+    pub fn is_unknown(&self) -> bool {
+        self.action == "UNKNOWN" || self.action.is_empty()
+    }
+
+    pub fn unknown() -> Self {
+        Self {
+            action: "UNKNOWN".to_string(),
+            target: "localhost".to_string(),
+            params: serde_json::json!({}),
+            thought: "".to_string(),
         }
     }
 }
