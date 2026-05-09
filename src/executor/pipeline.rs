@@ -18,6 +18,7 @@ pub enum Intent {
     InstallApt { name: String },
     InstallDocker { name: String },
     SystemUpdate {},
+    SystemDiagnostic {},
     SshConnect { host: String },
     BackupData { source: String, target: String },
     Unknown,

@@ -13,6 +13,7 @@ pub mod ollama;
 pub mod capabilities;
 pub mod service;
 pub mod docker;
+pub mod system;
 pub mod cuda;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

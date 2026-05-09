@@ -1,5 +1,5 @@
 {
-  "aiCount": 173,
+  "aiCount": 174,
   "cluster_flows": [],
   "clusters": [
     {
@@ -11681,12 +11681,190 @@
       "visual": {
         "opacity": 1
       }
+    },
+    {
+      "cluster_id": "doc_shelf",
+      "data": {
+        "cluster_id": "doc_shelf",
+        "degree": 0,
+        "file": "mile_stone/v0.0.14.md",
+        "hasAtomicSignature": false,
+        "hasImportSignature": false,
+        "hiddenOnCanvas": true,
+        "icon": "📚",
+        "isScoped": false,
+        "isSovereign": true,
+        "isUserCreated": true,
+        "label": "v0.0.14",
+        "layer": "user",
+        "opacity": 1,
+        "scale": 1,
+        "status": "active",
+        "type": "document"
+      },
+      "degree": 0,
+      "filePath": "mile_stone/v0.0.14.md",
+      "id": "mile_stone/v0.0.14.md",
+      "intelligence": {},
+      "label": "v0.0.14",
+      "layer": "user",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "status": "active",
+      "type": "document",
+      "visual": {
+        "opacity": 1
+      }
+    },
+    {
+      "cluster_id": "doc_shelf",
+      "data": {
+        "cluster_id": "doc_shelf",
+        "degree": 0,
+        "file": "mile_stone/v0.0.18-Environment-Cognition.md",
+        "hasAtomicSignature": false,
+        "hasImportSignature": false,
+        "hiddenOnCanvas": true,
+        "icon": "📚",
+        "isScoped": false,
+        "isSovereign": true,
+        "isUserCreated": true,
+        "label": "v0.0.18-Environment-Cognition",
+        "layer": "user",
+        "opacity": 1,
+        "scale": 1,
+        "status": "active",
+        "type": "document"
+      },
+      "degree": 0,
+      "filePath": "mile_stone/v0.0.18-Environment-Cognition.md",
+      "id": "mile_stone/v0.0.18-Environment-Cognition.md",
+      "intelligence": {},
+      "label": "v0.0.18-Environment-Cognition",
+      "layer": "user",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "status": "active",
+      "type": "document",
+      "visual": {
+        "opacity": 1
+      }
+    },
+    {
+      "cluster_id": "cluster_ghosts",
+      "data": {
+        "cluster_id": "cluster_ghosts",
+        "degree": 0,
+        "hasAtomicSignature": false,
+        "hasImportSignature": false,
+        "hiddenOnCanvas": false,
+        "icon": "☁️",
+        "isScoped": false,
+        "isSovereign": false,
+        "isUserCreated": false,
+        "label": "README",
+        "layer": "ai",
+        "opacity": 0.5,
+        "scale": 1,
+        "status": "ghost"
+      },
+      "degree": 0,
+      "filePath": "external://README",
+      "id": "README",
+      "intelligence": {},
+      "label": "README",
+      "layer": "ai",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "status": "ghost",
+      "type": "external",
+      "visual": {
+        "opacity": 0.5
+      }
+    },
+    {
+      "cluster_id": "doc_shelf",
+      "data": {
+        "cluster_id": "doc_shelf",
+        "degree": 0,
+        "file": "README.ko.md",
+        "hasAtomicSignature": false,
+        "hasImportSignature": false,
+        "hiddenOnCanvas": true,
+        "icon": "📚",
+        "isScoped": false,
+        "isSovereign": true,
+        "isUserCreated": true,
+        "label": "README.ko",
+        "layer": "user",
+        "opacity": 1,
+        "scale": 1,
+        "status": "active",
+        "type": "document"
+      },
+      "degree": 0,
+      "filePath": "README.ko.md",
+      "id": "README.ko.md",
+      "intelligence": {},
+      "label": "README.ko",
+      "layer": "user",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "status": "active",
+      "type": "document",
+      "visual": {
+        "opacity": 1
+      }
+    },
+    {
+      "cluster_id": "doc_shelf",
+      "data": {
+        "cluster_id": "doc_shelf",
+        "degree": 0,
+        "file": "RELEASE_NOTE_EN.md",
+        "hasAtomicSignature": false,
+        "hasImportSignature": false,
+        "hiddenOnCanvas": true,
+        "icon": "📚",
+        "isScoped": false,
+        "isSovereign": true,
+        "isUserCreated": true,
+        "label": "RELEASE_NOTE_EN",
+        "layer": "user",
+        "opacity": 1,
+        "scale": 1,
+        "status": "active",
+        "type": "document"
+      },
+      "degree": 0,
+      "filePath": "RELEASE_NOTE_EN.md",
+      "id": "RELEASE_NOTE_EN.md",
+      "intelligence": {},
+      "label": "RELEASE_NOTE_EN",
+      "layer": "user",
+      "position": {
+        "x": 0,
+        "y": 0
+      },
+      "status": "active",
+      "type": "document",
+      "visual": {
+        "opacity": 1
+      }
     }
   ],
-  "userCount": 96,
+  "userCount": 100,
   "_iron_guard": {
     "version": "0.2.18.1",
-    "byte_size": 180668,
+    "byte_size": 183461,
     "encoding": "UTF-8",
     "alignment": 8
   }

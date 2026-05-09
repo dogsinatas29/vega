@@ -148,6 +148,9 @@ impl ActionFactory {
                 }))
             },
             Intent::SystemUpdate {} => None,
+            Intent::SystemDiagnostic {} => {
+                Some(Box::new(crate::executor::system::SystemDiagnostic::new(_target_host.to_string())))
+            },
             Intent::SshConnect { host } => {
                 Some(Box::new(crate::executor::action::ShellAction {
                     command: format!("ssh {}", host),
